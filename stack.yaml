@@ -1,0 +1,6 @@
+---
+resolver: lts-16.15
+
+packages:
+  - ./rollbar-cli
+  - ./rollbar-client
