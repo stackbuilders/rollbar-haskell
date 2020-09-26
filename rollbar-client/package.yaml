@@ -25,7 +25,9 @@ dependencies:
 library:
   source-dirs: src
   dependencies:
+    - aeson
     - req
+    - text
 
 tests:
   rollbar-client-test:
