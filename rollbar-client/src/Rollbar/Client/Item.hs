@@ -1,3 +1,5 @@
+{-# LANGUAGE OverloadedStrings #-}
+
 module Rollbar.Client.Item where
 
 import Data.Text
@@ -25,7 +27,7 @@ data Data = Data
   -- fingerprint
   -- title
   -- uuid
-  -- notifier
+  , dataNotifier :: Maybe Notifier
   }
 
 data Body = Body
@@ -69,5 +71,16 @@ data Exception = Exception
   , exceptionDescription :: Maybe Text
   }
 
+data Notifier = Notifier
+  { notifierName :: Text
+  , notifierVersion :: Text
+  }
+
 newtype ItemId = ItemId Text
 
+defaultNotifier :: Notifier
+defaultNotifier =
+  Notifier
+    { notifierName = "rollbar-client"
+    , notifierVersion = "0.1.0.0"
+    }
