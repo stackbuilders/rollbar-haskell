@@ -7,14 +7,29 @@ module Rollbar.Client where
 import Control.Monad.Reader
 import Data.Aeson
 import Data.ByteString
+import Data.Text
 import Network.HTTP.Req
 import Rollbar.Client.Item
 
 data Pong = Pong
   deriving (Eq, Show)
 
-newtype Token = Token ByteString
-  deriving (Eq, Show)
+newtype Rollbar a = Rollbar (ReaderT Setting Req a)
+  deriving
+    ( Applicative
+    , Functor
+    , Monad
+    , MonadIO
+    , MonadReader Setting
+    )
+
+instance MonadHttp Rollbar where
+  handleHttpException = Rollbar . lift . handleHttpException
+
+data Setting = Setting
+  { settingToken :: ByteString
+  , settingEnvironment :: Text
+  } deriving (Eq, Show)
 
 data Response a = Response
   { responseErr :: Integer
@@ -26,20 +41,8 @@ instance FromJSON a => FromJSON (Response a) where
     Response <$> o .: "err"
              <*> o .: "result"
 
-newtype Rollbar a = Rollbar (ReaderT Token Req a)
-  deriving
-    ( Applicative
-    , Functor
-    , Monad
-    , MonadIO
-    , MonadReader Token
-    )
-
-instance MonadHttp Rollbar where
-  handleHttpException = Rollbar . lift . handleHttpException
-
-runWihToken :: Token -> Rollbar a -> IO a
-runWihToken token (Rollbar f) = run $ runReaderT f token
+runWihSetting :: Setting -> Rollbar a -> IO a
+runWihSetting setting (Rollbar f) = run $ runReaderT f setting
 
 run :: Req a -> IO a
 run = runReq defaultHttpConfig
@@ -53,7 +56,7 @@ ping = do
 
 createItem :: Item -> Rollbar (Response ItemId)
 createItem item = do
-  Token token <- ask
+  token <- asks settingToken
   responseBody <$> req POST url (ReqBodyJson item) jsonResponse (opts token)
   where
     url = baseUrl /: "item" /: ""
