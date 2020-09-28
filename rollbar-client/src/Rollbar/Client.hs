@@ -42,10 +42,10 @@ instance FromJSON a => FromJSON (Response a) where
              <*> o .: "result"
 
 runWihSettings :: Settings -> Rollbar a -> IO a
-runWihSettings settings (Rollbar f) = run $ runReaderT f settings
+runWihSettings settings (Rollbar f) = runWithoutSettings $ runReaderT f settings
 
-run :: Req a -> IO a
-run = runReq defaultHttpConfig
+runWithoutSettings :: Req a -> IO a
+runWithoutSettings = runReq defaultHttpConfig
 
 ping :: Req Pong
 ping = do
