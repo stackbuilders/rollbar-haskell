@@ -14,21 +14,21 @@ import Rollbar.Client.Item
 data Pong = Pong
   deriving (Eq, Show)
 
-newtype Rollbar a = Rollbar (ReaderT Setting Req a)
+newtype Rollbar a = Rollbar (ReaderT Settings Req a)
   deriving
     ( Applicative
     , Functor
     , Monad
     , MonadIO
-    , MonadReader Setting
+    , MonadReader Settings
     )
 
 instance MonadHttp Rollbar where
   handleHttpException = Rollbar . lift . handleHttpException
 
-data Setting = Setting
-  { settingToken :: ByteString
-  , settingEnvironment :: Text
+data Settings = Settings
+  { settingsToken :: ByteString
+  , settingsEnvironment :: Text
   } deriving (Eq, Show)
 
 data Response a = Response
@@ -41,8 +41,8 @@ instance FromJSON a => FromJSON (Response a) where
     Response <$> o .: "err"
              <*> o .: "result"
 
-runWihSetting :: Setting -> Rollbar a -> IO a
-runWihSetting setting (Rollbar f) = run $ runReaderT f setting
+runWihSettings :: Settings -> Rollbar a -> IO a
+runWihSettings settings (Rollbar f) = run $ runReaderT f settings
 
 run :: Req a -> IO a
 run = runReq defaultHttpConfig
@@ -56,7 +56,7 @@ ping = do
 
 createItem :: Item -> Rollbar (Response ItemId)
 createItem item = do
-  token <- asks settingToken
+  token <- asks settingsToken
   responseBody <$> req POST url (ReqBodyJson item) jsonResponse (opts token)
   where
     url = baseUrl /: "item" /: ""
