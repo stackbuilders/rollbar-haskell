@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 5c787b13b2502bb5d8972db7fa0ff416b1a1ef17871bd4459e4d37ad4c67b2c1
+-- hash: fd45f62c54e3c2eebb14899fbfc5c1aab11d0a0c11e35ed0783f03c8fb41f5c1
 
 name:           rollbar-client
 version:        0.1.0.0
@@ -36,6 +36,7 @@ library
   build-depends:
       aeson
     , base >=4.7 && <5
+    , bytestring
     , req
     , text
   default-language: Haskell2010
