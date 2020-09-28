@@ -27,6 +27,7 @@ library:
   dependencies:
     - aeson
     - bytestring
+    - mtl
     - req
     - text
 

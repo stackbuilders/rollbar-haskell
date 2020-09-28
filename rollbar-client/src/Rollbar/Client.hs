@@ -1,14 +1,19 @@
 {-# LANGUAGE DataKinds #-}
+{-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE OverloadedStrings #-}
 
 module Rollbar.Client where
 
+import Control.Monad.Reader
 import Data.Aeson
 import Data.ByteString
 import Network.HTTP.Req
 import Rollbar.Client.Item
 
 data Pong = Pong
+  deriving (Eq, Show)
+
+newtype Token = Token ByteString
   deriving (Eq, Show)
 
 data Response a = Response
@@ -21,6 +26,21 @@ instance FromJSON a => FromJSON (Response a) where
     Response <$> o .: "err"
              <*> o .: "result"
 
+newtype Rollbar a = Rollbar (ReaderT Token Req a)
+  deriving
+    ( Applicative
+    , Functor
+    , Monad
+    , MonadIO
+    , MonadReader Token
+    )
+
+instance MonadHttp Rollbar where
+  handleHttpException = Rollbar . lift . handleHttpException
+
+runWihToken :: Token -> Rollbar a -> IO a
+runWihToken token (Rollbar f) = run $ runReaderT f token
+
 run :: Req a -> IO a
 run = runReq defaultHttpConfig
 
@@ -31,12 +51,13 @@ ping = do
   where
     url = baseUrl /: "status" /: "ping"
 
-createItem :: ByteString -> Item -> Req (Response ItemId)
-createItem token item =
-  responseBody <$> req POST url (ReqBodyJson item) jsonResponse opts
+createItem :: Item -> Rollbar (Response ItemId)
+createItem item = do
+  Token token <- ask
+  responseBody <$> req POST url (ReqBodyJson item) jsonResponse (opts token)
   where
     url = baseUrl /: "item" /: ""
-    opts = header "X-Rollbar-Access-Token" token
+    opts token = header "X-Rollbar-Access-Token" token
 
 baseUrl :: Url Https
 baseUrl = https "api.rollbar.com" /: "api" /: "1"
