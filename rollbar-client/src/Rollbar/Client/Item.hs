@@ -152,12 +152,6 @@ mkItem payload = do
         }
     }
 
-mkPayloadTrace :: [Frame] -> Exception -> Payload
-mkPayloadTrace frames exception = PayloadTrace Trace
-  { traceFrames = frames
-  , traceException = exception
-  }
-
 mkException :: Text -> Exception
 mkException eclass= Exception
   { exceptionClass = eclass

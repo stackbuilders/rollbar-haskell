@@ -18,17 +18,30 @@ spec = before getToken $ do
     it "..." $ \_ ->
       run ping `shouldReturn` Pong
 
-  describe "createItem" $
-    it "..." $ \token -> do
-      let settings = Settings token "test"
-      itemId <- runRollbar defaultHttpConfig settings $ do
-        item <- mkItem $ mkPayloadTrace [] (mkException "NameError")
-          { exceptionMessage = Just "global name 'foo' is not defined"
-          , exceptionDescription = Just "Something went wrong while trying to save the user object"
-          }
-        createItem item
+  describe "createItem" $ do
+    context "PayloadTrace" $
+      it "..." $ \token -> do
+        let settings = Settings token "test"
+        itemId <- runRollbar defaultHttpConfig settings $ do
+          item <- mkItem $ PayloadTrace $ Trace [] (mkException "NameError")
+            { exceptionMessage = Just "global name 'foo' is not defined"
+            , exceptionDescription = Just "Something went wrong while trying to save the user object"
+            }
+          createItem item
 
-      itemId `shouldSatisfy` const True
+        itemId `shouldSatisfy` const True
+
+    context "PayloadTraceChain" $
+      it "..." $ \token -> do
+        let settings = Settings token "test"
+        itemId <- runRollbar defaultHttpConfig settings $ do
+          item <- mkItem $ PayloadTraceChain $ pure $ Trace [] (mkException "NameError")
+            { exceptionMessage = Just "global name 'foo' is not defined"
+            , exceptionDescription = Just "Something went wrong while trying to save the user object"
+            }
+          createItem item
+
+        itemId `shouldSatisfy` const True
 
 
 getToken :: IO ByteString
