@@ -1,4 +1,5 @@
 {-# LANGUAGE DataKinds #-}
+{-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE OverloadedStrings #-}
 
@@ -59,17 +60,18 @@ rollbar
      , HttpBodyAllowed (AllowsBody method) (ProvidesBody body)
      , HttpMethod method
      , HttpResponse response
+     , MonadHttp m
+     , MonadReader Settings m
      )
   => method
   -> Url Https
   -> body
   -> Proxy response
   -> Option Https
-  -> Rollbar response
+  -> m response
 rollbar method url body response options = do
   token <- asks settingsToken
-  Rollbar $ lift $ req method url body response
-    (options <> header "X-Rollbar-Access-Token" token)
+  req method url body response $ options <> header "X-Rollbar-Access-Token" token
 
 baseUrl :: Url Https
 baseUrl = https "api.rollbar.com" /: "api" /: "1"
