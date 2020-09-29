@@ -42,14 +42,17 @@ instance FromJSON a => FromJSON (Response a) where
 runRollbar :: HttpConfig -> Settings -> Rollbar a -> IO a
 runRollbar config settings (Rollbar f) = runReq config $ runReaderT f settings
 
-ping :: Req Pong
+ping :: MonadHttp m => m Pong
 ping = do
   req GET url NoReqBody ignoreResponse mempty
   return Pong
   where
     url = baseUrl /: "status" /: "ping"
 
-createItem :: Item -> Rollbar (Response ItemId)
+createItem
+  :: (MonadHttp m, MonadReader Settings m)
+  => Item
+  -> m (Response ItemId)
 createItem item =
   responseBody <$> rollbar POST url (ReqBodyJson item) jsonResponse mempty
   where
