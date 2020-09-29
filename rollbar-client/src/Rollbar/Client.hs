@@ -11,6 +11,7 @@ import Data.Proxy
 import Data.Text
 import Network.HTTP.Req
 import Rollbar.Client.Item
+import Rollbar.Client.Settings (Settings(..))
 
 data Pong = Pong
   deriving (Eq, Show)
@@ -27,11 +28,6 @@ newtype Rollbar a = Rollbar (ReaderT Settings Req a)
 instance MonadHttp Rollbar where
   handleHttpException = Rollbar . lift . handleHttpException
 
-data Settings = Settings
-  { settingsToken :: ByteString
-  , settingsEnvironment :: Text
-  } deriving (Eq, Show)
-
 data Response a = Response
   { responseErr :: Integer
   , responseResult :: a
@@ -42,11 +38,8 @@ instance FromJSON a => FromJSON (Response a) where
     Response <$> o .: "err"
              <*> o .: "result"
 
-runRollbar :: Settings -> Rollbar a -> IO a
-runRollbar settings (Rollbar f) = run $ runReaderT f settings
-
-run :: Req a -> IO a
-run = runReq defaultHttpConfig
+runRollbar :: HttpConfig -> Settings -> Rollbar a -> IO a
+runRollbar config settings (Rollbar f) = runReq config $ runReaderT f settings
 
 ping :: Req Pong
 ping = do

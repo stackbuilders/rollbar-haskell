@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 0cccdbb35c454e34bba8c62021797781e86f46125ae3368df9a0e21091d303a4
+-- hash: 01a0f9d53825895a448c949f9989218de8d2999470e352267f719dc1cdef2c38
 
 name:           rollbar-client
 version:        0.1.0.0
@@ -29,6 +29,7 @@ library
   exposed-modules:
       Rollbar.Client
       Rollbar.Client.Item
+      Rollbar.Client.Settings
   other-modules:
       Paths_rollbar_client
   hs-source-dirs:
@@ -46,6 +47,7 @@ test-suite rollbar-client-test
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:
+      Rollbar.ClientSpec
       Paths_rollbar_client
   hs-source-dirs:
       test
@@ -53,5 +55,6 @@ test-suite rollbar-client-test
   build-depends:
       base >=4.7 && <5
     , hspec
+    , req
     , rollbar-client
   default-language: Haskell2010

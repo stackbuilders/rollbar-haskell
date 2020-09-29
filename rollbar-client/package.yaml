@@ -41,4 +41,5 @@ tests:
       - -with-rtsopts=-N
     dependencies:
       - hspec
+      - req
       - rollbar-client

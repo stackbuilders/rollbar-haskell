@@ -1,10 +1,13 @@
+{-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards #-}
 
 module Rollbar.Client.Item where
 
+import Control.Monad.Reader
 import Data.Aeson
-import Data.Text
+import Data.Text (Text)
+import Rollbar.Client.Settings (Settings(..))
 
 data Item = Item
   { itemData :: Data
@@ -135,17 +138,19 @@ instance FromJSON ItemId where
   parseJSON = withObject "ItemId" $ \o ->
     ItemId <$> o .: "uuid"
 
-mkItem :: Text -> Payload -> Item
-mkItem environment payload = Item Data
-  { dataEnvironment = environment
-  , dataBody = Body
-      { bodyPayload = payload
-      }
-  , dataNotifier = Just Notifier
-      { notifierName = "rollbar-client"
-      , notifierVersion = "0.1.0.0"
-      }
-  }
+mkItem :: MonadReader Settings m =>  Payload -> m Item
+mkItem payload = do
+  environment <- asks settingsEnvironment
+  return $ Item Data
+    { dataEnvironment = environment
+    , dataBody = Body
+        { bodyPayload = payload
+        }
+    , dataNotifier = Just Notifier
+        { notifierName = "rollbar-client"
+        , notifierVersion = "0.1.0.0"
+        }
+    }
 
 mkPayloadTrace :: [Frame] -> Exception -> Payload
 mkPayloadTrace frames exception = PayloadTrace Trace
