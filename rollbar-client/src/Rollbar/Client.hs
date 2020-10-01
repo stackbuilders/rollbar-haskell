@@ -52,9 +52,9 @@ ping = do
 createItem
   :: (MonadHttp m, MonadReader Settings m)
   => Item
-  -> m (Response ItemId)
+  -> m ItemId
 createItem item =
-  responseBody <$> rollbar POST url (ReqBodyJson item) jsonResponse mempty
+  responseResult . responseBody <$> rollbar POST url (ReqBodyJson item) jsonResponse mempty
   where
     url = baseUrl /: "item" /: ""
 
