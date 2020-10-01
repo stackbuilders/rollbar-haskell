@@ -29,6 +29,7 @@ data Data = Data
   -- framework
   -- context
   -- request
+  , dataRequest :: Maybe Request
   -- person
   -- server
   -- client
@@ -57,8 +58,30 @@ instance ToJSON Body where
         (PayloadTraceChain traceChain) -> ("trace_chain", toJSON traceChain)
     ]
 
-data Telemetry = Telemetry
-  deriving (Eq, Show)
+data Request = Request
+  { requestUrl :: Text
+  , requestMethod :: Text
+  , requestHeaders :: Object
+  , requestParams :: Object
+  , requestGet :: Object
+  , requestQueryStrings :: Text
+  , requestPost :: Object
+  , requestBody :: Object
+  , requestUserIp :: Text
+  } deriving (Eq, Show)
+
+instance ToJSON Request where
+  toJSON Request{..} = object
+    [ "url" .= requestUrl
+    , "method" .= requestMethod
+    , "headers" .= requestHeaders
+    , "params" .= requestParams
+    , "GET" .= requestGet
+    , "query_string" .= requestQueryStrings
+    , "POST" .= requestPost
+    , "body" .= requestBody
+    , "user_ip" .= requestUserIp
+    ]
 
 data Payload
   = PayloadTrace Trace
@@ -146,6 +169,7 @@ mkItem payload = do
     , dataBody = Body
         { bodyPayload = payload
         }
+    , dataRequest = Nothing
     , dataNotifier = Just Notifier
         { notifierName = "rollbar-client"
         , notifierVersion = "0.1.0.0"

@@ -45,7 +45,10 @@ executables:
     main: Main.hs
     dependencies:
       - bytestring
+      - case-insensitive
+      - http-types
       - rollbar-client
+      - unordered-containers
       - wai
       - warp
 
