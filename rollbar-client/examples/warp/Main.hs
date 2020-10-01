@@ -10,8 +10,9 @@ import qualified Rollbar.Client.Item as R
 
 import Control.Exception
 import Data.Aeson
+import Data.Bool
 import Debug.Trace
-import Network.HTTP.Types.Status
+import Network.HTTP.Types
 import Network.Wai
 import Network.Wai.Handler.Warp hiding (Settings)
 import Rollbar.Client.Settings
@@ -30,6 +31,7 @@ getSettings =
 
 rollbarOnException :: Settings -> Maybe Request -> SomeException -> IO ()
 rollbarOnException _ mreq _ = do
+  print mreq
   print $ fmap toRollbarRequest mreq
   return ()
 
@@ -39,14 +41,20 @@ toRollbarRequest req = R.Request
   , R.requestMethod = T.decodeUtf8 $ requestMethod req
   , R.requestHeaders = HM.fromList $ fmap toHeader $ requestHeaders req
   , R.requestParams = mempty
-  , R.requestGet = mempty
-  , R.requestQueryStrings = T.decodeUtf8 $ rawQueryString req
+  , R.requestGet = HM.fromList []
+  , R.requestQueryStrings = T.decodeUtf8 $ renderQuery False $ queryString req
   , R.requestPost = mempty
   , R.requestBody = mempty
   , R.requestUserIp = ""
   }
   where
-    fullUrl a = T.decodeUtf8 $ a <> rawPathInfo req <> rawQueryString req
+    fullUrl host = T.decodeUtf8 $ mconcat
+      [ bool "http" "https" (isSecure req)
+      , "://"
+      , host
+      , rawPathInfo req
+      , rawQueryString req
+      ]
     toHeader (key, value) = (T.decodeUtf8 $ CI.original key, toJSON $ T.decodeUtf8 value)
 
 app :: Application
