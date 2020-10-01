@@ -9,7 +9,7 @@ import Data.Aeson
 import Data.Text (Text)
 import Rollbar.Client.Settings (Settings(..))
 
-data Item = Item
+newtype Item = Item
   { itemData :: Data
   } deriving (Eq, Show)
 
