@@ -13,15 +13,14 @@ import System.Environment
 import Test.Hspec
 
 spec :: Spec
-spec = before getToken $ do
+spec = before getSettings $ do
   describe "ping" $
-    it "..." $ \_ ->
+    it "returns Pong" $ \_ ->
       run ping `shouldReturn` Pong
 
   describe "createItem" $ do
     context "PayloadTrace" $
-      it "..." $ \token -> do
-        let settings = Settings token "test"
+      it "returns ItemId" $ \settings -> do
         itemId <- runRollbar defaultHttpConfig settings $ do
           item <- mkItem $ PayloadTrace $ Trace [] (mkException "NameError")
             { exceptionMessage = Just "global name 'foo' is not defined"
@@ -32,8 +31,7 @@ spec = before getToken $ do
         itemId `shouldSatisfy` const True
 
     context "PayloadTraceChain" $
-      it "..." $ \token -> do
-        let settings = Settings token "test"
+      it "returns ItemId" $ \settings -> do
         itemId <- runRollbar defaultHttpConfig settings $ do
           item <- mkItem $ PayloadTraceChain $ pure $ Trace [] (mkException "NameError")
             { exceptionMessage = Just "global name 'foo' is not defined"
@@ -44,8 +42,10 @@ spec = before getToken $ do
         itemId `shouldSatisfy` const True
 
 
-getToken :: IO ByteString
-getToken = BS.pack <$> getEnv "ROLLBAR_TOKEN"
+getSettings :: IO Settings
+getSettings =
+  Settings <$> BS.pack <$> getEnv "ROLLBAR_TOKEN"
+           <*> pure "test"
 
 
 run :: Req a -> IO a
