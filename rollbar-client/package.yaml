@@ -32,6 +32,14 @@ library:
     - req
     - text
 
+executables:
+  simple:
+    source-dirs: examples/simple
+    main: Main.hs
+    dependencies:
+      - bytestring
+      - rollbar-client
+
 tests:
   rollbar-client-test:
     main:                Spec.hs
