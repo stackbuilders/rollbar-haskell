@@ -5,6 +5,10 @@
 
 module Rollbar.Client where
 
+import qualified Data.Text as T
+
+import Control.Monad.Catch
+import Control.Monad.IO.Class
 import Control.Monad.Reader
 import Data.Aeson
 import Data.ByteString
@@ -39,7 +43,7 @@ instance FromJSON a => FromJSON (Response a) where
     Response <$> o .: "err"
              <*> o .: "result"
 
-runRollbar :: HttpConfig -> Settings -> Rollbar a -> IO a
+runRollbar :: MonadIO m => HttpConfig -> Settings -> Rollbar a -> m a
 runRollbar config settings (Rollbar f) = runReq config $ runReaderT f settings
 
 ping :: MonadHttp m => m Pong
@@ -78,3 +82,19 @@ rollbar method url body response options = do
 
 baseUrl :: Url Https
 baseUrl = https "api.rollbar.com" /: "api" /: "1"
+
+withRollbar :: (MonadCatch m, MonadIO m) => Settings -> m a -> m a
+withRollbar settings f = f `catch` handleException settings
+
+handleException
+  :: (MonadIO m, MonadThrow m)
+  => Settings
+  -> SomeException
+  -> m a
+handleException settings ex = do
+  runRollbar defaultHttpConfig settings $ do
+    item <- mkItem $ PayloadTrace $ Trace [] $ mkException $
+      T.pack $ displayException ex
+    createItem item
+
+  throwM ex
