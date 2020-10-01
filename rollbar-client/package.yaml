@@ -40,6 +40,14 @@ executables:
       - bytestring
       - rollbar-client
 
+  warp:
+    source-dirs: examples/warp
+    main: Main.hs
+    dependencies:
+      - rollbar-client
+      - wai
+      - warp
+
 tests:
   rollbar-client-test:
     main:                Spec.hs
