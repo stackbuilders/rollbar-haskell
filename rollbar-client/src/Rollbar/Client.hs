@@ -93,8 +93,7 @@ handleException
   -> m a
 handleException settings ex = do
   runRollbar defaultHttpConfig settings $ do
-    item <- mkItem $ PayloadTrace $ Trace [] $ mkException $
-      T.pack $ displayException ex
+    item <- mkItem $ PayloadTrace $ Trace [] $ mkExceptionFromSomeException ex
     createItem item
 
   throwM ex

@@ -4,6 +4,9 @@
 
 module Rollbar.Client.Item where
 
+import qualified Data.Text as T
+
+import Control.Exception (SomeException, displayException)
 import Control.Monad.Reader
 import Data.Aeson
 import Data.Text (Text)
@@ -44,6 +47,8 @@ instance ToJSON Data where
   toJSON Data{..} = object
     [ "environment" .= dataEnvironment
     , "body" .= dataBody
+    , "request" .= dataRequest
+    , "notifier" .= dataNotifier
     ]
 
 data Body = Body
@@ -66,7 +71,7 @@ data Request = Request
   , requestGet :: Object
   , requestQueryStrings :: Text
   , requestPost :: Object
-  , requestBody :: Object
+  , requestBody :: Text
   , requestUserIp :: Text
   } deriving (Eq, Show)
 
@@ -154,6 +159,12 @@ data Notifier = Notifier
   , notifierVersion :: Text
   } deriving (Eq, Show)
 
+instance ToJSON Notifier where
+  toJSON Notifier{..} = object
+    [ "name" .= notifierName
+    , "version" .= notifierVersion
+    ]
+
 newtype ItemId = ItemId Text
   deriving (Eq, Show)
 
@@ -161,10 +172,13 @@ instance FromJSON ItemId where
   parseJSON = withObject "ItemId" $ \o ->
     ItemId <$> o .: "uuid"
 
-mkItem :: MonadReader Settings m =>  Payload -> m Item
-mkItem payload = do
+mkItem :: MonadReader Settings m => Payload -> m Item
+mkItem payload = Item <$> mkData payload
+
+mkData :: MonadReader Settings m => Payload -> m Data
+mkData payload = do
   environment <- asks settingsEnvironment
-  return $ Item Data
+  return Data
     { dataEnvironment = environment
     , dataBody = Body
         { bodyPayload = payload
@@ -175,6 +189,9 @@ mkItem payload = do
         , notifierVersion = "0.1.0.0"
         }
     }
+
+mkExceptionFromSomeException :: SomeException -> Exception
+mkExceptionFromSomeException = mkException . T.pack . displayException
 
 mkException :: Text -> Exception
 mkException eclass= Exception

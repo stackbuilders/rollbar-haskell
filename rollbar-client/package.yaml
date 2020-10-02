@@ -44,12 +44,16 @@ executables:
     source-dirs: examples/warp
     main: Main.hs
     dependencies:
+      - aeson
       - bytestring
       - case-insensitive
       - http-types
+      - req
       - rollbar-client
+      - text
       - unordered-containers
       - wai
+      - wai-extra
       - warp
 
 tests:
@@ -61,6 +65,7 @@ tests:
       - -rtsopts
       - -with-rtsopts=-N
     dependencies:
+      - bytestring
       - hspec
       - req
       - rollbar-client
