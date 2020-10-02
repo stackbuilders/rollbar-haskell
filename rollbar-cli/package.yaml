@@ -26,9 +26,9 @@ library:
   source-dirs: src
 
 executables:
-  rollbar-cli-exe:
-    main:                Main.hs
-    source-dirs:         app
+  rollbar:
+    main: Main.hs
+    source-dirs: app
     ghc-options:
     - -threaded
     - -rtsopts
@@ -37,9 +37,9 @@ executables:
     - rollbar-cli
 
 tests:
-  rollbar-cli-test:
-    main:                Spec.hs
-    source-dirs:         test
+  spec:
+    main: Spec.hs
+    source-dirs: test
     ghc-options:
     - -threaded
     - -rtsopts
