@@ -27,6 +27,7 @@ library:
   dependencies:
     - aeson >= 1.4 && < 2
     - bytestring
+    - directory
     - exceptions >= 0.10 && < 1
     - mtl >= 2.2 && < 3
     - req >= 2.1 && < 4

@@ -11,6 +11,8 @@ import Control.Monad.Reader
 import Data.Aeson
 import Data.Text (Text)
 import Rollbar.Client.Settings (Settings(..))
+import System.Directory (getCurrentDirectory)
+import System.Info (arch, os)
 
 newtype Item = Item
   { itemData :: Data
@@ -27,8 +29,7 @@ data Data = Data
   -- level
   -- timestamp
   -- code_version
-  -- platform
-  -- language
+  , dataPlatform :: Maybe Text
   , dataLanguage :: Maybe Text
   , dataFramework :: Maybe Text
   -- context
@@ -36,6 +37,7 @@ data Data = Data
   , dataRequest :: Maybe Request
   -- person
   -- server
+  , dataServer :: Maybe Server
   -- client
   -- custom
   -- fingerprint
@@ -48,9 +50,11 @@ instance ToJSON Data where
   toJSON Data{..} = object
     [ "environment" .= dataEnvironment
     , "body" .= dataBody
+    , "platform" .= dataPlatform
     , "language" .= dataLanguage
     , "framework" .= dataFramework
     , "request" .= dataRequest
+    , "server" .= dataServer
     , "notifier" .= dataNotifier
     ]
 
@@ -157,6 +161,23 @@ instance ToJSON Exception where
     , "description" .= exceptionDescription
     ]
 
+data Server = Server
+  { serverCpu :: Maybe Text
+  , serverHost :: Maybe Text
+  , serverRoot :: Maybe Text
+  , serverBranch :: Maybe Text
+  , serverCodeVersion :: Maybe Text
+  } deriving (Eq, Show)
+
+instance ToJSON Server where
+  toJSON Server{..} = object
+    [ "cpu" .= serverCpu
+    , "host" .= serverHost
+    , "root" .= serverRoot
+    , "branch" .= serverBranch
+    , "code_version" .= serverCodeVersion
+    ]
+
 data Notifier = Notifier
   { notifierName :: Text
   , notifierVersion :: Text
@@ -175,20 +196,29 @@ instance FromJSON ItemId where
   parseJSON = withObject "ItemId" $ \o ->
     ItemId <$> o .: "uuid"
 
-mkItem :: MonadReader Settings m => Payload -> m Item
+mkItem :: (MonadIO m, MonadReader Settings m) => Payload -> m Item
 mkItem payload = Item <$> mkData payload
 
-mkData :: MonadReader Settings m => Payload -> m Data
+mkData :: (MonadIO m, MonadReader Settings m) => Payload -> m Data
 mkData payload = do
   environment <- asks settingsEnvironment
+  root <- liftIO getCurrentDirectory
   return Data
     { dataEnvironment = environment
     , dataBody = Body
         { bodyPayload = payload
         }
+    , dataPlatform = Just $ T.pack os
     , dataLanguage = Just "haskell"
     , dataFramework = Nothing
     , dataRequest = Nothing
+    , dataServer = Just Server
+        { serverCpu = Just $ T.pack arch
+        , serverHost = Nothing
+        , serverRoot = Just $ T.pack root
+        , serverBranch = Nothing
+        , serverCodeVersion = Nothing
+        }
     , dataNotifier = Just Notifier
         { notifierName = "rollbar-client"
         , notifierVersion = "0.1.0.0"
