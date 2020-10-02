@@ -1,5 +1,5 @@
 name:                rollbar-client
-version:             0.1.0.0
+version:             0.1.0
 github:              "githubuser/rollbar-client"
 license:             BSD3
 author:              "Author name here"
@@ -20,16 +20,16 @@ extra-source-files:
 description:         Please see the README on GitHub at <https://github.com/githubuser/rollbar-client#readme>
 
 dependencies:
-  - base >= 4.7 && < 5
+  - base >= 4.12 && < 5
 
 library:
   source-dirs: src
   dependencies:
-    - aeson
+    - aeson >= 1.4 && < 2
     - bytestring
-    - exceptions
-    - mtl
-    - req
+    - exceptions >= 0.10 && < 1
+    - mtl >= 2.2 && < 3
+    - req >= 2.1 && < 4
     - text
 
 executables:
@@ -54,8 +54,8 @@ tests:
       - -with-rtsopts=-N
     dependencies:
       - bytestring
-      - hspec
+      - hspec >= 2.7 && < 3
       - req
       - rollbar-client
     build-tools:
-      - hspec-discover:hspec-discover
+      - hspec-discover:hspec-discover >= 2.7 && < 3

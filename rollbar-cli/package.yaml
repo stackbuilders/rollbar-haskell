@@ -1,5 +1,5 @@
 name:                rollbar-cli
-version:             0.1.0.0
+version:             0.1.0
 github:              "githubuser/rollbar-cli"
 license:             BSD3
 author:              "Author name here"
@@ -20,7 +20,7 @@ extra-source-files:
 description:         Please see the README on GitHub at <https://github.com/githubuser/rollbar-cli#readme>
 
 dependencies:
-- base >= 4.7 && < 5
+  - base >= 4.12 && < 5
 
 library:
   source-dirs: src

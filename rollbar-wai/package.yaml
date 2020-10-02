@@ -1,5 +1,5 @@
 name:                rollbar-wai
-version:             0.1.0.0
+version:             0.1.0
 github:              "githubuser/rollbar-wai"
 license:             BSD3
 author:              "Author name here"
@@ -20,21 +20,21 @@ extra-source-files:
 description:         Please see the README on GitHub at <https://github.com/githubuser/rollbar-wai#readme>
 
 dependencies:
-- base >= 4.7 && < 5
+  - base >= 4.12 && < 5
 
 library:
   source-dirs: src
   dependencies:
-    - aeson
+    - aeson >= 1.4 && < 2
     - bytestring
-    - case-insensitive
-    - http-types
-    - req
-    - rollbar-client
+    - case-insensitive >= 1.2 && < 2
+    - http-types >= 0.12 && < 1
+    - req >= 2.1 && < 4
+    - rollbar-client >= 0.1 && < 1
     - text
-    - unordered-containers
-    - wai
-    - wai-extra
+    - unordered-containers >= 0.2 && < 1
+    - wai >= 3.2 && < 4
+    - wai-extra >= 3.0 && < 4
 
 executables:
   warp:
@@ -52,9 +52,9 @@ executables:
       - warp
 
 tests:
-  rollbar-wai-test:
-    main:                Spec.hs
-    source-dirs:         test
+  spec:
+    main: Spec.hs
+    source-dirs: test
     ghc-options:
     - -threaded
     - -rtsopts
