@@ -29,7 +29,8 @@ data Data = Data
   -- code_version
   -- platform
   -- language
-  -- framework
+  , dataLanguage :: Maybe Text
+  , dataFramework :: Maybe Text
   -- context
   -- request
   , dataRequest :: Maybe Request
@@ -47,6 +48,8 @@ instance ToJSON Data where
   toJSON Data{..} = object
     [ "environment" .= dataEnvironment
     , "body" .= dataBody
+    , "language" .= dataLanguage
+    , "framework" .= dataFramework
     , "request" .= dataRequest
     , "notifier" .= dataNotifier
     ]
@@ -183,6 +186,8 @@ mkData payload = do
     , dataBody = Body
         { bodyPayload = payload
         }
+    , dataLanguage = Just "haskell"
+    , dataFramework = Nothing
     , dataRequest = Nothing
     , dataNotifier = Just Notifier
         { notifierName = "rollbar-client"
