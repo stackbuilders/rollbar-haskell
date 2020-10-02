@@ -11,6 +11,7 @@ import qualified Rollbar.Client.Item as R
 
 import Control.Concurrent (forkIO)
 import Control.Exception
+import Control.Monad (void)
 import Control.Monad.IO.Class (MonadIO(..))
 import Data.Aeson
 import Data.Bool
@@ -36,20 +37,16 @@ getSettings =
            <*> pure "test"
 
 rollbarOnException :: Settings -> Maybe Request -> SomeException -> IO ()
-rollbarOnException settings mreq ex = do
-  forkIO $ runRollbar defaultHttpConfig settings $ do
+rollbarOnException settings mreq ex = void $ forkIO $
+  runRollbar defaultHttpConfig settings $ do
     rdata <- R.mkData $ R.PayloadTrace $ R.Trace [] $ R.mkExceptionFromSomeException ex
     rreq <- mapM mkRequest mreq
     let item = R.Item rdata { R.dataRequest = rreq }
-    createItem item
-    pure ()
-
-  return ()
-  where
+    void $ createItem item
 
 mkRequest :: MonadIO m => Request -> m R.Request
 mkRequest req = liftIO $ do
-  (params, _) <- parseRequestBody ignoreBackEnd req
+  (params, _) <- parseRequestBody ignoreFilesBackEnd req
   body <- T.decodeUtf8 . BSL.toStrict <$> strictRequestBody req
   return R.Request
     { R.requestUrl = maybe "" toUrl $ requestHeaderHost req
@@ -78,13 +75,8 @@ mkRequest req = liftIO $ do
     toParam (key, value) =
       (T.decodeUtf8 key, toJSON $ T.decodeUtf8 value)
 
-ignoreBackEnd :: BackEnd ()
-ignoreBackEnd _ _ _ = return ()
+ignoreFilesBackEnd :: BackEnd ()
+ignoreFilesBackEnd _ _ _ = pure ()
 
 app :: Application
-app req respond =
-  case rawPathInfo req of
-    "/error" ->
-      error "Zoom"
-    _ ->
-      respond $ responseLBS status404 [] "Not found"
+app _ _ = error "Hello World"
