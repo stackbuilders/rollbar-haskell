@@ -1,0 +1,4 @@
+packages:
+  rollbar-cli/
+  rollbar-client/
+  rollbar-wai/
