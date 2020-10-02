@@ -45,7 +45,7 @@ executables:
       - rollbar-client
 
 tests:
-  rollbar-client-test:
+  spec:
     main:                Spec.hs
     source-dirs:         test
     ghc-options:
@@ -57,3 +57,5 @@ tests:
       - hspec
       - req
       - rollbar-client
+    build-tools:
+      - hspec-discover:hspec-discover
