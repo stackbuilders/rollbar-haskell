@@ -18,7 +18,7 @@ spec = before getSettings $ do
   describe "createItem" $ do
     context "PayloadTrace" $
       it "returns ItemId" $ \settings -> do
-        itemId <- runRollbar defaultHttpConfig settings $ do
+        itemId <- runRollbar settings $ do
           item <- mkItem $ PayloadTrace $ Trace [] (mkException "NameError")
             { exceptionMessage = Just "global name 'foo' is not defined"
             , exceptionDescription = Just "Something went wrong while trying to save the user object"
@@ -29,7 +29,7 @@ spec = before getSettings $ do
 
     context "PayloadTraceChain" $
       it "returns ItemId" $ \settings -> do
-        itemId <- runRollbar defaultHttpConfig settings $ do
+        itemId <- runRollbar settings $ do
           item <- mkItem $ PayloadTraceChain $ pure $ Trace [] (mkException "NameError")
             { exceptionMessage = Just "global name 'foo' is not defined"
             , exceptionDescription = Just "Something went wrong while trying to save the user object"

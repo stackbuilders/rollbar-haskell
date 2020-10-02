@@ -17,13 +17,12 @@ import Control.Monad (void)
 import Control.Monad.IO.Class (MonadIO(..))
 import Data.Aeson
 import Data.Bool
-import Network.HTTP.Req (defaultHttpConfig)
 import Network.HTTP.Types (renderQuery)
 import Rollbar.Client
 
 rollbarOnException :: Settings -> Maybe W.Request -> SomeException -> IO ()
 rollbarOnException settings mreq ex = void $ forkIO $
-  runRollbar defaultHttpConfig settings $ do
+  runRollbar settings $ do
     rdata <- mkData $ PayloadTrace $ Trace [] $ mkExceptionFromSomeException ex
     rreq <- mapM mkRequest mreq
     let item = Item rdata { dataRequest = rreq }

@@ -22,7 +22,6 @@ import Network.HTTP.Req
 import Rollbar.Client.Item as R
 import Rollbar.Client.Settings as R
 
-
 data Pong = Pong
   deriving (Eq, Show)
 
@@ -48,8 +47,8 @@ instance FromJSON a => FromJSON (Response a) where
     Response <$> o .: "err"
              <*> o .: "result"
 
-runRollbar :: MonadIO m => HttpConfig -> Settings -> Rollbar a -> m a
-runRollbar config settings (Rollbar f) = runReq config $ runReaderT f settings
+runRollbar :: MonadIO m => Settings -> Rollbar a -> m a
+runRollbar settings (Rollbar f) = runReq defaultHttpConfig $ runReaderT f settings
 
 ping :: MonadHttp m => m Pong
 ping = do
@@ -97,7 +96,7 @@ handleException
   -> SomeException
   -> m a
 handleException settings ex = do
-  void $ runRollbar defaultHttpConfig settings $ do
+  void $ runRollbar settings $ do
     item <- mkItem $ PayloadTrace $ Trace [] $ mkExceptionFromSomeException ex
     createItem item
 
