@@ -5,15 +5,11 @@
 
 module Rollbar.Client where
 
-import qualified Data.Text as T
-
 import Control.Monad.Catch
 import Control.Monad.IO.Class
 import Control.Monad.Reader
 import Data.Aeson
-import Data.ByteString
 import Data.Proxy
-import Data.Text
 import Network.HTTP.Req
 import Rollbar.Client.Item
 import Rollbar.Client.Settings (Settings(..))
@@ -48,7 +44,7 @@ runRollbar config settings (Rollbar f) = runReq config $ runReaderT f settings
 
 ping :: MonadHttp m => m Pong
 ping = do
-  req GET url NoReqBody ignoreResponse mempty
+  void $ req GET url NoReqBody ignoreResponse mempty
   return Pong
   where
     url = baseUrl /: "status" /: "ping"
@@ -71,16 +67,16 @@ rollbar
      , MonadReader Settings m
      )
   => method
-  -> Url Https
+  -> Url 'Https
   -> body
   -> Proxy response
-  -> Option Https
+  -> Option 'Https
   -> m response
 rollbar method url body response options = do
   token <- asks settingsToken
   req method url body response $ options <> header "X-Rollbar-Access-Token" token
 
-baseUrl :: Url Https
+baseUrl :: Url 'Https
 baseUrl = https "api.rollbar.com" /: "api" /: "1"
 
 withRollbar :: (MonadCatch m, MonadIO m) => Settings -> m a -> m a
@@ -92,7 +88,7 @@ handleException
   -> SomeException
   -> m a
 handleException settings ex = do
-  runRollbar defaultHttpConfig settings $ do
+  void $ runRollbar defaultHttpConfig settings $ do
     item <- mkItem $ PayloadTrace $ Trace [] $ mkExceptionFromSomeException ex
     createItem item
 
