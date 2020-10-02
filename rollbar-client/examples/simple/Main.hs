@@ -5,7 +5,6 @@ module Main where
 import qualified Data.ByteString.Char8 as BS
 
 import Rollbar.Client
-import Rollbar.Client.Settings
 import System.Environment
 
 main :: IO ()

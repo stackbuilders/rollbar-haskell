@@ -4,11 +4,8 @@ module Rollbar.ClientSpec where
 
 import qualified Data.ByteString.Char8 as BS
 
-import Data.ByteString (ByteString)
 import Network.HTTP.Req
 import Rollbar.Client
-import Rollbar.Client.Item
-import Rollbar.Client.Settings (Settings(..))
 import System.Environment
 import Test.Hspec
 

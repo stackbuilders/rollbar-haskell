@@ -3,7 +3,15 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE OverloadedStrings #-}
 
-module Rollbar.Client where
+module Rollbar.Client
+  ( module R
+  , Pong (..)
+  , Rollbar (..)
+  , runRollbar
+  , ping
+  , createItem
+  , withRollbar
+  ) where
 
 import Control.Monad.Catch
 import Control.Monad.IO.Class
@@ -11,8 +19,9 @@ import Control.Monad.Reader
 import Data.Aeson
 import Data.Proxy
 import Network.HTTP.Req
-import Rollbar.Client.Item
-import Rollbar.Client.Settings (Settings(..))
+import Rollbar.Client.Item as R
+import Rollbar.Client.Settings as R
+
 
 data Pong = Pong
   deriving (Eq, Show)

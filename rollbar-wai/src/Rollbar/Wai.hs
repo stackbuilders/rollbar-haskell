@@ -20,8 +20,6 @@ import Data.Bool
 import Network.HTTP.Req (defaultHttpConfig)
 import Network.HTTP.Types (renderQuery)
 import Rollbar.Client
-import Rollbar.Client.Item
-import Rollbar.Client.Settings
 
 rollbarOnException :: Settings -> Maybe W.Request -> SomeException -> IO ()
 rollbarOnException settings mreq ex = void $ forkIO $
