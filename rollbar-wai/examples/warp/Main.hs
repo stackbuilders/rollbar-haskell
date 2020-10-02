@@ -24,4 +24,4 @@ getSettings =
            <*> pure "test"
 
 app :: Application
-app _ _ = error "Hello World"
+app _ _ = error "Boom"

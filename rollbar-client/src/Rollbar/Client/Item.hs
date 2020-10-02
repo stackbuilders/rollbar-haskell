@@ -36,7 +36,6 @@ data Data = Data
   -- request
   , dataRequest :: Maybe Request
   -- person
-  -- server
   , dataServer :: Maybe Server
   -- client
   -- custom

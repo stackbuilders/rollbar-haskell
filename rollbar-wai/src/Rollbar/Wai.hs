@@ -10,6 +10,7 @@ import qualified Data.HashMap.Strict as HM
 import qualified Data.Text.Encoding as T
 import qualified Network.Wai as W
 import qualified Network.Wai.Parse as W
+import qualified Network.Wai.Request as W
 
 import Control.Concurrent (forkIO)
 import Control.Exception
@@ -31,27 +32,19 @@ rollbarOnException settings mreq ex = void $ forkIO $
 mkRequest :: MonadIO m => W.Request -> m Request
 mkRequest req = liftIO $ do
   (params, _) <- W.parseRequestBody ignoreFilesBackEnd req
-  body <- T.decodeUtf8 . BSL.toStrict <$> W.strictRequestBody req
   return Request
-    { requestUrl = maybe "" toUrl $ W.requestHeaderHost req
+    { requestUrl = T.decodeUtf8 $ mconcat
+        [W.guessApproot req, W.rawPathInfo req, W.rawQueryString req]
     , requestMethod = T.decodeUtf8 $ W.requestMethod req
     , requestHeaders = HM.fromList $ fmap toHeader $ W.requestHeaders req
     , requestParams = mempty
     , requestGet = HM.fromList $ fmap toQuery $ W.queryString req
     , requestQueryStrings = T.decodeUtf8 $ renderQuery False $ W.queryString req
     , requestPost = HM.fromList $ fmap toParam params
-    , requestBody = body
+    , requestBody = mempty
     , requestUserIp = ""
     }
   where
-    toUrl host = T.decodeUtf8 $ mconcat
-      -- TODO: guessAppRoot
-      [ bool "http" "https" $ W.isSecure req
-      , "://"
-      , host
-      , W.rawPathInfo req
-      , W.rawQueryString req
-      ]
     toHeader (key, value) =
       (T.decodeUtf8 $ CI.original key, toJSON $ T.decodeUtf8 value)
     toQuery (key, value) =
