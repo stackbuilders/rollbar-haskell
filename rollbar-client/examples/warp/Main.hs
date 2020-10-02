@@ -64,6 +64,7 @@ mkRequest req = liftIO $ do
     }
   where
     toUrl host = T.decodeUtf8 $ mconcat
+      -- TODO: guessAppRoot
       [ bool "http" "https" $ isSecure req
       , "://"
       , host
