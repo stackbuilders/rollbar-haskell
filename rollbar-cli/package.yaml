@@ -22,6 +22,9 @@ dependencies:
 
 library:
   source-dirs: src
+  dependencies:
+    - optparse-applicative
+    - rollbar-client
 
 executables:
   rollbar:
