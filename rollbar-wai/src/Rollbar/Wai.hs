@@ -26,8 +26,7 @@ rollbarOnException settings mreq ex = void $ forkIO $
   runRollbar settings $ do
     rdata <- mkData $ PayloadTrace $ Trace [] $ mkExceptionFromSomeException ex
     rreq <- mapM mkRequest mreq
-    let item = Item rdata { dataRequest = rreq }
-    void $ createItem item
+    void $ createItem $ Item rdata { dataRequest = rreq }
 
 mkRequest :: MonadIO m => W.Request -> m Request
 mkRequest req = liftIO $ do
