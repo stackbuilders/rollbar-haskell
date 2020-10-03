@@ -10,7 +10,7 @@ import qualified Data.Text as T
 import Control.Monad.Reader
 import Data.Aeson
 import Data.Text (Text)
-import Rollbar.Client.Settings (Settings(..))
+import Rollbar.Client.Common (Settings(..))
 import System.Environment
 import System.Process
 

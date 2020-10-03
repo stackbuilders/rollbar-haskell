@@ -10,7 +10,7 @@ import Control.Exception (SomeException, displayException)
 import Control.Monad.Reader
 import Data.Aeson
 import Data.Text (Text)
-import Rollbar.Client.Settings (Settings(..))
+import Rollbar.Client.Common (Settings(..))
 import System.Directory (getCurrentDirectory)
 import System.Info (arch, os)
 

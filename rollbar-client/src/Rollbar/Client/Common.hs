@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Rollbar.Client.Settings
+module Rollbar.Client.Common
   ( Settings(..)
   , Token(..)
   , readSettings

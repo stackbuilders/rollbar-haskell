@@ -20,9 +20,9 @@ import Control.Monad.Reader
 import Data.Aeson
 import Data.Proxy
 import Network.HTTP.Req
+import Rollbar.Client.Common as R
 import Rollbar.Client.Deploy as R
 import Rollbar.Client.Item as R
-import Rollbar.Client.Settings as R
 
 newtype Rollbar a = Rollbar (ReaderT Settings Req a)
   deriving
