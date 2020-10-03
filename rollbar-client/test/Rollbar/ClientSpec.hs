@@ -2,18 +2,14 @@
 
 module Rollbar.ClientSpec where
 
-import qualified Data.ByteString.Char8 as BS
-
-import Network.HTTP.Req
 import Rollbar.Client
-import System.Environment
 import Test.Hspec
 
 spec :: Spec
-spec = before getSettings $ do
+spec = before (readSettings "rollbar.yaml") $ do
   describe "ping" $
-    it "returns Pong" $ \_ ->
-      run ping `shouldReturn` Pong
+    it "returns Pong" $ \settings ->
+      runRollbar settings ping `shouldReturn` Pong
 
   describe "createItem" $ do
     context "PayloadTrace" $
@@ -37,13 +33,3 @@ spec = before getSettings $ do
           createItem item
 
         itemId `shouldSatisfy` const True
-
-
-getSettings :: IO Settings
-getSettings =
-  Settings <$> BS.pack <$> getEnv "ROLLBAR_TOKEN"
-           <*> pure "test"
-
-
-run :: Req a -> IO a
-run = runReq defaultHttpConfig

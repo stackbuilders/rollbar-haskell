@@ -1,18 +1,10 @@
-{-# LANGUAGE OverloadedStrings #-}
-
-module Main where
-
-import qualified Data.ByteString.Char8 as BS
+module Main
+  ( main
+  ) where
 
 import Rollbar.Client
-import System.Environment
 
 main :: IO ()
 main = do
-  settings <- getSettings
+  settings <- readSettings "rollbar.yaml"
   withRollbar settings $ error "Boom"
-
-getSettings :: IO Settings
-getSettings =
-  Settings <$> BS.pack <$> getEnv "ROLLBAR_TOKEN"
-           <*> pure "test"

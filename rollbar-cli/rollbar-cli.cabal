@@ -4,17 +4,19 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: e8a50a753051e2de78e16283b669c3a47a0bc672eb7606aa043c2ea29e4a529d
+-- hash: 06ab5014e1dd1907d515e27fcdbd549ab9ccccd6ac147436264b7312cced0f98
 
 name:           rollbar-cli
 version:        0.1.0
-description:    Please see the README on GitHub at <https://github.com/githubuser/rollbar-cli#readme>
-homepage:       https://github.com/githubuser/rollbar-cli#readme
-bug-reports:    https://github.com/githubuser/rollbar-cli/issues
-author:         Author name here
-maintainer:     example@example.com
-copyright:      2020 Author name here
-license:        BSD3
+synopsis:       Simple CLI tool to perform commons tasks such as tracking deploys.
+description:    Please see the README on GitHub at
+                <https://github.com/stackbuilders/rollbar-haskell/tree/master/rollbar-cli>
+homepage:       https://github.com/stackbuilders/rollbar-haskell#readme
+bug-reports:    https://github.com/stackbuilders/rollbar-haskell/issues
+author:         Stack Builders Inc.
+maintainer:     Sebastián Estrella <sestrella@stackbuilders.com>
+copyright:      2020 Stack Builders Inc.
+license:        MIT
 license-file:   LICENSE
 build-type:     Simple
 extra-source-files:
@@ -23,7 +25,7 @@ extra-source-files:
 
 source-repository head
   type: git
-  location: https://github.com/githubuser/rollbar-cli
+  location: https://github.com/stackbuilders/rollbar-haskell
 
 library
   exposed-modules:

@@ -81,7 +81,7 @@ rollbar
   -> Option 'Https
   -> m response
 rollbar method url body response options = do
-  token <- asks settingsToken
+  Token token <- asks settingsToken
   req method url body response $ options <> header "X-Rollbar-Access-Token" token
 
 baseUrl :: Url 'Https

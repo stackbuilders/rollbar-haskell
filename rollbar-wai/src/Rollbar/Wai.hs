@@ -4,7 +4,6 @@ module Rollbar.Wai
   ( rollbarOnException
   ) where
 
-import qualified Data.ByteString.Lazy as BSL
 import qualified Data.CaseInsensitive as CI
 import qualified Data.HashMap.Strict as HM
 import qualified Data.Text.Encoding as T
@@ -17,7 +16,6 @@ import Control.Exception
 import Control.Monad (void)
 import Control.Monad.IO.Class (MonadIO(..))
 import Data.Aeson
-import Data.Bool
 import Network.HTTP.Types (renderQuery)
 import Rollbar.Client
 
