@@ -1,23 +1,21 @@
-name:                rollbar-cli
-version:             0.1.0
-github:              "githubuser/rollbar-cli"
-license:             BSD3
-author:              "Author name here"
-maintainer:          "example@example.com"
-copyright:           "2020 Author name here"
+name: rollbar-cli
+version: 0.1.0
+github: "stackbuilders/rollbar-haskell"
+license: MIT
+author: "Stack Builders Inc."
+maintainer: "Sebastián Estrella <sestrella@stackbuilders.com>"
+copyright: "2020 Stack Builders Inc."
 
 extra-source-files:
-- README.md
-- ChangeLog.md
+  - README.md
+  - ChangeLog.md
 
-# Metadata used when publishing your package
-# synopsis:            Short description of your package
+synopsis: Simple CLI tool to perform commons tasks such as tracking deploys.
 # category:            Web
 
-# To avoid duplicated efforts in documentation and dealing with the
-# complications of embedding Haddock markup inside cabal files, it is
-# common to point users to the README.md file.
-description:         Please see the README on GitHub at <https://github.com/githubuser/rollbar-cli#readme>
+description: |
+  Please see the README on GitHub at
+  <https://github.com/stackbuilders/rollbar-haskell/tree/master/rollbar-cli>
 
 dependencies:
   - base >= 4.12 && < 5

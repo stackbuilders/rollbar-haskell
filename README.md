@@ -30,3 +30,7 @@ env ROLLBAR_TOKEN=<token> stack test
 ```
 
 [rollbar-api]: https://explorer.docs.rollbar.com/
+
+## License
+
+[MIT](LICENSE)
