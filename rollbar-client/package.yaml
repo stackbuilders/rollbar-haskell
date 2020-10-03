@@ -41,7 +41,6 @@ executables:
       - -rtsopts
       - -with-rtsopts=-N
     dependencies:
-      - bytestring
       - rollbar-client
 
 tests:

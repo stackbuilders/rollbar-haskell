@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 3285e17e672b28ca3ac47adcfa29175a2a2a2fe5316c31fb2c4d94ed4e731a5b
+-- hash: 0ee1cd50de2173e1fa3a59b30f9a2c7a29bc9662eefa0edfa2de289797400afd
 
 name:           rollbar-wai
 version:        0.1.0
@@ -56,7 +56,6 @@ executable warp
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       base >=4.12 && <5
-    , bytestring
     , rollbar-client
     , rollbar-wai
     , wai

@@ -42,7 +42,6 @@ executables:
       - -rtsopts
       - -with-rtsopts=-N
     dependencies:
-      - bytestring
       - rollbar-client
       - rollbar-wai
       - wai
