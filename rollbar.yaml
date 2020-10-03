@@ -1,2 +1,2 @@
-token: "_env:ROLLBAR_TOKEN:''"
+token: "_env:ROLLBAR_TOKEN"
 environment: test
