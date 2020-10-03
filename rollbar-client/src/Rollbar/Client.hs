@@ -19,7 +19,6 @@ import Control.Monad.IO.Class
 import Control.Monad.Reader
 import Data.Aeson
 import Data.Proxy
-import Data.Text (Text)
 import Network.HTTP.Req
 import Rollbar.Client.Deploy as R
 import Rollbar.Client.Item as R

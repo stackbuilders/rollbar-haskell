@@ -1,6 +1,11 @@
-module Main where
+module Main
+  ( main
+  ) where
 
-import Lib
+import Rollbar.CLI (parseCommand, runCommand)
+import Rollbar.Client (readSettings)
 
 main :: IO ()
-main = someFunc
+main = do
+  settings <- readSettings "rollbar.yaml"
+  parseCommand >>= runCommand settings

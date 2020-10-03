@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: ddca1e14d91fe616b1996a1a0700a77904d1a7b929da0e6dee7173f23516abdb
+-- hash: 55933ff10a608cb4266c1812ccb50f476f2f00e3295cb2db59d54fe5b47dd99f
 
 name:           rollbar-cli
 version:        0.1.0
@@ -29,7 +29,6 @@ source-repository head
 
 library
   exposed-modules:
-      Lib
       Rollbar.CLI
   other-modules:
       Paths_rollbar_cli
@@ -37,7 +36,7 @@ library
       src
   build-depends:
       base >=4.12 && <5
-    , optparse-applicative
+    , optparse-applicative >=0.14 && <1
     , rollbar-client
   default-language: Haskell2010
 
@@ -51,6 +50,7 @@ executable rollbar
   build-depends:
       base >=4.12 && <5
     , rollbar-cli
+    , rollbar-client
   default-language: Haskell2010
 
 test-suite spec

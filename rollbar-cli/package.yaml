@@ -23,7 +23,7 @@ dependencies:
 library:
   source-dirs: src
   dependencies:
-    - optparse-applicative
+    - optparse-applicative >= 0.14 && < 1
     - rollbar-client
 
 executables:
@@ -36,6 +36,7 @@ executables:
       - -with-rtsopts=-N
     dependencies:
       - rollbar-cli
+      - rollbar-client
 
 tests:
   spec:

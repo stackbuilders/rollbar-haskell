@@ -1,8 +1,9 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Rollbar.ClientSpec where
+module Rollbar.ClientSpec
+  ( spec
+  ) where
 
-import Control.Monad.IO.Class
 import Rollbar.Client
 import Test.Hspec
 
