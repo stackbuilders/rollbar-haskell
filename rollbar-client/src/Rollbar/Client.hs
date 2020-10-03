@@ -68,6 +68,7 @@ handleException settings ex = do
 runRollbar :: MonadIO m => Settings -> Rollbar a -> m a
 runRollbar settings (Rollbar f) = runReq defaultHttpConfig $ runReaderT f settings
 
+-- | https://explorer.docs.rollbar.com/#section/Ping
 ping :: MonadHttp m => m Pong
 ping = do
   void $ req GET url NoReqBody ignoreResponse mempty
@@ -75,6 +76,7 @@ ping = do
   where
     url = baseUrl /: "status" /: "ping"
 
+-- | https://explorer.docs.rollbar.com/#operation/create-item
 createItem
   :: (MonadHttp m, MonadReader Settings m)
   => Item
@@ -84,6 +86,7 @@ createItem item =
   where
     url = baseUrl /: "item" /: ""
 
+-- | https://explorer.docs.rollbar.com/#operation/post-deploy
 reportDeploy
   :: (MonadHttp m, MonadReader Settings m)
   => Deploy
