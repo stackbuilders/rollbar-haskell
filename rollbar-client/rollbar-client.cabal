@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 66582e9278f91ca451d0dcec3d604d261277a1ad8874156f2ef40ee65916dd31
+-- hash: 4eb2f6e657790f011c11100c7e5b6fd66e86780a8b819bb4ef8938f2b0cdd35e
 
 name:           rollbar-client
 version:        0.1.0
@@ -30,6 +30,7 @@ source-repository head
 library
   exposed-modules:
       Rollbar.Client
+      Rollbar.Client.Deploy
       Rollbar.Client.Item
       Rollbar.Client.Settings
   other-modules:
@@ -43,6 +44,7 @@ library
     , directory
     , exceptions >=0.10 && <1
     , mtl >=2.2 && <3
+    , process
     , req >=2.1 && <4
     , text
     , yaml >=0.11 && <1

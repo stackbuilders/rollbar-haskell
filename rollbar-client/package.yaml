@@ -28,6 +28,7 @@ library:
     - directory
     - exceptions >= 0.10 && < 1
     - mtl >= 2.2 && < 3
+    - process
     - req >= 2.1 && < 4
     - text
     - yaml >= 0.11 && < 1

@@ -2,6 +2,7 @@
 
 module Rollbar.ClientSpec where
 
+import Control.Monad.IO.Class
 import Rollbar.Client
 import Test.Hspec
 
@@ -33,3 +34,11 @@ spec = before (readSettings "rollbar.yaml") $ do
           createItem item
 
         itemId `shouldSatisfy` const True
+
+  describe "reportDeploy" $
+    it "returns DeployId" $ \settings -> do
+      deployId <- runRollbar settings $ do
+        deploy <- mkDeploy
+        reportDeploy deploy
+
+      deployId `shouldSatisfy` (> 0)

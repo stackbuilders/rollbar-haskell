@@ -5,12 +5,13 @@
 
 module Rollbar.Client
   ( module R
-  , Pong (..)
   , Rollbar (..)
+  , Pong (..)
+  , withRollbar
   , runRollbar
   , ping
   , createItem
-  , withRollbar
+  , reportDeploy
   ) where
 
 import Control.Monad.Catch
@@ -18,12 +19,11 @@ import Control.Monad.IO.Class
 import Control.Monad.Reader
 import Data.Aeson
 import Data.Proxy
+import Data.Text (Text)
 import Network.HTTP.Req
+import Rollbar.Client.Deploy as R
 import Rollbar.Client.Item as R
 import Rollbar.Client.Settings as R
-
-data Pong = Pong
-  deriving (Eq, Show)
 
 newtype Rollbar a = Rollbar (ReaderT Settings Req a)
   deriving
@@ -37,6 +37,9 @@ newtype Rollbar a = Rollbar (ReaderT Settings Req a)
 instance MonadHttp Rollbar where
   handleHttpException = Rollbar . lift . handleHttpException
 
+data Pong = Pong
+  deriving (Eq, Show)
+
 data Response a = Response
   { responseErr :: Integer
   , responseResult :: a
@@ -46,6 +49,21 @@ instance FromJSON a => FromJSON (Response a) where
   parseJSON = withObject "Response a" $ \o ->
     Response <$> o .: "err"
              <*> o .: "result"
+
+withRollbar :: (MonadCatch m, MonadIO m) => Settings -> m a -> m a
+withRollbar settings f = f `catch` handleException settings
+
+handleException
+  :: (MonadIO m, MonadThrow m)
+  => Settings
+  -> SomeException
+  -> m a
+handleException settings ex = do
+  void $ runRollbar settings $ do
+    item <- mkItem $ PayloadTrace $ Trace [] $ mkExceptionFromSomeException ex
+    createItem item
+
+  throwM ex
 
 runRollbar :: MonadIO m => Settings -> Rollbar a -> m a
 runRollbar settings (Rollbar f) = runReq defaultHttpConfig $ runReaderT f settings
@@ -65,6 +83,15 @@ createItem item =
   responseResult . responseBody <$> rollbar POST url (ReqBodyJson item) jsonResponse mempty
   where
     url = baseUrl /: "item" /: ""
+
+reportDeploy
+  :: (MonadHttp m, MonadReader Settings m)
+  => Deploy
+  -> m DeployId
+reportDeploy deploy =
+  unDataResponse . responseBody <$> rollbar POST url (ReqBodyJson deploy) jsonResponse mempty
+  where
+    url = baseUrl /: "deploy"
 
 rollbar
   :: ( HttpBody body
@@ -86,18 +113,3 @@ rollbar method url body response options = do
 
 baseUrl :: Url 'Https
 baseUrl = https "api.rollbar.com" /: "api" /: "1"
-
-withRollbar :: (MonadCatch m, MonadIO m) => Settings -> m a -> m a
-withRollbar settings f = f `catch` handleException settings
-
-handleException
-  :: (MonadIO m, MonadThrow m)
-  => Settings
-  -> SomeException
-  -> m a
-handleException settings ex = do
-  void $ runRollbar settings $ do
-    item <- mkItem $ PayloadTrace $ Trace [] $ mkExceptionFromSomeException ex
-    createItem item
-
-  throwM ex

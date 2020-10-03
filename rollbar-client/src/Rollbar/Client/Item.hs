@@ -200,10 +200,10 @@ mkItem payload = Item <$> mkData payload
 
 mkData :: (MonadIO m, MonadReader Settings m) => Payload -> m Data
 mkData payload = do
-  environment <- asks settingsEnvironment
+  env <- asks settingsEnvironment
   root <- liftIO getCurrentDirectory
   return Data
-    { dataEnvironment = environment
+    { dataEnvironment = env
     , dataBody = Body
         { bodyPayload = payload
         }
