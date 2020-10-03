@@ -32,6 +32,8 @@ library:
     - req >= 2.1 && < 4
     - text
     - yaml >= 0.11 && < 1
+  exposed-modules:
+    - Rollbar.Client
 
 executables:
   simple:

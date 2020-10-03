@@ -3,6 +3,7 @@
 module Rollbar.Client.Common
   ( Settings(..)
   , Token(..)
+  , Response(..)
   , readSettings
   ) where
 
@@ -28,6 +29,16 @@ newtype Token = Token ByteString
 
 instance FromJSON Token where
   parseJSON = withText "Token" $ pure . Token . T.encodeUtf8
+
+data Response a = Response
+  { responseErr :: Integer
+  , responseResult :: a
+  } deriving (Eq, Show)
+
+instance FromJSON a => FromJSON (Response a) where
+  parseJSON = withObject "Response a" $ \o ->
+    Response <$> o .: "err"
+             <*> o .: "result"
 
 readSettings :: FilePath -> IO Settings
 readSettings path = loadYamlSettings [path] [] requireEnv

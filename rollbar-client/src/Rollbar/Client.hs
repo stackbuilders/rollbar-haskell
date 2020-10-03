@@ -39,16 +39,6 @@ instance MonadHttp Rollbar where
 data Pong = Pong
   deriving (Eq, Show)
 
-data Response a = Response
-  { responseErr :: Integer
-  , responseResult :: a
-  } deriving (Eq, Show)
-
-instance FromJSON a => FromJSON (Response a) where
-  parseJSON = withObject "Response a" $ \o ->
-    Response <$> o .: "err"
-             <*> o .: "result"
-
 withRollbar :: (MonadCatch m, MonadIO m) => Settings -> m a -> m a
 withRollbar settings f = f `catch` handleException settings
 
