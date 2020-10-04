@@ -11,9 +11,10 @@ module Rollbar.Client
   , Settings(..)
   , Token(..)
   , Environment(..)
-  , readSettings
   -- * Top Functions
   -- $topFunctions
+  , readSettings
+  , getRevision
   , withRollbar
   , runRollbar
   -- * Endpoints
@@ -47,7 +48,6 @@ module Rollbar.Client
   , DeployId(..)
   -- *** Smart Constructors
   , mkDeploy
-  , getRevision
   -- *** Endpoints
   , reportDeploy
   ) where
@@ -88,12 +88,14 @@ instance MonadHttp Rollbar where
 data Settings = Settings
   { settingsToken :: Token
   , settingsEnvironment :: Environment
+  , settingsRevision :: Maybe Revision
   } deriving (Eq, Show)
 
 instance FromJSON Settings where
   parseJSON = withObject "Settings" $ \o ->
     Settings <$> o .: "token"
              <*> o .: "environment"
+             <*> o .:? "revision" .!= Nothing
 
 newtype Token = Token ByteString
   deriving (Eq, Show)
@@ -104,8 +106,8 @@ instance FromJSON Token where
 newtype Environment = Environment Text
   deriving (Eq, FromJSON, Show, ToJSON)
 
-readSettings :: MonadIO m => FilePath -> m Settings
-readSettings path = liftIO $ loadYamlSettings [path] [] requireEnv
+newtype Revision = Revision Text
+  deriving (Eq, FromJSON, Show, ToJSON)
 
 newtype DataResponse a = DataResponse { unDataResponse :: a }
   deriving (Eq, Show)
@@ -126,6 +128,23 @@ instance FromJSON a => FromJSON (ResultResponse a) where
 
 --------------------------------------------------------------------------------
 -- $topFunctions
+
+-- | Reads 'Settings' from a YAML file.
+readSettings :: MonadIO m => FilePath -> m Settings
+readSettings path = liftIO $ loadYamlSettings [path] [] requireEnv
+
+-- |
+getRevision
+  :: (MonadIO m, MonadReader Settings m)
+  => m Revision
+getRevision = do
+  mrevision <- asks settingsRevision
+  case mrevision of
+    Nothing ->
+      mkRevision <$> liftIO (readProcess "git" ["rev-parse", "HEAD"] "")
+    Just revision -> return revision
+  where
+    mkRevision = Revision . T.stripEnd . T.pack
 
 -- | Runs a computation, captures any 'E.SomeException' threw, and send it to
 -- Rollbar.
@@ -420,9 +439,6 @@ instance ToJSON Deploy where
     , "status" .= deployStatus
     ]
 
-newtype Revision = Revision Text
-  deriving (Eq, Show, ToJSON)
-
 data Status
   = StatusStarted
   | StatusSucceeded
@@ -458,12 +474,6 @@ mkDeploy revision = do
     , deployComment = Nothing
     , deployStatus = Just StatusSucceeded
     }
-
-getRevision :: MonadIO m => m Revision
-getRevision =
-  fmap
-    (Revision . T.stripEnd . T.pack)
-    (liftIO $ readProcess "git" ["rev-parse", "HEAD"] "")
 
 -- | Tracks a deploy in Rollbar.
 --
