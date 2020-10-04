@@ -9,6 +9,8 @@ module Rollbar.Client
   -- * Types
     Rollbar
   , Settings(..)
+  , Token(..)
+  , Environment(..)
   , readSettings
   -- * Top Functions
   -- $topFunctions
