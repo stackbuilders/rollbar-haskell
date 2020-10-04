@@ -1,7 +1,7 @@
 # Rollbar Yesod
 
 Provides error reporting capabilities to [Yesod](https://www.yesodweb.com/)
-applications using Rollbar API.
+applications through [Rollbar API](https://explorer.docs.rollbar.com/).
 
 ## Getting Started
 

@@ -8,10 +8,11 @@ API][rollbar-api].
 - [rollbar-client](rollbar-client/) - Core library to communicate with [Rollbar
   API][rollbar-api].
 - [rollbar-wai](rollbar-wai/) - Provides error reporting capabilities to
-  [WAI](http://hackage.haskell.org/package/wai) based applications using
-  Rollbar API.
+  [WAI](http://hackage.haskell.org/package/wai) based applications through
+  [Rollbar API][rollbar-api].
 - [rollbar-yesod](rollbar-yesod/) - Provides error reporting capabilities to
-  [Yesod](https://www.yesodweb.com/) applications using Rollbar API.
+  [Yesod](https://www.yesodweb.com/) applications through [Rollbar
+  API][rollbar-api].
 
 ## Requirements
 
@@ -32,8 +33,8 @@ Run all tests:
 env ROLLBAR_TOKEN=<token> stack test
 ```
 
-[rollbar-api]: https://explorer.docs.rollbar.com/
-
 ## License
 
 [MIT](LICENSE)
+
+[rollbar-api]: https://explorer.docs.rollbar.com/
