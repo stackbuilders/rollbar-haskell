@@ -17,8 +17,9 @@ spec = before (readSettings "rollbar.yaml") $ do
     context "PayloadTrace" $
       it "returns ItemId" $ \settings -> do
         itemId <- runRollbar settings $ do
-          item <- mkItem $ PayloadTrace $ Trace [] (mkException "NameError")
-            { exceptionMessage = Just "global name 'foo' is not defined"
+          item <- mkItem $ PayloadTrace $ Trace [] $ Exception
+            { exceptionClass = "NameError"
+            , exceptionMessage = Just "global name 'foo' is not defined"
             , exceptionDescription = Just "Something went wrong while trying to save the user object"
             }
           createItem item
@@ -28,8 +29,9 @@ spec = before (readSettings "rollbar.yaml") $ do
     context "PayloadTraceChain" $
       it "returns ItemId" $ \settings -> do
         itemId <- runRollbar settings $ do
-          item <- mkItem $ PayloadTraceChain $ pure $ Trace [] (mkException "NameError")
-            { exceptionMessage = Just "global name 'foo' is not defined"
+          item <- mkItem $ PayloadTraceChain $ pure $ Trace [] $ Exception
+            { exceptionClass = "NameError"
+            , exceptionMessage = Just "global name 'foo' is not defined"
             , exceptionDescription = Just "Something went wrong while trying to save the user object"
             }
           createItem item

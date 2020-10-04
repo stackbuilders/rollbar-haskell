@@ -22,9 +22,9 @@ import Rollbar.Client
 rollbarOnException :: Settings -> Maybe W.Request -> SomeException -> IO ()
 rollbarOnException settings mreq ex = void $ forkIO $
   runRollbar settings $ do
-    rdata <- mkData $ PayloadTrace $ Trace [] $ mkExceptionFromSomeException ex
-    rreq <- mapM mkRequest mreq
-    void $ createItem $ Item rdata { dataRequest = rreq }
+    itemData <- mkData $ PayloadTrace $ Trace [] $ mkException ex
+    mdreq <- mapM mkRequest mreq
+    void $ createItem $ Item itemData { dataRequest = mdreq }
 
 mkRequest :: MonadIO m => W.Request -> m Request
 mkRequest req = liftIO $ do
