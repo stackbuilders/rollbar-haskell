@@ -35,8 +35,8 @@ library:
     - wai-extra >= 3.0 && < 4
 
 executables:
-  warp:
-    source-dirs: examples/warp
+  example:
+    source-dirs: example
     main: Main.hs
     ghc-options:
       - -threaded

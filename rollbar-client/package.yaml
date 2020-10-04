@@ -35,8 +35,8 @@ library:
     - yaml >= 0.11 && < 1
 
 executables:
-  simple:
-    source-dirs: examples/simple
+  example:
+    source-dirs: example
     main: Main.hs
     ghc-options:
       - -threaded
