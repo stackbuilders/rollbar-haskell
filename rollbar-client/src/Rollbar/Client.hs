@@ -10,8 +10,8 @@ module Rollbar.Client
     Rollbar
   , Settings(..)
   , readSettings
-  -- * High-Level
-  -- $highLevel
+  -- * Top Functions
+  -- $topFunctions
   , withRollbar
   , runRollbar
   -- * Endpoints
@@ -121,17 +121,12 @@ instance FromJSON a => FromJSON (ResultResponse a) where
                    <*> o .: "result"
 
 --------------------------------------------------------------------------------
--- $highLevel
+-- $topFunctions
 
+-- | Runs a computation, captures any 'E.SomeException' threw, and send it to
+-- Rollbar.
 withRollbar :: (MonadCatch m, MonadIO m) => Settings -> m a -> m a
-withRollbar settings f = f `catch` handleException settings
-
-handleException
-  :: (MonadIO m, MonadThrow m)
-  => Settings
-  -> E.SomeException
-  -> m a
-handleException settings ex = do
+withRollbar settings f = f `catch` \ex -> do
   void $ runRollbar settings $ do
     item <- mkItem $ PayloadTrace $ Trace [] $ mkException ex
     createItem item
