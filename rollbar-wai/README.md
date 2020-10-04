@@ -1,7 +1,8 @@
 # Rollbar WAI
 
-Provides some functions to integrate Rollbar with
-[WAI](http://hackage.haskell.org/package/wai) based applications.
+Provides error reporting capabilities to
+[WAI](http://hackage.haskell.org/package/wai) based applications using Rollbar
+API.
 
 ## Getting Started
 

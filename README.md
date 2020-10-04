@@ -7,8 +7,11 @@ API][rollbar-api].
   as tracking deploys.
 - [rollbar-client](rollbar-client/) - Core library to communicate with [Rollbar
   API][rollbar-api].
-- [rollbar-wai](rollbar-wai/) - Provides some functions to integrate Rollbar
-  with [WAI](http://hackage.haskell.org/package/wai) based applications.
+- [rollbar-wai](rollbar-wai/) - Provides error reporting capabilities to
+  [WAI](http://hackage.haskell.org/package/wai) based applications using
+  Rollbar API.
+- [rollbar-yesod](rollbar-yesod/) - Provides error reporting capabilities to
+  [Yesod](https://www.yesodweb.com/) applications using Rollbar API.
 
 ## Requirements
 
