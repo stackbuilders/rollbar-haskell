@@ -1,0 +1,42 @@
+name: rollbar-yesod
+version: 0.1.0
+github: "stackbuilders/rollbar-haskell"
+license: MIT
+author: "Stack Builders Inc."
+maintainer: "Sebastián Estrella <sestrella@stackbuilders.com>"
+copyright: "2020 Stack Builders Inc."
+tested-with: GHC ==8.6.5, GHC ==8.8.4, GHC ==8.10.2
+
+extra-source-files:
+  - README.md
+  - ChangeLog.md
+
+# Metadata used when publishing your package
+# synopsis:            Short description of your package
+# category:            Web
+
+description:
+  Please see the README on GitHub at
+  <https://github.com/stackbuilders/rollbar-haskell/tree/master/rollbar-yesod>
+
+dependencies:
+  - base >= 4.12 && < 5
+
+library:
+  source-dirs: src
+  dependencies:
+    - exceptions
+    - rollbar-client
+    - rollbar-wai
+    - yesod-core
+
+tests:
+  rollbar-yesod-test:
+    main:                Spec.hs
+    source-dirs:         test
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - rollbar-yesod

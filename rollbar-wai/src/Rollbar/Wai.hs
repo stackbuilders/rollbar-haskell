@@ -19,12 +19,17 @@ import Data.Aeson
 import Network.HTTP.Types (renderQuery)
 import Rollbar.Client
 
-rollbarOnException :: Settings -> Maybe W.Request -> SomeException -> IO ()
-rollbarOnException settings mreq ex = void $ forkIO $
+rollbarOnException
+  :: MonadIO m
+  => Settings
+  -> Maybe W.Request
+  -> SomeException
+  -> m ()
+rollbarOnException settings mreq ex = void $ liftIO $ forkIO $
   runRollbar settings $ do
-    itemData <- mkData $ PayloadTrace $ Trace [] $ mkException ex
+    idata <- mkData $ PayloadTrace $ Trace [] $ mkException ex
     mdreq <- mapM mkRequest mreq
-    void $ createItem $ Item itemData { dataRequest = mdreq }
+    void $ createItem $ Item idata { dataRequest = mdreq }
 
 mkRequest :: MonadIO m => W.Request -> m Request
 mkRequest req = liftIO $ do
@@ -38,7 +43,7 @@ mkRequest req = liftIO $ do
     , requestGet = HM.fromList $ fmap toQuery $ W.queryString req
     , requestQueryStrings = T.decodeUtf8 $ renderQuery False $ W.queryString req
     , requestPost = HM.fromList $ fmap toParam params
-    , requestBody = mempty
+    , requestBody = ""
     , requestUserIp = ""
     }
   where
