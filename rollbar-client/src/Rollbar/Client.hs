@@ -100,8 +100,8 @@ instance FromJSON Token where
 newtype Environment = Environment Text
   deriving (Eq, FromJSON, Show, ToJSON)
 
-readSettings :: FilePath -> IO Settings
-readSettings path = loadYamlSettings [path] [] requireEnv
+readSettings :: MonadIO m => FilePath -> m Settings
+readSettings path = liftIO $ loadYamlSettings [path] [] requireEnv
 
 newtype DataResponse a = DataResponse { unDataResponse :: a }
   deriving (Eq, Show)
