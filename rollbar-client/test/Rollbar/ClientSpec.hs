@@ -41,7 +41,7 @@ spec = before (readSettings "rollbar.yaml") $ do
   describe "reportDeploy" $
     it "returns DeployId" $ \settings -> do
       deployId <- runRollbar settings $ do
-        deploy <- mkDeploy
+        deploy <- getRevision >>= mkDeploy
         reportDeploy deploy
 
       deployId `shouldSatisfy` (> 0)

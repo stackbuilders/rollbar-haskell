@@ -43,9 +43,11 @@ module Rollbar.Client
   -- ** Deploy
   -- $deploy
   , Deploy(..)
+  , Revision(..)
   , DeployId(..)
   -- *** Smart Constructors
   , mkDeploy
+  , getRevision
   -- *** Endpoints
   , reportDeploy
   ) where
@@ -401,7 +403,7 @@ createItem item =
 
 data Deploy = Deploy
   { deployEnvironment :: Environment
-  , deployRevision :: Text
+  , deployRevision :: Revision
   , deployRollbarUsername :: Maybe Text
   , deployLocalUsername :: Maybe Text
   , deployComment :: Maybe Text
@@ -417,6 +419,9 @@ instance ToJSON Deploy where
     , "comment" .= deployComment
     , "status" .= deployStatus
     ]
+
+newtype Revision = Revision Text
+  deriving (Eq, Show, ToJSON)
 
 data Status
   = StatusStarted
@@ -438,10 +443,12 @@ instance FromJSON DeployId where
   parseJSON = withObject "DeployId" $ \o ->
     DeployId <$> o .: "deploy_id"
 
-mkDeploy :: (MonadIO m, MonadReader Settings m) => m Deploy
-mkDeploy = do
+mkDeploy
+  :: (MonadIO m, MonadReader Settings m)
+  => Revision
+  -> m Deploy
+mkDeploy revision = do
   env <- asks settingsEnvironment
-  revision <- getRevision
   muser <- fmap T.pack <$> liftIO (lookupEnv "USER")
   return Deploy
     { deployEnvironment = env
@@ -452,11 +459,11 @@ mkDeploy = do
     , deployStatus = Just StatusSucceeded
     }
 
-getRevision :: MonadIO m => m Text
+getRevision :: MonadIO m => m Revision
 getRevision =
   fmap
-    (T.stripEnd . T.pack)
-    (liftIO (readProcess "git" ["rev-parse", "HEAD"] ""))
+    (Revision . T.stripEnd . T.pack)
+    (liftIO $ readProcess "git" ["rev-parse", "HEAD"] "")
 
 -- | Tracks a deploy in Rollbar.
 --

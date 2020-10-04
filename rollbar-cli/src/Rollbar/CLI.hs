@@ -52,5 +52,8 @@ runCommand settings cmd = do
       pong <- runRollbar settings ping
       print pong
     CommandDeploy DeployCommandReport -> do
-      deployId <- runRollbar settings $ mkDeploy >>= reportDeploy
+      deployId <- runRollbar settings $ do
+        deploy <- getRevision >>= mkDeploy
+        reportDeploy deploy
+
       print deployId
