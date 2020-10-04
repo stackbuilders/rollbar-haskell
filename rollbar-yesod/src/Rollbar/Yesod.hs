@@ -4,27 +4,28 @@ module Rollbar.Yesod
   ( rollbarYesodMiddleware
   ) where
 
-import Control.Monad
-import Control.Monad.Catch
+import Control.Exception (Exception(..), SomeException)
+import Control.Monad (unless, void)
 import Rollbar.Client
 import Rollbar.Wai (rollbarOnException)
+import UnliftIO.Exception (catch, throwIO)
 import Yesod.Core
 import Yesod.Core.Types (HandlerContents)
 
 rollbarYesodMiddleware
-  :: MonadCatch (HandlerFor site)
+  :: (MonadHandler m, MonadUnliftIO m)
   => Settings
-  -> HandlerFor site res
-  -> HandlerFor site res
+  -> m a
+  -> m a
 rollbarYesodMiddleware settings handler = handler `catch` \ex -> do
   unless (isHandlerContents ex) $ do
     req <- waiRequest
     rollbarOnException settings (Just req) ex
 
-  throwM ex
+  throwIO ex
 
 isHandlerContents :: SomeException -> Bool
-isHandlerContents = maybe False bar . fromException
+isHandlerContents = maybe False handlerContents . fromException
   where
-    bar :: HandlerContents -> Bool
-    bar = const True
+    handlerContents :: HandlerContents -> Bool
+    handlerContents = const True
