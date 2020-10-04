@@ -31,15 +31,20 @@ module Rollbar.Client
   , Request(..)
   , Server(..)
   , Notifier(..)
+  , ItemId(..)
+  -- *** Smart Constructors
   , mkItem
   , mkData
   , mkException
+  -- *** Endpoints
   , createItem
   -- ** Deploy
   -- $deploy
   , Deploy(..)
   , DeployId(..)
+  -- *** Smart Constructors
   , mkDeploy
+  -- *** Endpoints
   , reportDeploy
   ) where
 
@@ -78,7 +83,7 @@ instance MonadHttp Rollbar where
 
 data Settings = Settings
   { settingsToken :: Token
-  , settingsEnvironment :: Text
+  , settingsEnvironment :: Environment
   } deriving (Eq, Show)
 
 instance FromJSON Settings where
@@ -91,6 +96,9 @@ newtype Token = Token ByteString
 
 instance FromJSON Token where
   parseJSON = withText "Token" $ pure . Token . T.encodeUtf8
+
+newtype Environment = Environment Text
+  deriving (Eq, FromJSON, Show, ToJSON)
 
 readSettings :: FilePath -> IO Settings
 readSettings path = loadYamlSettings [path] [] requireEnv
@@ -166,7 +174,7 @@ instance ToJSON Item where
     ]
 
 data Data = Data
-  { dataEnvironment :: Text
+  { dataEnvironment :: Environment
   , dataBody :: Body
   -- level
   -- timestamp
@@ -395,7 +403,7 @@ createItem item =
 -- Deploy endpoints.
 
 data Deploy = Deploy
-  { deployEnvironment :: Text
+  { deployEnvironment :: Environment
   , deployRevision :: Text
   , deployRollbarUsername :: Maybe Text
   , deployLocalUsername :: Maybe Text
@@ -468,6 +476,9 @@ reportDeploy deploy =
     (rollbar POST url (ReqBodyJson deploy) jsonResponse mempty)
   where
     url = baseUrl /: "deploy"
+
+--------------------------------------------------------------------------------
+-- Internal Functions
 
 rollbar
   :: ( HttpBody body
