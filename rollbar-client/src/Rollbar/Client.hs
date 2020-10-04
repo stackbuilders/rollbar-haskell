@@ -79,11 +79,16 @@ newtype Rollbar a = Rollbar (ReaderT Settings Req a)
     , Functor
     , Monad
     , MonadIO
-    , MonadReader Settings
     )
 
 instance MonadHttp Rollbar where
   handleHttpException = Rollbar . lift . handleHttpException
+
+class HasSettings m where
+  getSettings :: m Settings
+
+instance HasSettings Rollbar where
+  getSettings = Rollbar ask
 
 data Settings = Settings
   { settingsToken :: Token
@@ -135,10 +140,10 @@ readSettings path = liftIO $ loadYamlSettings [path] [] requireEnv
 
 -- |
 getRevision
-  :: (MonadIO m, MonadReader Settings m)
+  :: (HasSettings m, MonadIO m)
   => m Revision
 getRevision = do
-  mrevision <- asks settingsRevision
+  mrevision <- settingsRevision <$> getSettings
   case mrevision of
     Nothing ->
       mkRevision <$> liftIO (readProcess "git" ["rev-parse", "HEAD"] "")
@@ -363,15 +368,21 @@ instance FromJSON ItemId where
   parseJSON = withObject "ItemId" $ \o ->
     ItemId <$> o .: "uuid"
 
-mkItem :: (MonadIO m, MonadReader Settings m) => Payload -> m Item
+mkItem
+  :: (HasSettings m, MonadIO m)
+  => Payload
+  -> m Item
 mkItem payload = Item <$> mkData payload
 
-mkData :: (MonadIO m, MonadReader Settings m) => Payload -> m Data
+mkData
+  :: (HasSettings m, MonadIO m)
+  => Payload
+  -> m Data
 mkData payload = do
-  env <- asks settingsEnvironment
+  environment <- settingsEnvironment <$> getSettings
   root <- liftIO getCurrentDirectory
   return Data
-    { dataEnvironment = env
+    { dataEnvironment = environment
     , dataBody = Body
         { bodyPayload = payload
         }
@@ -405,7 +416,7 @@ mkException ex = Exception
 --
 -- <https://explorer.docs.rollbar.com/#operation/create-item>
 createItem
-  :: (MonadHttp m, MonadReader Settings m)
+  :: (HasSettings m, MonadHttp m)
   => Item
   -> m ItemId
 createItem item =
@@ -460,11 +471,11 @@ instance FromJSON DeployId where
     DeployId <$> o .: "deploy_id"
 
 mkDeploy
-  :: (MonadIO m, MonadReader Settings m)
+  :: (HasSettings m, MonadIO m)
   => Revision
   -> m Deploy
 mkDeploy revision = do
-  env <- asks settingsEnvironment
+  env <- settingsEnvironment <$> getSettings
   muser <- fmap T.pack <$> liftIO (lookupEnv "USER")
   return Deploy
     { deployEnvironment = env
@@ -481,7 +492,7 @@ mkDeploy revision = do
 --
 -- <https://explorer.docs.rollbar.com/#operation/post-deploy>
 reportDeploy
-  :: (MonadHttp m, MonadReader Settings m)
+  :: (HasSettings m, MonadHttp m)
   => Deploy
   -> m DeployId
 reportDeploy deploy =
@@ -495,12 +506,12 @@ reportDeploy deploy =
 -- Internal Functions
 
 rollbar
-  :: ( HttpBody body
+  :: ( HasSettings m
+     , HttpBody body
      , HttpBodyAllowed (AllowsBody method) (ProvidesBody body)
      , HttpMethod method
      , HttpResponse response
      , MonadHttp m
-     , MonadReader Settings m
      )
   => method
   -> Url 'Https
@@ -509,7 +520,7 @@ rollbar
   -> Option 'Https
   -> m response
 rollbar method url body response options = do
-  Token token <- asks settingsToken
+  Token token <- settingsToken <$> getSettings
   req method url body response $ options <> header "X-Rollbar-Access-Token" token
 
 baseUrl :: Url 'Https
