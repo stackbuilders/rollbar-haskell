@@ -1,7 +1,8 @@
 # Rollbar Haskell
 
 A group of libraries written in Haskell to communicate with [Rollbar
-API][rollbar-api].
+API][rollbar-api]. Inspired by
+[bugsnag-haskell](https://github.com/pbrisbin/bugsnag-haskell).
 
 - [rollbar-cli](rollbar-cli/) - Simple CLI tool to perform commons tasks such
   as tracking deploys.

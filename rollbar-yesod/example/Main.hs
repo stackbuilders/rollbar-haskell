@@ -8,8 +8,8 @@ module Main
   ) where
 
 import Network.Wai.Handler.Warp (run)
-import Rollbar.Client
-import Rollbar.Yesod
+import Rollbar.Client (Settings, readSettings)
+import Rollbar.Yesod (rollbarYesodMiddleware)
 import Yesod.Core
 
 newtype App = App { appRollbarSettings :: Settings }

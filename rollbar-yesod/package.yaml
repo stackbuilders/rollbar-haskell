@@ -42,7 +42,7 @@ executables:
       - rollbar-client
       - rollbar-yesod
       - warp
-      - yesod
+      - yesod-core
 
 tests:
   rollbar-yesod-test:
