@@ -1,13 +1,67 @@
-# Use the latest 2.1 version of CircleCI pipeline process engine. See: https://circleci.com/docs/2.0/configuration-reference
+---
 version: 2.1
-# Use a package of configuration called an orb.
-orbs:
-  # Declare a dependency on the welcome-orb
-  welcome: circleci/welcome-orb@0.4.1
-# Orchestrate or schedule a set of jobs
+
+commands:
+  setup_haskell:
+    parameters:
+      ghc:
+        type: string
+      cabal:
+        type: string
+        default: "3.2"
+
+    steps:
+      - run: apt update
+      - run: apt install -y gnupg zlib1g-dev
+      - run: apt-key adv --keyserver keyserver.ubuntu.com --recv-keys BA3CBA3FFE22B574
+      - run: echo 'deb http://downloads.haskell.org/debian buster main' > /etc/apt/sources.list.d/haskell.list
+      - run: apt update
+      - run: apt install -y ghc-<< parameters.ghc >> cabal-install-<< parameters.cabal >>
+      - run: echo 'export PATH=/opt/ghc/bin:$PATH' >> $BASH_ENV
+
+jobs:
+  build_8_10:
+    docker:
+      - image: debian:10
+
+    steps:
+      - checkout
+      - setup_haskell:
+          ghc: "8.10.2"
+      - run: cabal update
+      - run: cabal build all --only-dependencies --enable-tests
+      - run: cabal build all --enable-tests
+      - run: cabal test all
+
+  build_8_8:
+    docker:
+      - image: debian:10
+
+    steps:
+      - checkout
+      - setup_haskell:
+          ghc: "8.8.4"
+      - run: cabal update
+      - run: cabal build all --only-dependencies --enable-tests
+      - run: cabal build all --enable-tests
+      - run: cabal test all
+
+  build_8_6:
+    docker:
+      - image: debian:10
+
+    steps:
+      - checkout
+      - setup_haskell:
+          ghc: "8.6.5"
+      - run: cabal update
+      - run: cabal build all --only-dependencies --enable-tests
+      - run: cabal build all --enable-tests
+      - run: cabal test all
+
 workflows:
-  # Name the workflow "welcome"
-  welcome:
-    # Run the welcome/run job in its own container
+  main:
     jobs:
-      - welcome/run
+      - build_8_10
+      - build_8_8
+      - build_8_6
