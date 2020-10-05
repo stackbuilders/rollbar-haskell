@@ -18,6 +18,12 @@ description: |
   Please see the README on GitHub at
   <https://github.com/stackbuilders/rollbar-haskell/tree/master/rollbar-client>
 
+flags:
+  example:
+    description: Build the example
+    manual: false
+    default: false
+
 dependencies:
   - base >= 4.12 && < 5
 
@@ -44,6 +50,12 @@ executables:
       - -with-rtsopts=-N
     dependencies:
       - rollbar-client
+    when:
+      - condition: flag(example)
+        then:
+          buildable: true
+        else:
+          buildable: false
 
 tests:
   spec:
