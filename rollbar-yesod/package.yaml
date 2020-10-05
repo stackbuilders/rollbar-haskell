@@ -21,6 +21,12 @@ description: |
   Please see the README on GitHub at
   <https://github.com/stackbuilders/rollbar-haskell/tree/master/rollbar-yesod>
 
+flags:
+  example:
+    description: Build the example
+    manual: false
+    default: false
+
 dependencies:
   - base >= 4.12 && < 5
 
@@ -45,6 +51,12 @@ executables:
       - rollbar-yesod
       - warp
       - yesod-core
+    when:
+      - condition: flag(example)
+        then:
+          buildable: true
+        else:
+          buildable: false
 
 tests:
   rollbar-yesod-test:

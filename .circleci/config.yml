@@ -1,0 +1,68 @@
+---
+version: 2.1
+
+commands:
+  setup_haskell:
+    parameters:
+      cabal:
+        type: string
+        default: "3.2"
+      ghc:
+        type: string
+
+    steps:
+      - run: apt update
+      - run: apt install -y ca-certificates git gnupg zlib1g-dev
+      - run: apt-key adv --keyserver keyserver.ubuntu.com --recv-keys BA3CBA3FFE22B574
+      - run: echo 'deb http://downloads.haskell.org/debian buster main' > /etc/apt/sources.list.d/haskell.list
+      - run: apt update
+      - run: apt install -y cabal-install-<< parameters.cabal >> ghc-<< parameters.ghc >>
+      - run: echo 'export PATH=/opt/ghc/bin:$PATH' >> $BASH_ENV
+
+jobs:
+  build_8_10:
+    docker:
+      - image: debian:10
+
+    steps:
+      - checkout
+      - setup_haskell:
+          ghc: "8.10.2"
+      - run: cabal update
+      - run: cabal configure --enable-tests -fexample
+      - run: cabal build all --only-dependencies
+      - run: cabal build all
+      - run: cabal test all
+
+  build_8_8:
+    docker:
+      - image: debian:10
+
+    steps:
+      - checkout
+      - setup_haskell:
+          ghc: "8.8.4"
+      - run: cabal update
+      - run: cabal build all --only-dependencies --enable-tests
+      - run: cabal build all --enable-tests
+      - run: cabal test all
+
+  build_8_6:
+    docker:
+      - image: debian:10
+
+    steps:
+      - checkout
+      - setup_haskell:
+          ghc: "8.6.5"
+      - run: cabal update
+      - run: cabal build all --only-dependencies --enable-tests
+      - run: cabal build all --enable-tests
+      - run: cabal test all
+
+workflows:
+  main:
+    jobs:
+      - build_8_10
+      - build_8_8
+      - build_8_6

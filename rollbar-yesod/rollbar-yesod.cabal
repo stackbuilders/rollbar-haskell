@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: c538503c77d89522f16611127c5da6ebd5604db02dfaa67052bf30a6958a1e86
+-- hash: bdae13386361b3715216749fb0c771403b3678986c8b7ea59a06204f1b922363
 
 name:           rollbar-yesod
 version:        0.1.0
@@ -28,6 +28,11 @@ extra-source-files:
 source-repository head
   type: git
   location: https://github.com/stackbuilders/rollbar-haskell
+
+flag example
+  description: Build the example
+  manual: False
+  default: False
 
 library
   exposed-modules:
@@ -57,6 +62,10 @@ executable yesod-example
     , rollbar-yesod
     , warp
     , yesod-core
+  if flag(example)
+    buildable: True
+  else
+    buildable: False
   default-language: Haskell2010
 
 test-suite rollbar-yesod-test
