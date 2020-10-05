@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 0c6dc925962b0792caf893249bc6e9c17140b5e2a7c9e3b9cbae16165580dc4c
+-- hash: b15bec735ae04b7a9d96aa963f9aefbc6d1d82d999234a7f482671d3b2fc2f8c
 
 name:           rollbar-client
 version:        0.1.0
@@ -48,7 +48,7 @@ library
     , yaml >=0.11 && <1
   default-language: Haskell2010
 
-executable example
+executable client-example
   main-is: Main.hs
   other-modules:
       Paths_rollbar_client

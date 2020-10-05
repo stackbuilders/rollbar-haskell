@@ -11,7 +11,9 @@ extra-source-files:
   - README.md
   - ChangeLog.md
 
-synopsis: Provides some functions to integrate Rollbar with WAI.
+synopsis: >
+  Provides error reporting capabilities to WAI based applications through
+  Rollbar API.
 # category:            Web
 
 description: |
@@ -35,7 +37,7 @@ library:
     - wai-extra >= 3.0 && < 4
 
 executables:
-  example:
+  wai-example:
     source-dirs: example
     main: Main.hs
     ghc-options:

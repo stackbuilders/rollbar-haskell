@@ -4,11 +4,14 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 5b34109379a130bdd97af4afdb7516b04ba751321d504f64e1904161ab9874e0
+-- hash: c538503c77d89522f16611127c5da6ebd5604db02dfaa67052bf30a6958a1e86
 
 name:           rollbar-yesod
 version:        0.1.0
-description:    Please see the README on GitHub at <https://github.com/stackbuilders/rollbar-haskell/tree/master/rollbar-yesod>
+synopsis:       Provides error reporting capabilities to Yesod applications through Rollbar API.
+
+description:    Please see the README on GitHub at
+                <https://github.com/stackbuilders/rollbar-haskell/tree/master/rollbar-yesod>
 homepage:       https://github.com/stackbuilders/rollbar-haskell#readme
 bug-reports:    https://github.com/stackbuilders/rollbar-haskell/issues
 author:         Stack Builders Inc.
@@ -41,7 +44,7 @@ library
     , yesod-core
   default-language: Haskell2010
 
-executable example
+executable yesod-example
   main-is: Main.hs
   other-modules:
       Paths_rollbar_yesod
