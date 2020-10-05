@@ -19,8 +19,23 @@ commands:
       - run: apt install -y cabal-install-<< parameters.cabal >> ghc-<< parameters.ghc >>
       - run: echo 'export PATH=/opt/ghc/bin:$PATH' >> $BASH_ENV
 
+  cabal_build:
+    steps:
+      - run: cabal update
+      - run: cabal configure --enable-tests -fexample
+      - run: cabal build all --only-dependencies
+      - run: cabal build all
+      - run: cabal test all
+
+  stack_build:
+    steps:
+      - run: stack update
+      - run: stack build --only-dependencies --test
+      - run: stack build --test --no-run-tests
+      - run: stack test
+
 jobs:
-  build_8_10:
+  cabal_8_10:
     docker:
       - image: debian:10
 
@@ -28,13 +43,9 @@ jobs:
       - checkout
       - setup_haskell:
           ghc: "8.10.2"
-      - run: cabal update
-      - run: cabal configure --enable-tests -fexample
-      - run: cabal build all --only-dependencies
-      - run: cabal build all
-      - run: cabal test all
+      - cabal_build
 
-  build_8_8:
+  cabal_8_8:
     docker:
       - image: debian:10
 
@@ -42,12 +53,9 @@ jobs:
       - checkout
       - setup_haskell:
           ghc: "8.8.4"
-      - run: cabal update
-      - run: cabal build all --only-dependencies --enable-tests
-      - run: cabal build all --enable-tests
-      - run: cabal test all
+      - cabal_build
 
-  build_8_6:
+  cabal_8_6:
     docker:
       - image: debian:10
 
@@ -55,14 +63,29 @@ jobs:
       - checkout
       - setup_haskell:
           ghc: "8.6.5"
-      - run: cabal update
-      - run: cabal build all --only-dependencies --enable-tests
-      - run: cabal build all --enable-tests
-      - run: cabal test all
+      - cabal_build
+
+  stack_16:
+    docker:
+      - image: fpco/stack-build-small:lts-16.17
+
+    steps:
+      - checkout
+      - stack_build
+
+  stack_14:
+    docker:
+      - image: fpco/stack-build-small:lts-14.27
+
+    steps:
+      - checkout
+      - stack_build
 
 workflows:
   main:
     jobs:
-      - build_8_10
-      - build_8_8
-      - build_8_6
+      - cabal_8_10
+      - cabal_8_8
+      - cabal_8_6
+      - stack_16
+      - stack_14
