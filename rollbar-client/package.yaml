@@ -67,11 +67,12 @@ tests:
       - -rtsopts
       - -with-rtsopts=-N
     dependencies:
-      - bytestring
+      - aeson
       - hspec >= 2.7 && < 3
       - mtl
-      - req
       - rollbar-client
+      - text
       - unordered-containers
+      - yaml
     build-tools:
       - hspec-discover:hspec-discover >= 2.7 && < 3

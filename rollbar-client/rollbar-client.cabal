@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 5551b17041093968b18fbcce95f786e2369e2399b68496a2740b585bafa4e339
+-- hash: ea3534565bfede7d28d697ec511278aeeab35fb2f8a2bd5139e0b301c2a1cc0f
 
 name:           rollbar-client
 version:        0.1.0
@@ -82,11 +82,12 @@ test-suite spec
   build-tool-depends:
       hspec-discover:hspec-discover >=2.7 && <3
   build-depends:
-      base >=4.12 && <5
-    , bytestring
+      aeson
+    , base >=4.12 && <5
     , hspec >=2.7 && <3
     , mtl
-    , req
     , rollbar-client
+    , text
     , unordered-containers
+    , yaml
   default-language: Haskell2010
