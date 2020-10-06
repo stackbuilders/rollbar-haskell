@@ -44,25 +44,29 @@ spec = do
 
     context "ExcludeHeaders" $
       it "excludes the headers not matching the given names" $
-        let requestModifier = runReader getRequestModifier $ mkSettings $ ExcludeHeaders ["Secret"]
+        let requestModifier = runReader getRequestModifier $ mkSettings $
+              ExcludeHeaders ["Secret"]
         in requestModifier request `shouldBe` request
              { requestHeaders = HM.fromList [("Host", "example.com")] }
 
     context "ExcludeParams" $
       it "excludes the params not matching the given names" $
-        let requestModifier = runReader getRequestModifier $ mkSettings $ ExcludeParams ["password"]
+        let requestModifier = runReader getRequestModifier $ mkSettings $
+              ExcludeParams ["password"]
         in requestModifier request `shouldBe` request
              { requestParams = HM.fromList [("user", "John Doe")] }
 
     context "IncludeHeaders" $
       it "includes only the headers matching the given names" $
-        let requestModifier = runReader getRequestModifier $ mkSettings $ IncludeHeaders ["Host"]
+        let requestModifier = runReader getRequestModifier $ mkSettings $
+              IncludeHeaders ["Host"]
         in requestModifier request `shouldBe` request
              { requestHeaders = HM.fromList [("Host", "example.com")] }
 
     context "IncludeParams" $
       it "includes only the headers matching the given names" $
-        let requestModifier = runReader getRequestModifier $ mkSettings $ IncludeParams ["user"]
+        let requestModifier = runReader getRequestModifier $ mkSettings $
+              IncludeParams ["user"]
         in requestModifier request `shouldBe` request
              { requestParams = HM.fromList [("user", "John Doe")] }
 
