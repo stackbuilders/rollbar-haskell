@@ -38,6 +38,7 @@ library:
     - process
     - req >= 2.1 && < 4
     - text
+    - unordered-containers
     - yaml >= 0.11 && < 1
 
 executables:
@@ -68,7 +69,9 @@ tests:
     dependencies:
       - bytestring
       - hspec >= 2.7 && < 3
+      - mtl
       - req
       - rollbar-client
+      - unordered-containers
     build-tools:
       - hspec-discover:hspec-discover >= 2.7 && < 3

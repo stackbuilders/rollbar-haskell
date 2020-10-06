@@ -8,9 +8,13 @@ module Rollbar.Client
   (
   -- * Types
     Rollbar
+  -- ** Settings
+  , HasSettings(..)
   , Settings(..)
   , Token(..)
   , Environment(..)
+  , RequestModifier(..)
+  , getRequestModifier
   -- * Top Functions
   -- $topFunctions
   , readSettings
@@ -53,14 +57,17 @@ module Rollbar.Client
   ) where
 
 import qualified Control.Exception as E
+import qualified Data.HashMap.Strict as HM
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as T
 
+import Control.Applicative ((<|>))
 import Control.Monad.Catch (MonadCatch(..), MonadThrow(..))
 import Control.Monad.IO.Class
 import Control.Monad.Reader
 import Data.Aeson
 import Data.ByteString (ByteString)
+import Data.Monoid
 import Data.Proxy
 import Data.Text (Text)
 import Data.Yaml.Config
@@ -84,6 +91,9 @@ newtype Rollbar a = Rollbar (ReaderT Settings Req a)
 instance MonadHttp Rollbar where
   handleHttpException = Rollbar . lift . handleHttpException
 
+-------------------------------------------------------------------------------
+-- Settings
+
 class HasSettings m where
   getSettings :: m Settings
 
@@ -94,6 +104,7 @@ data Settings = Settings
   { settingsToken :: Token
   , settingsEnvironment :: Environment
   , settingsRevision :: Maybe Revision
+  , settingsRequestModifiers :: [RequestModifier]
   } deriving (Eq, Show)
 
 instance FromJSON Settings where
@@ -101,6 +112,7 @@ instance FromJSON Settings where
     Settings <$> o .: "token"
              <*> o .: "environment"
              <*> o .:? "revision" .!= Nothing
+             <*> o .:? "request_modifiers" .!= []
 
 newtype Token = Token ByteString
   deriving (Eq, Show)
@@ -113,6 +125,57 @@ newtype Environment = Environment Text
 
 newtype Revision = Revision Text
   deriving (Eq, FromJSON, Show, ToJSON)
+
+data RequestModifier
+  = ExcludeHeaders [Text]
+  | ExcludeParams [Text]
+  | IncludeHeaders [Text]
+  | IncludeParams [Text]
+  deriving (Eq, Show)
+
+instance FromJSON RequestModifier where
+  parseJSON = withObject "RequestModifier" $ \o ->
+    parseExcludeHeaders o <|> parseExcludeParams o
+    where
+      parseExcludeHeaders o = ExcludeHeaders <$> o .: "exclude_headers"
+      parseExcludeParams o = ExcludeParams <$> o .: "exclude_params"
+      parseIncludeHeaders o = IncludeHeaders <$> o .: "include_headers"
+      parseIncludeParams o = IncludeParams <$> o .: "include_params"
+
+getRequestModifier :: (HasSettings m, Monad m) => m (Request -> Request)
+getRequestModifier = do
+  modifiers <- settingsRequestModifiers <$> getSettings
+  return $ appEndo $ mconcat $ fmap toModifier modifiers
+  where
+    toModifier (ExcludeHeaders names) = excludeHeaders names
+    toModifier (ExcludeParams names) = excludeParams names
+    toModifier (IncludeHeaders names) = includeHeaders names
+    toModifier (IncludeParams names) = includeParams names
+
+excludeHeaders :: [Text] -> Endo Request
+excludeHeaders names = withHeaders $ filter $ \(key, _) -> key `notElem` names
+
+excludeParams :: [Text] -> Endo Request
+excludeParams names = withParams $ filter $ \(key, _) -> key `notElem` names
+
+includeHeaders :: [Text] -> Endo Request
+includeHeaders names = withHeaders $ filter $ \(key, _) -> key `elem` names
+
+includeParams :: [Text] -> Endo Request
+includeParams names = withParams $ filter $ \(key, _) -> key `elem` names
+
+withHeaders :: ([(Text, Value)] -> [(Text, Value)]) -> Endo Request
+withHeaders f = Endo $ \request ->
+  let headers = requestHeaders request
+  in request { requestHeaders = HM.fromList $ f $ HM.toList headers }
+
+withParams :: ([(Text, Value)] -> [(Text, Value)]) -> Endo Request
+withParams f = Endo $ \request ->
+  let params = requestParams request
+  in request { requestParams = HM.fromList $ f $ HM.toList params }
+
+-------------------------------------------------------------------------------
+-- Responses
 
 newtype DataResponse a = DataResponse { unDataResponse :: a }
   deriving (Eq, Show)
@@ -419,12 +482,15 @@ createItem
   :: (HasSettings m, MonadHttp m)
   => Item
   -> m ItemId
-createItem item =
+createItem (Item itemData) = do
+  requestModifier <- getRequestModifier
   fmap
     (resultResponseResult . responseBody)
-    (rollbar POST url (ReqBodyJson item) jsonResponse mempty)
+    (rollbar POST url (body requestModifier) jsonResponse mempty)
   where
     url = baseUrl /: "item" /: ""
+    body requestModifier = ReqBodyJson $ Item
+      itemData { dataRequest = requestModifier <$> dataRequest itemData }
 
 --------------------------------------------------------------------------------
 -- $deploy
