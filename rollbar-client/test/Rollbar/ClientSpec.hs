@@ -1,5 +1,6 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE TypeSynonymInstances #-}
 
 module Rollbar.ClientSpec
@@ -9,8 +10,21 @@ module Rollbar.ClientSpec
 import qualified Data.HashMap.Strict as HM
 
 import Control.Monad.Reader
+import Data.Aeson
+import Data.Text
+import Data.Yaml.Config
 import Rollbar.Client
 import Test.Hspec
+
+data Package = Package
+  { packageName :: Text
+  , packageVersion :: Text
+  } deriving (Eq, Show)
+
+instance FromJSON Package where
+  parseJSON = withObject "Package" $ \o ->
+    Package <$> o .: "name"
+            <*> o .: "version"
 
 instance HasSettings (Reader Settings) where
   getSettings = ask
@@ -69,6 +83,14 @@ spec = do
               IncludeParams ["user"]
         in requestModifier request `shouldBe` request
              { requestParams = HM.fromList [("user", "John Doe")] }
+
+  describe "defaultNotifier" $
+    it "matches the package name and version" $ do
+      Package{..} <- loadYamlSettings ["package.yaml"] [] ignoreEnv
+      defaultNotifier `shouldBe` Notifier
+        { notifierName = packageName
+        , notifierVersion = packageVersion
+        }
 
   before (readSettings "rollbar.yaml") $ do
     describe "ping" $

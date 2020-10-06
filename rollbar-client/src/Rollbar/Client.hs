@@ -43,6 +43,7 @@ module Rollbar.Client
   , mkItem
   , mkData
   , mkException
+  , defaultNotifier
   -- *** Endpoints
   , createItem
   -- ** Deploy
@@ -460,10 +461,7 @@ mkData payload = do
         , serverBranch = Nothing
         , serverCodeVersion = Nothing
         }
-    , dataNotifier = Just Notifier
-        { notifierName = "rollbar-client"
-        , notifierVersion = "0.1.0.0"
-        }
+    , dataNotifier = Just defaultNotifier
     }
 
 mkException :: E.SomeException -> Exception
@@ -471,6 +469,12 @@ mkException ex = Exception
   { exceptionClass = T.pack $ E.displayException ex
   , exceptionMessage = Nothing
   , exceptionDescription = Nothing
+  }
+
+defaultNotifier :: Notifier
+defaultNotifier = Notifier
+  { notifierName = "rollbar-client"
+  , notifierVersion = "0.1.0"
   }
 
 -- | Reports an occurrence (exception or message) to Rollbar.
