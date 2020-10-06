@@ -28,23 +28,24 @@ module Rollbar.Client
   , ping
   -- ** Item
   -- $item
+  -- *** Response
   , Item(..)
+  , mkItem
   , Data(..)
+  , mkData
   , Body(..)
   , Payload(..)
   , Trace(..)
   , Frame(..)
   , Exception(..)
+  , mkException
   , Request(..)
   , Message(..)
   , Server(..)
   , Notifier(..)
-  , ItemId(..)
-  -- *** Smart Constructors
-  , mkItem
-  , mkData
-  , mkException
   , defaultNotifier
+  -- *** Request
+  , ItemId(..)
   -- *** Endpoints
   , createItem
   -- ** Deploy
@@ -264,6 +265,12 @@ instance ToJSON Item where
     [ "data" .= itemData
     ]
 
+mkItem
+  :: (HasSettings m, MonadIO m)
+  => Payload
+  -> m Item
+mkItem payload = Item <$> mkData payload
+
 data Data = Data
   { dataEnvironment :: Environment
   , dataBody :: Body
@@ -297,6 +304,33 @@ instance ToJSON Data where
     , "server" .= dataServer
     , "notifier" .= dataNotifier
     ]
+
+mkData
+  :: (HasSettings m, MonadIO m)
+  => Payload
+  -> m Data
+mkData payload = do
+  environment <- settingsEnvironment <$> getSettings
+  root <- liftIO getCurrentDirectory
+  return Data
+    { dataEnvironment = environment
+    , dataBody = Body
+        { bodyPayload = payload
+        }
+    , dataPlatform = Just $ T.pack os
+    , dataLanguage = Just "haskell"
+    , dataFramework = Nothing
+    , dataRequest = Nothing
+    , dataServer = Just Server
+        { serverCpu = Just $ T.pack arch
+        , serverHost = Nothing
+        , serverRoot = Just $ T.pack root
+        , serverBranch = Nothing
+        , serverCodeVersion = Nothing
+        }
+    , dataNotifier = Just defaultNotifier
+    }
+
 
 newtype Body = Body
   { -- telemetry
@@ -403,6 +437,14 @@ instance ToJSON Exception where
     , "description" .= exceptionDescription
     ]
 
+-- | Builds a Rollbar 'Exception' based on 'E.SomeException'.
+mkException :: E.SomeException -> Exception
+mkException ex = Exception
+  { exceptionClass = T.pack $ E.displayException ex
+  , exceptionMessage = Nothing
+  , exceptionDescription = Nothing
+  }
+
 data Message = Message
   { messageBody :: Text
   , messageMetadata :: Object
@@ -440,6 +482,13 @@ instance ToJSON Notifier where
     , "version" .= notifierVersion
     ]
 
+-- | Returns information about this package such as name and version.
+defaultNotifier :: Notifier
+defaultNotifier = Notifier
+  { notifierName = "rollbar-client"
+  , notifierVersion = "0.1.0"
+  }
+
 --------------------------------------------------------------------------------
 -- Item / Types / Response
 
@@ -449,56 +498,6 @@ newtype ItemId = ItemId Text
 instance FromJSON ItemId where
   parseJSON = withObject "ItemId" $ \o ->
     ItemId <$> o .: "uuid"
-
---------------------------------------------------------------------------------
--- Item / Smart Constructors
-
-mkItem
-  :: (HasSettings m, MonadIO m)
-  => Payload
-  -> m Item
-mkItem payload = Item <$> mkData payload
-
-mkData
-  :: (HasSettings m, MonadIO m)
-  => Payload
-  -> m Data
-mkData payload = do
-  environment <- settingsEnvironment <$> getSettings
-  root <- liftIO getCurrentDirectory
-  return Data
-    { dataEnvironment = environment
-    , dataBody = Body
-        { bodyPayload = payload
-        }
-    , dataPlatform = Just $ T.pack os
-    , dataLanguage = Just "haskell"
-    , dataFramework = Nothing
-    , dataRequest = Nothing
-    , dataServer = Just Server
-        { serverCpu = Just $ T.pack arch
-        , serverHost = Nothing
-        , serverRoot = Just $ T.pack root
-        , serverBranch = Nothing
-        , serverCodeVersion = Nothing
-        }
-    , dataNotifier = Just defaultNotifier
-    }
-
--- | Builds a Rollbar 'Exception' based on 'E.SomeException'.
-mkException :: E.SomeException -> Exception
-mkException ex = Exception
-  { exceptionClass = T.pack $ E.displayException ex
-  , exceptionMessage = Nothing
-  , exceptionDescription = Nothing
-  }
-
--- | Returns information about this package such as name and version.
-defaultNotifier :: Notifier
-defaultNotifier = Notifier
-  { notifierName = "rollbar-client"
-  , notifierVersion = "0.1.0"
-  }
 
 -- | Reports an occurrence (exception or message) to Rollbar.
 --
