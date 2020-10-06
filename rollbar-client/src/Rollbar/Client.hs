@@ -1,6 +1,7 @@
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards #-}
 
@@ -282,7 +283,7 @@ mkItem payload = Item <$> mkData payload
 data Data = Data
   { dataEnvironment :: Environment
   , dataBody :: Body
-  -- level
+  , dataLevel :: Maybe Level
   -- timestamp
   -- code_version
   , dataPlatform :: Maybe Text
@@ -305,6 +306,7 @@ instance ToJSON Data where
   toJSON Data{..} = object
     [ "environment" .= dataEnvironment
     , "body" .= dataBody
+    , "level" .= dataLevel
     , "platform" .= dataPlatform
     , "language" .= dataLanguage
     , "framework" .= dataFramework
@@ -325,6 +327,7 @@ mkData payload = do
     , dataBody = Body
         { bodyPayload = payload
         }
+    , dataLevel = Just $ mkLevel payload
     , dataPlatform = Just $ T.pack os
     , dataLanguage = Just "haskell"
     , dataFramework = Nothing
@@ -339,7 +342,6 @@ mkData payload = do
     , dataNotifier = Just defaultNotifier
     }
 
-
 newtype Body = Body
   { -- telemetry
     bodyPayload :: Payload
@@ -351,31 +353,6 @@ instance ToJSON Body where
         (PayloadTrace trace) -> ("trace", toJSON trace)
         (PayloadTraceChain traceChain) -> ("trace_chain", toJSON traceChain)
         (PayloadMessage message) -> ("message", toJSON message)
-    ]
-
-data Request = Request
-  { requestUrl :: Text
-  , requestMethod :: Text
-  , requestHeaders :: Object
-  , requestParams :: Object
-  , requestGet :: Object
-  , requestQueryStrings :: Text
-  , requestPost :: Object
-  , requestBody :: Text
-  , requestUserIp :: Text
-  } deriving (Eq, Show)
-
-instance ToJSON Request where
-  toJSON Request{..} = object
-    [ "url" .= requestUrl
-    , "method" .= requestMethod
-    , "headers" .= requestHeaders
-    , "params" .= requestParams
-    , "GET" .= requestGet
-    , "query_string" .= requestQueryStrings
-    , "POST" .= requestPost
-    , "body" .= requestBody
-    , "user_ip" .= requestUserIp
     ]
 
 data Payload
@@ -461,6 +438,51 @@ data Message = Message
 instance ToJSON Message where
   toJSON Message{..} = Object $
     HM.insert "body" (toJSON messageBody) messageMetadata
+
+data Level
+  = LevelCritical
+  | LevelError
+  | LevelWarning
+  | LevelInfo
+  | LevelDebug
+  deriving (Eq, Show)
+
+instance ToJSON Level where
+  toJSON = \case
+    LevelCritical -> "critical"
+    LevelError -> "error"
+    LevelWarning -> "warning"
+    LevelInfo -> "info"
+    LevelDebug -> "debug"
+
+mkLevel :: Payload -> Level
+mkLevel (PayloadMessage _) = LevelInfo
+mkLevel _ = LevelError
+
+data Request = Request
+  { requestUrl :: Text
+  , requestMethod :: Text
+  , requestHeaders :: Object
+  , requestParams :: Object
+  , requestGet :: Object
+  , requestQueryStrings :: Text
+  , requestPost :: Object
+  , requestBody :: Text
+  , requestUserIp :: Text
+  } deriving (Eq, Show)
+
+instance ToJSON Request where
+  toJSON Request{..} = object
+    [ "url" .= requestUrl
+    , "method" .= requestMethod
+    , "headers" .= requestHeaders
+    , "params" .= requestParams
+    , "GET" .= requestGet
+    , "query_string" .= requestQueryStrings
+    , "POST" .= requestPost
+    , "body" .= requestBody
+    , "user_ip" .= requestUserIp
+    ]
 
 data Server = Server
   { serverCpu :: Maybe Text
