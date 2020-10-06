@@ -6,29 +6,28 @@
 
 module Rollbar.Client
   (
-  -- * Types
+  -- * Common
+  -- ** Types
     Rollbar
-  -- ** Settings
   , HasSettings(..)
   , Settings(..)
+  , readSettings
   , Token(..)
   , Environment(..)
+  , Revision(..)
+  , getRevision
   , RequestModifier(..)
   , getRequestModifier
-  -- * Top Functions
-  -- $topFunctions
-  , readSettings
-  , getRevision
+  -- ** Top Functions
   , withRollbar
   , runRollbar
-  -- * Endpoints
-  -- ** Ping
-  -- $ping
+  -- * Ping
+  -- ** Responses
   , Pong(..)
+  -- ** Endpoints
   , ping
-  -- ** Item
-  -- $item
-  -- *** Response
+  -- * Item
+  -- ** Requests
   , Item(..)
   , mkItem
   , Data(..)
@@ -44,18 +43,17 @@ module Rollbar.Client
   , Server(..)
   , Notifier(..)
   , defaultNotifier
-  -- *** Request
+  -- ** Responses
   , ItemId(..)
-  -- *** Endpoints
+  -- ** Endpoints
   , createItem
-  -- ** Deploy
-  -- $deploy
+  -- * Deploy
+  -- ** Requests
   , Deploy(..)
-  , Revision(..)
-  , DeployId(..)
-  -- *** Smart Constructors
   , mkDeploy
-  -- *** Endpoints
+  -- ** Responses
+  , DeployId(..)
+  -- ** Endpoints
   , reportDeploy
   ) where
 
@@ -80,9 +78,6 @@ import System.Environment
 import System.Info (arch, os)
 import System.Process
 
---------------------------------------------------------------------------------
--- $types
-
 newtype Rollbar a = Rollbar (ReaderT Settings Req a)
   deriving
     ( Applicative
@@ -93,9 +88,6 @@ newtype Rollbar a = Rollbar (ReaderT Settings Req a)
 
 instance MonadHttp Rollbar where
   handleHttpException = Rollbar . lift . handleHttpException
-
--------------------------------------------------------------------------------
--- Settings
 
 class HasSettings m where
   getSettings :: m Settings
@@ -117,6 +109,10 @@ instance FromJSON Settings where
              <*> o .:? "revision" .!= Nothing
              <*> o .:? "request_modifiers" .!= []
 
+-- | Reads 'Settings' from a YAML file.
+readSettings :: MonadIO m => FilePath -> m Settings
+readSettings path = liftIO $ loadYamlSettings [path] [] requireEnv
+
 newtype Token = Token ByteString
   deriving (Eq, Show)
 
@@ -128,6 +124,18 @@ newtype Environment = Environment Text
 
 newtype Revision = Revision Text
   deriving (Eq, FromJSON, Show, ToJSON)
+
+getRevision
+  :: (HasSettings m, MonadIO m)
+  => m Revision
+getRevision = do
+  mrevision <- settingsRevision <$> getSettings
+  case mrevision of
+    Nothing ->
+      mkRevision <$> liftIO (readProcess "git" ["rev-parse", "HEAD"] "")
+    Just revision -> return revision
+  where
+    mkRevision = Revision . T.stripEnd . T.pack
 
 data RequestModifier
   = ExcludeHeaders [Text]
@@ -177,8 +185,9 @@ withParams f = Endo $ \request ->
   let params = requestParams request
   in request { requestParams = HM.fromList $ f $ HM.toList params }
 
--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 -- Responses
+--------------------------------------------------------------------------------
 
 newtype DataResponse a = DataResponse { unDataResponse :: a }
   deriving (Eq, Show)
@@ -198,24 +207,8 @@ instance FromJSON a => FromJSON (ResultResponse a) where
                    <*> o .: "result"
 
 --------------------------------------------------------------------------------
--- $topFunctions
-
--- | Reads 'Settings' from a YAML file.
-readSettings :: MonadIO m => FilePath -> m Settings
-readSettings path = liftIO $ loadYamlSettings [path] [] requireEnv
-
--- |
-getRevision
-  :: (HasSettings m, MonadIO m)
-  => m Revision
-getRevision = do
-  mrevision <- settingsRevision <$> getSettings
-  case mrevision of
-    Nothing ->
-      mkRevision <$> liftIO (readProcess "git" ["rev-parse", "HEAD"] "")
-    Just revision -> return revision
-  where
-    mkRevision = Revision . T.stripEnd . T.pack
+-- Common / Top Functions
+--------------------------------------------------------------------------------
 
 -- | Runs a computation, captures any 'E.SomeException' threw, and send it to
 -- Rollbar.
@@ -539,9 +532,14 @@ createItem (Item itemData) = do
       itemData { dataRequest = requestModifier <$> dataRequest itemData }
 
 --------------------------------------------------------------------------------
--- $deploy
+-- Deploy
 --
--- Deploy endpoints.
+-- $deploy
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+-- Deploy / Request
+--------------------------------------------------------------------------------
 
 data Deploy = Deploy
   { deployEnvironment :: Environment
@@ -562,26 +560,6 @@ instance ToJSON Deploy where
     , "status" .= deployStatus
     ]
 
-data Status
-  = StatusStarted
-  | StatusSucceeded
-  | StatusFailed
-  | StatusTimedOut
-  deriving (Eq, Show)
-
-instance ToJSON Status where
-  toJSON StatusStarted = String "started"
-  toJSON StatusSucceeded = String "succeeded"
-  toJSON StatusFailed = String "failed"
-  toJSON StatusTimedOut = String "timed_out"
-
-newtype DeployId = DeployId Integer
-  deriving (Eq, Num, Ord, Show)
-
-instance FromJSON DeployId where
-  parseJSON = withObject "DeployId" $ \o ->
-    DeployId <$> o .: "deploy_id"
-
 mkDeploy
   :: (HasSettings m, MonadIO m)
   => Revision
@@ -597,6 +575,34 @@ mkDeploy revision = do
     , deployComment = Nothing
     , deployStatus = Just StatusSucceeded
     }
+
+data Status
+  = StatusStarted
+  | StatusSucceeded
+  | StatusFailed
+  | StatusTimedOut
+  deriving (Eq, Show)
+
+instance ToJSON Status where
+  toJSON StatusStarted = String "started"
+  toJSON StatusSucceeded = String "succeeded"
+  toJSON StatusFailed = String "failed"
+  toJSON StatusTimedOut = String "timed_out"
+
+--------------------------------------------------------------------------------
+-- Deploy / Response
+--------------------------------------------------------------------------------
+
+newtype DeployId = DeployId Integer
+  deriving (Eq, Num, Ord, Show)
+
+instance FromJSON DeployId where
+  parseJSON = withObject "DeployId" $ \o ->
+    DeployId <$> o .: "deploy_id"
+
+--------------------------------------------------------------------------------
+-- Deploy / Endpoints
+--------------------------------------------------------------------------------
 
 -- | Tracks a deploy in Rollbar.
 --
@@ -616,6 +622,7 @@ reportDeploy deploy =
 
 --------------------------------------------------------------------------------
 -- Internal Functions
+--------------------------------------------------------------------------------
 
 rollbar
   :: ( HasSettings m
