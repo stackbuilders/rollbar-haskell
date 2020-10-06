@@ -122,6 +122,20 @@ spec = do
 
           itemId `shouldSatisfy` const True
 
+      context "PayloadMessage" $
+        it "returns ItemId" $ \settings -> do
+          itemId <- runRollbar settings $ do
+            item <- mkItem $ PayloadMessage $ Message
+              { messageBody = "Request over threshold of 10 seconds"
+              , messageMetadata = HM.fromList
+                  [ ("route", "home#index")
+                  , ("time_elapsed", Number 15.23)
+                  ]
+              }
+            createItem item
+
+          itemId `shouldSatisfy` const True
+
     describe "reportDeploy" $
       it "returns DeployId" $ \settings -> do
         deployId <- runRollbar settings $ do

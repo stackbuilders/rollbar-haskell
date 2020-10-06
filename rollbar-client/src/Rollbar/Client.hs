@@ -36,6 +36,7 @@ module Rollbar.Client
   , Frame(..)
   , Exception(..)
   , Request(..)
+  , Message(..)
   , Server(..)
   , Notifier(..)
   , ItemId(..)
@@ -251,6 +252,9 @@ ping = do
 --------------------------------------------------------------------------------
 -- $item
 
+--------------------------------------------------------------------------------
+-- Item / Types / Request
+
 newtype Item = Item
   { itemData :: Data
   } deriving (Eq, Show)
@@ -294,7 +298,7 @@ instance ToJSON Data where
     , "notifier" .= dataNotifier
     ]
 
-data Body = Body
+newtype Body = Body
   { -- telemetry
     bodyPayload :: Payload
   } deriving (Eq, Show)
@@ -304,6 +308,7 @@ instance ToJSON Body where
     [ case bodyPayload of
         (PayloadTrace trace) -> ("trace", toJSON trace)
         (PayloadTraceChain traceChain) -> ("trace_chain", toJSON traceChain)
+        (PayloadMessage message) -> ("message", toJSON message)
     ]
 
 data Request = Request
@@ -334,6 +339,7 @@ instance ToJSON Request where
 data Payload
   = PayloadTrace Trace
   | PayloadTraceChain [Trace]
+  | PayloadMessage Message
   deriving (Eq, Show)
 
 data Trace = Trace
@@ -397,6 +403,15 @@ instance ToJSON Exception where
     , "description" .= exceptionDescription
     ]
 
+data Message = Message
+  { messageBody :: Text
+  , messageMetadata :: Object
+  } deriving (Eq, Show)
+
+instance ToJSON Message where
+  toJSON Message{..} = Object $
+    HM.insert "body" (toJSON messageBody) messageMetadata
+
 data Server = Server
   { serverCpu :: Maybe Text
   , serverHost :: Maybe Text
@@ -425,12 +440,18 @@ instance ToJSON Notifier where
     , "version" .= notifierVersion
     ]
 
+--------------------------------------------------------------------------------
+-- Item / Types / Response
+
 newtype ItemId = ItemId Text
   deriving (Eq, Show)
 
 instance FromJSON ItemId where
   parseJSON = withObject "ItemId" $ \o ->
     ItemId <$> o .: "uuid"
+
+--------------------------------------------------------------------------------
+-- Item / Smart Constructors
 
 mkItem
   :: (HasSettings m, MonadIO m)
@@ -464,6 +485,7 @@ mkData payload = do
     , dataNotifier = Just defaultNotifier
     }
 
+-- | Builds a Rollbar 'Exception' based on 'E.SomeException'.
 mkException :: E.SomeException -> Exception
 mkException ex = Exception
   { exceptionClass = T.pack $ E.displayException ex
@@ -471,6 +493,7 @@ mkException ex = Exception
   , exceptionDescription = Nothing
   }
 
+-- | Returns information about this package such as name and version.
 defaultNotifier :: Notifier
 defaultNotifier = Notifier
   { notifierName = "rollbar-client"
