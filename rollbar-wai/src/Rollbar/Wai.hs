@@ -2,6 +2,7 @@
 
 module Rollbar.Wai
   ( rollbarOnException
+  , rollbarOnExceptionWith
   ) where
 
 import qualified Data.CaseInsensitive as CI
@@ -25,11 +26,21 @@ rollbarOnException
   -> Maybe W.Request
   -> SomeException
   -> m ()
-rollbarOnException settings mreq ex = void $ liftIO $ forkIO $
-  runRollbar settings $ do
-    idata <- mkData $ PayloadTrace $ Trace [] $ mkException ex
-    mdreq <- mapM mkRequest mreq
-    void $ createItem $ Item idata { dataRequest = mdreq }
+rollbarOnException settings = rollbarOnExceptionWith runner (void . createItem)
+  where
+    runner = void . liftIO . forkIO . runRollbar settings
+
+rollbarOnExceptionWith
+  :: (HasSettings m, MonadIO m, MonadIO n)
+  => (m () -> n ())
+  -> (Item -> m ())
+  -> Maybe W.Request
+  -> SomeException
+  -> n ()
+rollbarOnExceptionWith runner f mreq ex = runner $ do
+  idata <- mkData $ PayloadTrace $ Trace [] $ mkException ex
+  mdreq <- mapM mkRequest mreq
+  f $ Item idata { dataRequest = mdreq }
 
 mkRequest :: MonadIO m => W.Request -> m Request
 mkRequest req = liftIO $ do

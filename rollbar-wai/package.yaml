@@ -71,4 +71,15 @@ tests:
       - -rtsopts
       - -with-rtsopts=-N
     dependencies:
+      - aeson
+      - hspec >= 2.7 && < 3
+      - mtl
+      - process
+      - rollbar-client
       - rollbar-wai
+      - text
+      - unordered-containers
+      - wai
+      - warp
+    build-tools:
+      - hspec-discover:hspec-discover >= 2.7 && < 3
