@@ -33,12 +33,7 @@ spec =
       itemRef <- newIORef Nothing
       let warpSettings = W.setOnException
             ( rollbarOnExceptionWith
-                ( runner settings
-                    { settingsRequestModifiers =
-                        [ IncludeHeaders ["Accept", "Host"]
-                        ]
-                    }
-                )
+                (runner settings)
                 (createItemFake itemRef)
             )
             W.defaultSettings

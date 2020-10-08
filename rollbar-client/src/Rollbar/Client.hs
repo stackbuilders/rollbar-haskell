@@ -17,7 +17,8 @@ module Rollbar.Client
   , Environment(..)
   , Revision(..)
   , getRevision
-  , RequestModifier(..)
+  , RequestModifiers(..)
+  , defaultRequestModifiers
   , getRequestModifier
   -- ** Top Functions
   , withRollbar
@@ -100,7 +101,7 @@ data Settings = Settings
   { settingsToken :: Token
   , settingsEnvironment :: Environment
   , settingsRevision :: Maybe Revision
-  , settingsRequestModifiers :: [RequestModifier]
+  , settingsRequestModifiers :: RequestModifiers
   } deriving (Eq, Show)
 
 instance FromJSON Settings where
@@ -108,7 +109,7 @@ instance FromJSON Settings where
     Settings <$> o .: "token"
              <*> o .: "environment"
              <*> o .:? "revision" .!= Nothing
-             <*> o .:? "request_modifiers" .!= []
+             <*> o .:? "request_modifiers" .!= defaultRequestModifiers
 
 -- | Reads 'Settings' from a YAML file.
 readSettings :: MonadIO m => FilePath -> m Settings
@@ -138,42 +139,52 @@ getRevision = do
   where
     mkRevision = Revision . T.stripEnd . T.pack
 
-data RequestModifier
-  = ExcludeHeaders [Text]
-  | ExcludeParams [Text]
-  | IncludeHeaders [Text]
-  | IncludeParams [Text]
-  deriving (Eq, Show)
+data RequestModifiers = RequestModifiers
+  { requestModifiersExcludeHeaders :: [Text]
+  , requestModifiersExcludeParams :: [Text]
+  , requestModifiersIncludeHeaders :: [Text]
+  , requestModifiersIncludeParams :: [Text]
+  } deriving (Eq, Show)
 
-instance FromJSON RequestModifier where
-  parseJSON = withObject "RequestModifier" $ \o ->
-    parseExcludeHeaders o <|> parseExcludeParams o
-    where
-      parseExcludeHeaders o = ExcludeHeaders <$> o .: "exclude_headers"
-      parseExcludeParams o = ExcludeParams <$> o .: "exclude_params"
-      parseIncludeHeaders o = IncludeHeaders <$> o .: "include_headers"
-      parseIncludeParams o = IncludeParams <$> o .: "include_params"
+instance FromJSON RequestModifiers where
+  parseJSON = withObject "RequestModifiers" $ \o ->
+    RequestModifiers <$> o .:? "exclude_headers" .!= []
+                     <*> o .:? "exclude_params" .!= []
+                     <*> o .:? "include_headers" .!= []
+                     <*> o .:? "include_params" .!= []
+
+defaultRequestModifiers :: RequestModifiers
+defaultRequestModifiers = RequestModifiers
+  { requestModifiersExcludeHeaders = []
+  , requestModifiersExcludeParams = []
+  , requestModifiersIncludeHeaders = []
+  , requestModifiersIncludeParams = []
+  }
 
 getRequestModifier :: (HasSettings m, Monad m) => m (Request -> Request)
 getRequestModifier = do
-  modifiers <- settingsRequestModifiers <$> getSettings
-  return $ appEndo $ mconcat $ fmap toModifier modifiers
-  where
-    toModifier (ExcludeHeaders names) = excludeHeaders names
-    toModifier (ExcludeParams names) = excludeParams names
-    toModifier (IncludeHeaders names) = includeHeaders names
-    toModifier (IncludeParams names) = includeParams names
+  RequestModifiers{..} <- settingsRequestModifiers <$> getSettings
+  return $ appEndo $ mconcat
+    [ excludeHeaders requestModifiersExcludeHeaders
+    , excludeParams requestModifiersExcludeParams
+    , includeHeaders requestModifiersIncludeHeaders
+    , includeParams requestModifiersIncludeParams
+    ]
 
 excludeHeaders :: [Text] -> Endo Request
+excludeHeaders [] = mempty
 excludeHeaders names = withHeaders $ filter $ \(key, _) -> key `notElem` names
 
 excludeParams :: [Text] -> Endo Request
+excludeParams [] = mempty
 excludeParams names = withParams $ filter $ \(key, _) -> key `notElem` names
 
 includeHeaders :: [Text] -> Endo Request
+includeHeaders [] = mempty
 includeHeaders names = withHeaders $ filter $ \(key, _) -> key `elem` names
 
 includeParams :: [Text] -> Endo Request
+includeParams [] = mempty
 includeParams names = withParams $ filter $ \(key, _) -> key `elem` names
 
 withHeaders :: ([(Text, Value)] -> [(Text, Value)]) -> Endo Request

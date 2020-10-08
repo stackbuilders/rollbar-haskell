@@ -32,11 +32,11 @@ instance HasSettings (Reader Settings) where
 spec :: Spec
 spec = do
   describe "getRequestModifier" $ do
-    let mkSettings modifier = Settings
+    let mkSettings modifiers = Settings
           { settingsToken = Token "invalid-token"
           , settingsEnvironment = Environment "test"
           , settingsRevision = Nothing
-          , settingsRequestModifiers = [modifier]
+          , settingsRequestModifiers = modifiers
           }
         request = Request
           { requestUrl = "http://example.com"
@@ -56,33 +56,33 @@ spec = do
           , requestUserIp = ""
           }
 
-    context "ExcludeHeaders" $
-      it "excludes the headers not matching the given names" $
-        let requestModifier = runReader getRequestModifier $ mkSettings $
-              ExcludeHeaders ["Secret"]
-        in requestModifier request `shouldBe` request
-             { requestHeaders = HM.fromList [("Host", "example.com")] }
+    it "excludes the headers not matching the given names" $
+      let requestModifier = runReader getRequestModifier $ mkSettings $
+            defaultRequestModifiers
+              { requestModifiersExcludeHeaders = ["Secret"] }
+      in requestModifier request `shouldBe` request
+           { requestHeaders = HM.fromList [("Host", "example.com")] }
 
-    context "ExcludeParams" $
-      it "excludes the params not matching the given names" $
-        let requestModifier = runReader getRequestModifier $ mkSettings $
-              ExcludeParams ["password"]
-        in requestModifier request `shouldBe` request
-             { requestParams = HM.fromList [("user", "John Doe")] }
+    it "excludes the params not matching the given names" $
+      let requestModifier = runReader getRequestModifier $ mkSettings $
+            defaultRequestModifiers
+              { requestModifiersExcludeParams = ["password"] }
+      in requestModifier request `shouldBe` request
+           { requestParams = HM.fromList [("user", "John Doe")] }
 
-    context "IncludeHeaders" $
-      it "includes only the headers matching the given names" $
-        let requestModifier = runReader getRequestModifier $ mkSettings $
-              IncludeHeaders ["Host"]
-        in requestModifier request `shouldBe` request
-             { requestHeaders = HM.fromList [("Host", "example.com")] }
+    it "includes only the headers matching the given names" $
+      let requestModifier = runReader getRequestModifier $ mkSettings $
+            defaultRequestModifiers
+              { requestModifiersIncludeHeaders = ["Host"] }
+      in requestModifier request `shouldBe` request
+           { requestHeaders = HM.fromList [("Host", "example.com")] }
 
-    context "IncludeParams" $
-      it "includes only the headers matching the given names" $
-        let requestModifier = runReader getRequestModifier $ mkSettings $
-              IncludeParams ["user"]
-        in requestModifier request `shouldBe` request
-             { requestParams = HM.fromList [("user", "John Doe")] }
+    it "includes only the params matching the given names" $
+      let requestModifier = runReader getRequestModifier $ mkSettings $
+            defaultRequestModifiers
+              { requestModifiersIncludeParams = ["user"] }
+      in requestModifier request `shouldBe` request
+           { requestParams = HM.fromList [("user", "John Doe")] }
 
   describe "defaultNotifier" $
     it "matches the package name and version" $ do
