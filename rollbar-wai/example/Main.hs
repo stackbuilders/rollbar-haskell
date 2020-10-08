@@ -4,6 +4,7 @@ module Main
 
 import Network.Wai
 import Network.Wai.Handler.Warp
+import Rollbar.Client (readSettings)
 import Rollbar.Wai
 
 main :: IO ()
