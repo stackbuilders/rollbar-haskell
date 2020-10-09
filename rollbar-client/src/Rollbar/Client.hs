@@ -70,6 +70,8 @@ import Control.Monad.IO.Class
 import Control.Monad.Reader
 import Data.Aeson
 import Data.ByteString (ByteString)
+import Data.List.NonEmpty (NonEmpty)
+import Data.Maybe (catMaybes)
 import Data.Monoid
 import Data.Proxy
 import Data.Text (Text)
@@ -140,51 +142,47 @@ getRevision = do
     mkRevision = Revision . T.stripEnd . T.pack
 
 data RequestModifiers = RequestModifiers
-  { requestModifiersExcludeHeaders :: [Text]
-  , requestModifiersExcludeParams :: [Text]
-  , requestModifiersIncludeHeaders :: [Text]
-  , requestModifiersIncludeParams :: [Text]
+  { requestModifiersExcludeHeaders :: Maybe (NonEmpty Text)
+  , requestModifiersExcludeParams :: Maybe (NonEmpty Text)
+  , requestModifiersIncludeHeaders :: Maybe (NonEmpty Text)
+  , requestModifiersIncludeParams :: Maybe (NonEmpty Text)
   } deriving (Eq, Show)
 
 instance FromJSON RequestModifiers where
   parseJSON = withObject "RequestModifiers" $ \o ->
-    RequestModifiers <$> o .:? "exclude_headers" .!= []
-                     <*> o .:? "exclude_params" .!= []
-                     <*> o .:? "include_headers" .!= []
-                     <*> o .:? "include_params" .!= []
+    RequestModifiers <$> o .:? "exclude_headers" .!= Nothing
+                     <*> o .:? "exclude_params" .!= Nothing
+                     <*> o .:? "include_headers" .!= Nothing
+                     <*> o .:? "include_params" .!= Nothing
 
 defaultRequestModifiers :: RequestModifiers
 defaultRequestModifiers = RequestModifiers
-  { requestModifiersExcludeHeaders = []
-  , requestModifiersExcludeParams = []
-  , requestModifiersIncludeHeaders = []
-  , requestModifiersIncludeParams = []
+  { requestModifiersExcludeHeaders = Nothing
+  , requestModifiersExcludeParams = Nothing
+  , requestModifiersIncludeHeaders = Nothing
+  , requestModifiersIncludeParams = Nothing
   }
 
 getRequestModifier :: (HasSettings m, Monad m) => m (Request -> Request)
 getRequestModifier = do
   RequestModifiers{..} <- settingsRequestModifiers <$> getSettings
-  return $ appEndo $ mconcat
-    [ excludeHeaders requestModifiersExcludeHeaders
-    , excludeParams requestModifiersExcludeParams
-    , includeHeaders requestModifiersIncludeHeaders
-    , includeParams requestModifiersIncludeParams
+  return $ appEndo $ mconcat $ catMaybes
+    [ excludeHeaders <$> requestModifiersExcludeHeaders
+    , excludeParams <$> requestModifiersExcludeParams
+    , includeHeaders <$> requestModifiersIncludeHeaders
+    , includeParams <$> requestModifiersIncludeParams
     ]
 
-excludeHeaders :: [Text] -> Endo Request
-excludeHeaders [] = mempty
+excludeHeaders :: NonEmpty Text -> Endo Request
 excludeHeaders names = withHeaders $ filter $ \(key, _) -> key `notElem` names
 
-excludeParams :: [Text] -> Endo Request
-excludeParams [] = mempty
+excludeParams :: NonEmpty Text -> Endo Request
 excludeParams names = withParams $ filter $ \(key, _) -> key `notElem` names
 
-includeHeaders :: [Text] -> Endo Request
-includeHeaders [] = mempty
+includeHeaders :: NonEmpty Text -> Endo Request
 includeHeaders names = withHeaders $ filter $ \(key, _) -> key `elem` names
 
-includeParams :: [Text] -> Endo Request
-includeParams [] = mempty
+includeParams :: NonEmpty Text -> Endo Request
 includeParams names = withParams $ filter $ \(key, _) -> key `elem` names
 
 withHeaders :: ([(Text, Value)] -> [(Text, Value)]) -> Endo Request
