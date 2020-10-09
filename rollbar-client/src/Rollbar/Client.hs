@@ -167,33 +167,22 @@ getRequestModifier :: (HasSettings m, Monad m) => m (Request -> Request)
 getRequestModifier = do
   RequestModifiers{..} <- settingsRequestModifiers <$> getSettings
   return $ appEndo $ mconcat $ catMaybes
-    [ excludeHeaders <$> requestModifiersExcludeHeaders
-    , excludeParams <$> requestModifiersExcludeParams
-    , includeHeaders <$> requestModifiersIncludeHeaders
-    , includeParams <$> requestModifiersIncludeParams
+    [ withHeaders . excludeNames <$> requestModifiersExcludeHeaders
+    , withParams . excludeNames <$> requestModifiersExcludeParams
+    , withHeaders . includeNames <$> requestModifiersIncludeHeaders
+    , withParams . includeNames <$> requestModifiersIncludeParams
     ]
+  where
+    excludeNames names = HM.filterWithKey $ \name _ -> name `notElem` names
+    includeNames names = HM.filterWithKey $ \name _ -> name `elem` names
 
-excludeHeaders :: NonEmpty Text -> Endo Request
-excludeHeaders names = withHeaders $ filter $ \(key, _) -> key `notElem` names
+withHeaders :: (Object -> Object) -> Endo Request
+withHeaders f = Endo $ \request -> request
+  { requestHeaders = f $ requestHeaders request }
 
-excludeParams :: NonEmpty Text -> Endo Request
-excludeParams names = withParams $ filter $ \(key, _) -> key `notElem` names
-
-includeHeaders :: NonEmpty Text -> Endo Request
-includeHeaders names = withHeaders $ filter $ \(key, _) -> key `elem` names
-
-includeParams :: NonEmpty Text -> Endo Request
-includeParams names = withParams $ filter $ \(key, _) -> key `elem` names
-
-withHeaders :: ([(Text, Value)] -> [(Text, Value)]) -> Endo Request
-withHeaders f = Endo $ \request ->
-  let headers = requestHeaders request
-  in request { requestHeaders = HM.fromList $ f $ HM.toList headers }
-
-withParams :: ([(Text, Value)] -> [(Text, Value)]) -> Endo Request
-withParams f = Endo $ \request ->
-  let params = requestParams request
-  in request { requestParams = HM.fromList $ f $ HM.toList params }
+withParams :: (Object -> Object) -> Endo Request
+withParams f = Endo $ \request -> request
+  { requestParams = f $ requestParams request }
 
 --------------------------------------------------------------------------------
 -- Responses
