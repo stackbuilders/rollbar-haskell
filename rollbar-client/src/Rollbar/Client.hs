@@ -155,6 +155,8 @@ instance FromJSON RequestModifiers where
                      <*> o .:? "include_headers" .!= Nothing
                      <*> o .:? "include_params" .!= Nothing
 
+-- | Returns an empty 'RequestModifiers', the function produced by
+-- 'getRequestModifier' given this values is equivalent to 'id'.
 defaultRequestModifiers :: RequestModifiers
 defaultRequestModifiers = RequestModifiers
   { requestModifiersExcludeHeaders = Nothing
@@ -163,6 +165,8 @@ defaultRequestModifiers = RequestModifiers
   , requestModifiersIncludeParams = Nothing
   }
 
+-- | Pulls 'RequestModifiers' out of 'Settings' and build a list of 'Endo
+-- Request' which are folded as a single request modifier function.
 getRequestModifier :: (HasSettings m, Monad m) => m (Request -> Request)
 getRequestModifier = do
   RequestModifiers{..} <- settingsRequestModifiers <$> getSettings
@@ -173,16 +177,12 @@ getRequestModifier = do
     , withParams . includeNames <$> requestModifiersIncludeParams
     ]
   where
+    withHeaders f = Endo $ \request -> request
+      { requestHeaders = f $ requestHeaders request }
+    withParams f = Endo $ \request -> request
+      { requestParams = f $ requestParams request }
     excludeNames names = HM.filterWithKey $ \name _ -> name `notElem` names
     includeNames names = HM.filterWithKey $ \name _ -> name `elem` names
-
-withHeaders :: (Object -> Object) -> Endo Request
-withHeaders f = Endo $ \request -> request
-  { requestHeaders = f $ requestHeaders request }
-
-withParams :: (Object -> Object) -> Endo Request
-withParams f = Endo $ \request -> request
-  { requestParams = f $ requestParams request }
 
 --------------------------------------------------------------------------------
 -- Responses
@@ -221,8 +221,8 @@ withRollbar settings f = f `catch` \ex -> do
 
 -- | Run a computation in 'Rollbar' monad.
 runRollbar :: MonadIO m => Settings -> Rollbar a -> m a
-runRollbar settings (Rollbar f) =
-  runReq defaultHttpConfig $ runReaderT f settings
+runRollbar settings (Rollbar f) = runReq defaultHttpConfig $
+  runReaderT f settings
 
 --------------------------------------------------------------------------------
 -- Ping
