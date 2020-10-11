@@ -2,6 +2,18 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards #-}
 
+{-|
+Module: Rollbar.Client.Item
+Copyright: (c) 2020 Stack Builders Inc.
+License: MIT
+Maintainer: Sebastián Estrella <sestrella@stackbuilders.com>
+
+Most of the documentation in this module comes from Rollbar's official
+documentation.
+
+<https://explorer.docs.rollbar.com/#operation/create-item>
+-}
+
 module Rollbar.Client.Item
   ( -- * Requests
     Item(..)
@@ -53,6 +65,7 @@ instance ToJSON Item where
     [ "data" .= itemData
     ]
 
+-- | Builds an 'Item' based on a 'Payload'.
 mkItem
   :: (HasSettings m, MonadIO m)
   => Payload
@@ -61,24 +74,47 @@ mkItem payload = Item <$> mkData payload
 
 data Data = Data
   { dataEnvironment :: Environment
+    -- ^ The name of the environment in which this occurrence was seen. A
+    -- string up to 255 characters. For best results, use "production" or
+    -- "prod" for your production environment.  You don't need to configure
+    -- anything in the Rollbar UI for new environment names; we'll detect them
+    -- automatically.
   , dataBody :: Body
+    -- ^ The main data being sent. It can either be a message, an exception, or
+    -- a crash report.
   , dataLevel :: Maybe Level
+    -- ^ The severity level. One of: "critical", "error", "warning", "info",
+    -- "debug" Defaults to "error" for exceptions and "info" for messages.  The
+    -- level of the *first* occurrence of an item is used as the item's level.
   -- timestamp
   -- code_version
   , dataPlatform :: Maybe Text
+    -- ^ The platform on which this occurred. Meaningful platform names:
+    -- "browser", "android", "ios", "flash", "client", "heroku",
+    -- "google-app-engine" If this is a client-side event, be sure to specify
+    -- the platform and use a post_client_item access token.
   , dataLanguage :: Maybe Text
+    -- ^ The name of the language your code is written in.  This can affect the
+    -- order of the frames in the stack trace. The following languages set the
+    -- most recent call first - 'ruby', 'javascript', 'php', 'java',
+    -- 'objective-c', 'lua' It will also change the way the individual frames
+    -- are displayed, with what is most consistent with users of the language.
   , dataFramework :: Maybe Text
+    -- ^ The name of the framework your code uses.
   -- context
   -- request
   , dataRequest :: Maybe Request
+    -- ^ Data about the request this event occurred in.
   -- person
   , dataServer :: Maybe Server
+    -- ^ Data about the server related to this event.
   -- client
   -- custom
   -- fingerprint
   -- title
   -- uuid
   , dataNotifier :: Maybe Notifier
+    -- ^ Describes the library used to send this event.
   } deriving (Eq, Show)
 
 instance ToJSON Data where
@@ -94,6 +130,7 @@ instance ToJSON Data where
     , "notifier" .= dataNotifier
     ]
 
+-- | Builds an 'Data' based on a 'Payload'.
 mkData
   :: (HasSettings m, MonadIO m)
   => Payload
@@ -135,11 +172,18 @@ instance ToJSON Body where
 data Payload
   = PayloadTrace Trace
   | PayloadTraceChain [Trace]
+    -- ^ Used for exceptions with inner exceptions or causes.
   | PayloadMessage Message
   deriving (Eq, Show)
 
+--------------------------------------------------------------------------------
+-- Option 1: "trace"
+--------------------------------------------------------------------------------
+
 data Trace = Trace
   { traceFrames :: [Frame]
+    -- ^ A list of stack frames, ordered such that the most recent call is last
+    -- in the list.
   , traceException :: Exception
   } deriving (Eq, Show)
 
@@ -151,16 +195,20 @@ instance ToJSON Trace where
 
 data Frame = Frame
   { frameFilename :: Text
+    -- ^ The filename including its full path.
   , frameLineno :: Maybe Integer
+    -- ^ The line number as an integer.
   , frameColno :: Maybe Integer
+    -- ^ The column number as an integer.
   , frameMethod :: Maybe Text
+    -- ^ The method or function name.
   , frameCode :: Maybe Text
+    -- ^ The line of code.
   , frameClassName :: Maybe Text
+    -- ^ A string containing the class name.  Used in the UI when the payload's
+    -- top-level "language" key has the value "java".
   , frameContext :: Maybe Context
-  -- argspec
-  -- varargspec
-  -- keywordspec
-  -- locals
+    -- ^ Additional code before and after the "code" line.
   } deriving (Eq, Show)
 
 instance ToJSON Frame where
@@ -174,9 +222,12 @@ instance ToJSON Frame where
     , "context" .= frameContext
     ]
 
+-- | Additional code before and after the "code" line.
 data Context = Context
   { contextPre :: [Text]
+    -- ^ List of lines of code before the "code" line.
   , contextPost :: [Text]
+    -- ^ List of lines of code after the "code" line.
   } deriving (Eq, Show)
 
 instance ToJSON Context where
@@ -185,10 +236,16 @@ instance ToJSON Context where
     , "post" .= contextPost
     ]
 
+-- | An object describing the exception instance.
 data Exception = Exception
   { exceptionClass :: Text
+    -- ^ The exception class name.
   , exceptionMessage :: Maybe Text
+    -- ^ The exception message, as a string.
   , exceptionDescription :: Maybe Text
+    -- ^ An alternate human-readable string describing the exception Usually
+    -- the original exception message will have been machine-generated; you can
+    -- use this to send something custom.
   } deriving (Eq, Show)
 
 instance ToJSON Exception where
