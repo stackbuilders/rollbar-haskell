@@ -12,8 +12,6 @@ module Rollbar.Client.Settings
   , getRevision
   , RequestModifiers(..)
   , defaultRequestModifiers
-  , Request(..)
-  , getRequestModifier
   ) where
 
 import qualified Data.HashMap.Strict as HM
@@ -24,8 +22,6 @@ import Control.Monad.IO.Class (MonadIO(..))
 import Data.Aeson
 import Data.ByteString (ByteString)
 import Data.List.NonEmpty
-import Data.Maybe (catMaybes)
-import Data.Monoid (Endo(..))
 import Data.Text (Text)
 import Data.Yaml.Config (loadYamlSettings, requireEnv)
 import System.Process
@@ -98,47 +94,3 @@ defaultRequestModifiers = RequestModifiers
   , requestModifiersIncludeHeaders = Nothing
   , requestModifiersIncludeParams = Nothing
   }
-
-data Request = Request
-  { requestUrl :: Text
-  , requestMethod :: Text
-  , requestHeaders :: Object
-  , requestParams :: Object
-  , requestGet :: Object
-  , requestQueryStrings :: Text
-  , requestPost :: Object
-  , requestBody :: Text
-  , requestUserIp :: Text
-  } deriving (Eq, Show)
-
-instance ToJSON Request where
-  toJSON Request{..} = object
-    [ "url" .= requestUrl
-    , "method" .= requestMethod
-    , "headers" .= requestHeaders
-    , "params" .= requestParams
-    , "GET" .= requestGet
-    , "query_string" .= requestQueryStrings
-    , "POST" .= requestPost
-    , "body" .= requestBody
-    , "user_ip" .= requestUserIp
-    ]
-
--- | Pulls 'RequestModifiers' out of 'Settings' and build a list of 'Endo
--- Request' which are folded as a single request modifier function.
-getRequestModifier :: (HasSettings m, Monad m) => m (Request -> Request)
-getRequestModifier = do
-  RequestModifiers{..} <- settingsRequestModifiers <$> getSettings
-  return $ appEndo $ mconcat $ catMaybes
-    [ withHeaders . excludeNames <$> requestModifiersExcludeHeaders
-    , withParams . excludeNames <$> requestModifiersExcludeParams
-    , withHeaders . includeNames <$> requestModifiersIncludeHeaders
-    , withParams . includeNames <$> requestModifiersIncludeParams
-    ]
-  where
-    withHeaders f = Endo $ \request -> request
-      { requestHeaders = f $ requestHeaders request }
-    withParams f = Endo $ \request -> request
-      { requestParams = f $ requestParams request }
-    excludeNames names = HM.filterWithKey $ \name _ -> name `notElem` names
-    includeNames names = HM.filterWithKey $ \name _ -> name `elem` names
