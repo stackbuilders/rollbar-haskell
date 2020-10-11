@@ -2,7 +2,32 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards #-}
 
-module Rollbar.Client.Item where
+module Rollbar.Client.Item
+  ( -- * Requests
+    Item(..)
+  , mkItem
+  , Data(..)
+  , mkData
+  , Body(..)
+  , Payload(..)
+  , Trace(..)
+  , Frame(..)
+  , Context(..)
+  , Exception(..)
+  , mkException
+  , Message(..)
+  , Level(..)
+  , mkLevel
+  , Request(..)
+  , getRequestModifier
+  , Server(..)
+  , Notifier(..)
+  , defaultNotifier
+    -- * Responses
+  , ItemId(..)
+    -- * Endpoints
+  , createItem
+  ) where
 
 import qualified Control.Exception as E
 import qualified Data.HashMap.Strict as HM
@@ -154,7 +179,6 @@ data Context = Context
   , contextPost :: [Text]
   } deriving (Eq, Show)
 
-
 instance ToJSON Context where
   toJSON Context{..} = object
     [ "pre" .= contextPre
@@ -298,6 +322,17 @@ instance FromJSON ItemId where
     ItemId <$> o .: "uuid"
 
 -- | Reports an occurrence (exception or message) to Rollbar.
+--
+-- __Example__
+--
+-- > settings <- readSettings "rollbar.yaml"
+-- > runRollbar settings $ do
+-- >   item <- mkItem $ PayloadTrace $ Trace [] $ Exception
+-- >     { exceptionClass = "NameError"
+-- >     , exceptionMessage = Just "global name 'foo' is not defined"
+-- >     , exceptionDescription = Just "Something went wrong while trying to save the user object"
+-- >     }
+-- >   createItem item
 --
 -- __Reference__
 --

@@ -3,10 +3,13 @@
 {-# LANGUAGE RecordWildCards #-}
 
 module Rollbar.Client.Deploy
-  ( Deploy(..)
+  ( -- * Requests
+    Deploy(..)
   , mkDeploy
   , Status(..)
+    -- * Responses
   , DeployId(..)
+    -- * Endpoints
   , reportDeploy
   ) where
 
@@ -76,6 +79,13 @@ instance FromJSON DeployId where
     DeployId <$> o .: "deploy_id"
 
 -- | Tracks a deploy in Rollbar.
+--
+-- __Example__
+--
+-- > settings <- readSettings "rollbar.yaml"
+-- > runRollbar settings $ do
+-- >   deploy <- getRevision >>= mkDeploy
+-- >   reportDeploy deploy
 --
 -- __Reference__
 --

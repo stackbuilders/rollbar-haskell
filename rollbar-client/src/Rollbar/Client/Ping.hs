@@ -1,7 +1,9 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module Rollbar.Client.Ping
-  ( Pong(..)
+  ( -- * Requests
+    Pong(..)
+    -- * Endpoints
   , ping
   ) where
 
@@ -13,6 +15,11 @@ data Pong = Pong
   deriving (Eq, Show)
 
 -- | Pings Rollbar API server, on success returns 'Pong'.
+--
+-- __Example__
+--
+-- > settings <- readSettings "rollbar.yaml"
+-- > runRollbar settings ping
 --
 -- __Reference__
 --
