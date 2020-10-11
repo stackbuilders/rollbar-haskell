@@ -158,6 +158,8 @@ mkData payload = do
     , dataNotifier = defaultNotifier
     }
 
+-- | The main data being sent. It can either be a message, an exception, or a
+-- crash report.
 newtype Body = Body { bodyPayload :: Payload }
   deriving (Eq, Show)
 
@@ -172,13 +174,8 @@ instance ToJSON Body where
 data Payload
   = PayloadTrace Trace
   | PayloadTraceChain [Trace]
-    -- ^ Used for exceptions with inner exceptions or causes.
   | PayloadMessage Message
   deriving (Eq, Show)
-
---------------------------------------------------------------------------------
--- Option 1: "trace"
---------------------------------------------------------------------------------
 
 data Trace = Trace
   { traceFrames :: [Frame]
@@ -255,7 +252,7 @@ instance ToJSON Exception where
     , "description" .= exceptionDescription
     ]
 
--- | Builds a Rollbar 'Exception' based on 'E.SomeException'.
+-- | Builds a 'Exception' based on 'E.SomeException'.
 mkException :: E.SomeException -> Exception
 mkException ex = Exception
   { exceptionClass = T.pack $ E.displayException ex
@@ -272,6 +269,9 @@ instance ToJSON Message where
   toJSON Message{..} = Object $
     HM.insert "body" (toJSON messageBody) messageMetadata
 
+-- | The severity level. One of: "critical", "error", "warning", "info",
+-- "debug" Defaults to "error" for exceptions and "info" for messages. The
+-- level of the *first* occurrence of an item is used as the item's level.
 data Level
   = LevelCritical
   | LevelError
@@ -288,20 +288,33 @@ instance ToJSON Level where
     LevelInfo -> "info"
     LevelDebug -> "debug"
 
+-- | Builds a 'Level' based on a 'Payload'.
 mkLevel :: Payload -> Level
 mkLevel (PayloadMessage _) = LevelInfo
 mkLevel _ = LevelError
 
+-- | Data about the request this event occurred in.
 data Request = Request
   { requestUrl :: Text
+    -- ^ Full URL where this event occurred.
   , requestMethod :: Text
+    -- ^ The request method.
   , requestHeaders :: Object
+    -- ^ Object containing the request headers.
   , requestParams :: Object
+    -- ^ Any routing parameters (i.e. for use with Rails Routes).
   , requestGet :: Object
+    -- ^ Query string params.
   , requestQueryStrings :: Text
+    -- ^ The raw query string.
   , requestPost :: Object
+    -- ^ POST params.
   , requestBody :: Text
+    -- ^ The raw POST body.
   , requestUserIp :: Text
+    -- ^ Can also be the special value "$remote_ip", which will be replaced
+    -- with the source IP of the API request.  Will be indexed, as long as it
+    -- is a valid IPv4 address.
   } deriving (Eq, Show)
 
 instance ToJSON Request where
