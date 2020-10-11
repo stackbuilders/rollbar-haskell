@@ -113,7 +113,7 @@ data Data = Data
   -- fingerprint
   -- title
   -- uuid
-  , dataNotifier :: Maybe Notifier
+  , dataNotifier :: Notifier
     -- ^ Describes the library used to send this event.
   } deriving (Eq, Show)
 
@@ -155,7 +155,7 @@ mkData payload = do
         , serverBranch = Nothing
         , serverCodeVersion = Nothing
         }
-    , dataNotifier = Just defaultNotifier
+    , dataNotifier = defaultNotifier
     }
 
 newtype Body = Body { bodyPayload :: Payload }
