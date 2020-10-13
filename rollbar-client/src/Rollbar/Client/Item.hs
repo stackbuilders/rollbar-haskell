@@ -349,12 +349,19 @@ getRequestModifier = do
     excludeNames names = HM.filterWithKey $ \name _ -> name `notElem` names
     includeNames names = HM.filterWithKey $ \name _ -> name `elem` names
 
+-- | Data about the server related to this event.
 data Server = Server
   { serverCpu :: Maybe Text
+    -- ^ A string up to 255 characters.
   , serverHost :: Maybe Text
+    -- ^ The server hostname. Will be indexed.
   , serverRoot :: Maybe Text
+    -- ^ Path to the application code root, not including the final slash.
+    -- Used to collapse non-project code when displaying tracebacks.
   , serverBranch :: Maybe Text
+    -- ^ Name of the checked-out source control branch. Defaults to "master".
   , serverCodeVersion :: Maybe Text
+    -- ^ String describing the running code version on the server.
   } deriving (Eq, Show)
 
 instance ToJSON Server where
@@ -377,7 +384,7 @@ instance ToJSON Notifier where
     , "version" .= notifierVersion
     ]
 
--- | Returns information about this package such as name and version.
+-- | Returns information about this package such as the name and version.
 defaultNotifier :: Notifier
 defaultNotifier = Notifier
   { notifierName = "rollbar-client"
