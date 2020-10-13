@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 4c04a2e64c9934d01cae4000193d5900c3a65b64aa87a2e7edd1f69fbb9bc5fd
+-- hash: 5b29580f0d159913f212ca536ae1038f723d03ad286932613528fb73d95e5c4b
 
 name:           rollbar-client
 version:        0.1.0
@@ -36,12 +36,12 @@ flag example
 library
   exposed-modules:
       Rollbar.Client
+  other-modules:
       Rollbar.Client.Deploy
       Rollbar.Client.Internal
       Rollbar.Client.Item
       Rollbar.Client.Ping
       Rollbar.Client.Settings
-  other-modules:
       Paths_rollbar_client
   hs-source-dirs:
       src

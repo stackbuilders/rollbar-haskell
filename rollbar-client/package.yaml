@@ -40,6 +40,8 @@ library:
     - text
     - unordered-containers
     - yaml >= 0.11 && < 1
+  exposed-modules:
+    - Rollbar.Client
 
 executables:
   client-example:
