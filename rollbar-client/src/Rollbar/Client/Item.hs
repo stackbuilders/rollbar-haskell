@@ -253,9 +253,9 @@ instance ToJSON Exception where
     ]
 
 -- | Builds a 'Exception' based on 'E.SomeException'.
-mkException :: E.SomeException -> Exception
-mkException ex = Exception
-  { exceptionClass = T.pack $ E.displayException ex
+mkException :: E.Exception e => e -> Exception
+mkException e = Exception
+  { exceptionClass = T.pack $ E.displayException e
   , exceptionMessage = Nothing
   , exceptionDescription = Nothing
   }

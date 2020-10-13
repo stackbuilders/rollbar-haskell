@@ -38,12 +38,12 @@ instance HasSettings Rollbar where
 -- | Runs a computation, captures any 'E.SomeException' threw, and send it to
 -- Rollbar.
 withRollbar :: (MonadCatch m, MonadIO m) => Settings -> m a -> m a
-withRollbar settings f = f `catch` \ex -> do
+withRollbar settings f = f `catch` \e -> do
   void $ runRollbar settings $ do
-    item <- mkItem $ PayloadTrace $ Trace [] $ mkException ex
+    item <- mkItem $ PayloadTrace $ Trace [] $ mkException (e :: SomeException)
     createItem item
 
-  throwM ex
+  throwM e
 
 -- | Run a computation in 'Rollbar' monad.
 runRollbar :: MonadIO m => Settings -> Rollbar a -> m a
