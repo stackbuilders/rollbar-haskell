@@ -49,9 +49,9 @@ mkRequest req = liftIO $ do
     { requestUrl = T.decodeUtf8 $ mconcat
         [W.guessApproot req, W.rawPathInfo req, W.rawQueryString req]
     , requestMethod = T.decodeUtf8 $ W.requestMethod req
-    , requestHeaders = HM.fromList $ fmap toHeader $ W.requestHeaders req
+    , requestHeaders = HM.fromList $ toHeader <$> W.requestHeaders req
     , requestParams = mempty
-    , requestGet = HM.fromList $ fmap toQuery $ W.queryString req
+    , requestGet = HM.fromList $ toQuery <$> W.queryString req
     , requestQueryStrings = T.decodeUtf8 $ renderQuery False $ W.queryString req
     , requestPost = HM.fromList $ fmap toParam params
     , requestBody = ""
