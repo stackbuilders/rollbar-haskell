@@ -36,6 +36,7 @@ library:
     - rollbar-client
     - rollbar-wai
     - unliftio
+    - wai
     - yesod-core
 
 executables:
@@ -59,12 +60,19 @@ executables:
           buildable: false
 
 tests:
-  rollbar-yesod-test:
-    main:                Spec.hs
-    source-dirs:         test
+  spec:
+    main: Spec.hs
+    source-dirs: test
     ghc-options:
-    - -threaded
-    - -rtsopts
-    - -with-rtsopts=-N
+      - -threaded
+      - -rtsopts
+      - -with-rtsopts=-N
     dependencies:
-    - rollbar-yesod
+      - hspec
+      - rollbar-client
+      - rollbar-yesod
+      - yesod-core
+      - yesod-test
+      - wai
+    build-tools:
+      - hspec-discover:hspec-discover >= 2.7 && < 3

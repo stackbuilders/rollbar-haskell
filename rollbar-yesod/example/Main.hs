@@ -1,14 +1,16 @@
+{-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE QuasiQuotes #-}
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE TypeFamilies #-}
+{-# LANGUAGE TypeSynonymInstances #-}
 
 module Main
   ( main
   ) where
 
 import Network.Wai.Handler.Warp (run)
-import Rollbar.Client (Settings, readSettings)
+import Rollbar.Client
 import Rollbar.Yesod (rollbarYesodMiddleware)
 import Yesod.Core
 
@@ -18,10 +20,11 @@ mkYesod "App" [parseRoutes|
   / RootR GET
 |]
 
+instance HasSettings Handler where
+  getSettings = getsYesod appRollbarSettings
+
 instance Yesod App where
-  yesodMiddleware handler = do
-    settings <- getsYesod appRollbarSettings
-    rollbarYesodMiddleware settings $ defaultYesodMiddleware handler
+  yesodMiddleware = rollbarYesodMiddleware . defaultYesodMiddleware
 
 getRootR :: Handler ()
 getRootR = error "Boom"
