@@ -48,10 +48,10 @@ getSuccessR :: Handler ()
 getSuccessR = return ()
 
 spec :: Spec
-spec =
+spec = withApp $
   describe "rollbarYesodMiddlewareWith" $ do
     context "when there is an error" $
-      withApp $ yit "triggers a call to Rollbar" $ do
+      it "triggers a call to Rollbar" $ do
         get ErrorR
         statusIs 500
         requestRef <- appRequestRef <$> getTestYesod
@@ -60,7 +60,7 @@ spec =
           request `shouldSatisfy` isJust
 
     context "when there is no error" $
-      withApp $ yit "does not trigger a call to Rollbar" $ do
+      it "does not trigger a call to Rollbar" $ do
         get SuccessR
         statusIs 200
         requestRef <- appRequestRef <$> getTestYesod
@@ -69,11 +69,11 @@ spec =
           request `shouldSatisfy` isNothing
 
 
-withApp :: YesodSpec App -> Spec
-withApp yspec = do
-  app <- runIO getApplication
-  yesodSpec app yspec
+withApp :: SpecWith (TestApp App) -> Spec
+withApp = before $ do
+  app <- getApp
+  return (app, id)
   where
-    getApplication =
+    getApp =
       App <$> readSettings "rollbar.yaml"
           <*> newIORef Nothing
