@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: bb26d020ec6018a9b42ab3680c9b206fa591f3c95fdac2b8f18eaebdc6c26403
+-- hash: 050867e06db1f830bef31f1fb008b4c512bd788d74b4822060d0c04b7232e4f6
 
 name:           rollbar-wai
 version:        0.1.0
@@ -89,8 +89,10 @@ test-suite spec
       aeson
     , base >=4.12 && <5
     , hspec >=2.7 && <3
+    , http-types
     , mtl
     , process
+    , req
     , rollbar-client
     , rollbar-wai
     , text

@@ -45,7 +45,10 @@ mkRequest req = liftIO $ do
   (params, _) <- W.parseRequestBody ignoreFiles req
   return Request
     { requestUrl = T.decodeUtf8 $ mconcat
-        [W.guessApproot req, W.rawPathInfo req, W.rawQueryString req]
+        [ W.guessApproot req
+        , W.rawPathInfo req
+        , W.rawQueryString req
+        ]
     , requestMethod = T.decodeUtf8 $ W.requestMethod req
     , requestHeaders = HM.fromList $ toHeader <$> W.requestHeaders req
     , requestParams = mempty

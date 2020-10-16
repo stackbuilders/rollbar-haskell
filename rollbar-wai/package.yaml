@@ -76,8 +76,10 @@ tests:
     dependencies:
       - aeson
       - hspec >= 2.7 && < 3
+      - http-types
       - mtl
       - process
+      - req
       - rollbar-client
       - rollbar-wai
       - text

@@ -10,50 +10,81 @@ import qualified Data.Text as T
 import qualified Network.Wai as W
 import qualified Network.Wai.Handler.Warp as W
 
+import Control.Concurrent (threadDelay)
+import Control.Monad (join)
 import Control.Monad.IO.Class
-import Control.Monad.Reader
 import Data.Aeson
 import Data.IORef
+import Network.HTTP.Req
+import Network.HTTP.Types (status200, status404)
 import Rollbar.Client
-import Rollbar.Wai
-import System.Process
+import Rollbar.Wai (rollbarOnExceptionWith)
 import Test.Hspec
 
 spec :: Spec
-spec =
-  describe "rollbarOnExceptionWith" $
-    it "sends information about the given request to Rollbar API" $ do
-      settings <- readSettings "rollbar.yaml"
-      itemRef <- newIORef Nothing
-      let warpSettings = W.setOnException
-            (rollbarOnExceptionWith (createItemFake itemRef) settings)
-            W.defaultSettings
-      port <- W.withApplicationSettings warpSettings (return app) $ \port -> do
-        response <- readProcess "curl" ["-s", "http://localhost:" ++ show port] ""
-        response `shouldBe` "Something went wrong"
-        return $ T.pack $ show port
+spec = before getSettingsAndItemRef $
+  describe "rollbarOnExceptionWith" $ do
+    context "when the response status code is 200" $
+      it "does not trigger a call to Rollbar" $
+        withApp $ \itemRef warpPort -> do
+          let url = http "localhost" /: "success"
+          response <- runReq
+            defaultHttpConfig
+            (req GET url NoReqBody bsResponse $ port warpPort)
+          responseStatusCode response `shouldBe` 200
+          responseBody response `shouldBe` "OK"
+          threadDelay 500
+          readIORef itemRef `shouldReturn` Nothing
 
-      mrequest <-fmap itemRequest <$> readIORef itemRef
-      join mrequest `shouldBe` Just
-        ( Request
-          { requestUrl = "http://localhost:" <> port <> "/"
-          , requestMethod = "GET"
-          , requestHeaders = HM.fromList
-              [ ("Accept", "*/*")
-              , ("Host", String $ "localhost:" <> port)
-              ]
-          , requestParams = mempty
-          , requestGet = mempty
-          , requestQueryStrings = ""
-          , requestPost = mempty
-          , requestBody = ""
-          , requestUserIp = ""
-          }
-        )
+    context "when the response status code is not 200" $
+      it "triggers a call to Rollbar" $
+        withApp $ \itemRef warpPort -> do
+          let url = http "localhost" /: "error"
+          response <- fmap responseBody $ runReq
+            (defaultHttpConfig { httpConfigCheckResponse = \_ _ _ -> Nothing })
+            (req GET url NoReqBody bsResponse $ port warpPort)
+          response `shouldBe` "Something went wrong"
+          threadDelay 500
+          let portAsText = T.pack $ show warpPort
+          join . fmap itemRequest <$> readIORef itemRef `shouldReturn` Just
+            ( Request
+                { requestUrl = "http://localhost:" <> portAsText <> "/error"
+                , requestMethod = "GET"
+                , requestHeaders = HM.fromList
+                    [ ("Accept-Encoding", "gzip")
+                    , ("Host", String $ "localhost:" <> portAsText)
+                    ]
+                , requestParams = mempty
+                , requestGet = mempty
+                , requestQueryStrings = ""
+                , requestPost = mempty
+                , requestBody = ""
+                , requestUserIp = ""
+                }
+            )
 
+
+getSettingsAndItemRef :: IO (Settings, IORef (Maybe Item))
+getSettingsAndItemRef =
+  (,) <$> readSettings "rollbar.yaml"
+      <*> newIORef Nothing
+
+withApp
+  :: (IORef (Maybe Item) -> W.Port -> IO a)
+  -> (Settings, IORef (Maybe Item))
+  -> IO a
+withApp f (settings, itemRef) = do
+  let waiSettings = W.setOnException
+        (rollbarOnExceptionWith (createItemFake itemRef) settings)
+        W.defaultSettings
+  W.withApplicationSettings waiSettings (return app) $ f itemRef
 
 app :: W.Application
-app _ _ = error "Boom"
+app wrequest respond =
+  case W.rawPathInfo wrequest of
+    "/error" -> error "Boom"
+    "/success" -> respond $ W.responseLBS status200 [] "OK"
+    _ -> respond $ W.responseLBS status404 [] "Not Found"
 
 createItemFake :: IORef (Maybe Item) -> Item -> Rollbar ()
 createItemFake itemRef item = do
