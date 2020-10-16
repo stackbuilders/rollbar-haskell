@@ -27,6 +27,9 @@ flags:
 dependencies:
   - base >= 4.12 && < 5
 
+ghc-options:
+  - -Wall
+
 library:
   source-dirs: src
   dependencies:
