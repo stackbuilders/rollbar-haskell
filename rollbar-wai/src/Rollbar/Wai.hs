@@ -3,6 +3,7 @@
 module Rollbar.Wai
   ( rollbarOnException
   , rollbarOnExceptionWith
+  , mkRequest
   ) where
 
 import qualified Data.CaseInsensitive as CI
@@ -21,30 +22,27 @@ import Network.HTTP.Types (renderQuery)
 import Rollbar.Client
 
 rollbarOnException
-  :: MonadIO m
-  => Settings
+  :: Settings
   -> Maybe W.Request
   -> SomeException
-  -> m ()
-rollbarOnException settings = rollbarOnExceptionWith runner (void . createItem)
-  where
-    runner = void . liftIO . forkIO . runRollbar settings
+  -> IO ()
+rollbarOnException = rollbarOnExceptionWith (void . createItem)
 
 rollbarOnExceptionWith
-  :: (HasSettings m, MonadIO m, MonadIO n)
-  => (m () -> n ())
-  -> (Item -> m ())
+  :: (Item -> Rollbar ())
+  -> Settings
   -> Maybe W.Request
   -> SomeException
-  -> n ()
-rollbarOnExceptionWith runner f mreq ex = runner $ do
-  idata <- mkData $ PayloadTrace $ Trace [] $ mkException ex
-  mdreq <- mapM mkRequest mreq
-  f $ Item idata { dataRequest = mdreq }
+  -> IO ()
+rollbarOnExceptionWith f settings mreq ex =
+  void $ liftIO $ forkIO $ runRollbar settings $ do
+    idata <- mkData $ PayloadTrace $ Trace [] $ mkException ex
+    mdreq <- mapM mkRequest mreq
+    f $ Item idata { dataRequest = mdreq }
 
 mkRequest :: MonadIO m => W.Request -> m Request
 mkRequest req = liftIO $ do
-  (params, _) <- W.parseRequestBody ignoreFilesBackEnd req
+  (params, _) <- W.parseRequestBody ignoreFiles req
   return Request
     { requestUrl = T.decodeUtf8 $ mconcat
         [W.guessApproot req, W.rawPathInfo req, W.rawQueryString req]
@@ -65,5 +63,5 @@ mkRequest req = liftIO $ do
     toParam (key, value) =
       (T.decodeUtf8 key, toJSON $ T.decodeUtf8 value)
 
-ignoreFilesBackEnd :: W.BackEnd ()
-ignoreFilesBackEnd _ _ _ = pure ()
+ignoreFiles :: W.BackEnd ()
+ignoreFiles _ _ _ = pure ()

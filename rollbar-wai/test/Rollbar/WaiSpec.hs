@@ -19,12 +19,6 @@ import Rollbar.Wai
 import System.Process
 import Test.Hspec
 
-newtype Fake a = Fake (ReaderT Settings IO a)
-  deriving (Applicative, Functor, Monad, MonadIO)
-
-instance HasSettings Fake where
-  getSettings = Fake ask
-
 spec :: Spec
 spec =
   describe "rollbarOnExceptionWith" $
@@ -32,10 +26,7 @@ spec =
       settings <- readSettings "rollbar.yaml"
       itemRef <- newIORef Nothing
       let warpSettings = W.setOnException
-            ( rollbarOnExceptionWith
-                (runner settings)
-                (createItemFake itemRef)
-            )
+            (rollbarOnExceptionWith (createItemFake itemRef) settings)
             W.defaultSettings
       port <- W.withApplicationSettings warpSettings (return app) $ \port -> do
         response <- readProcess "curl" ["-s", "http://localhost:" ++ show port] ""
@@ -64,10 +55,7 @@ spec =
 app :: W.Application
 app _ _ = error "Boom"
 
-runner :: Settings -> Fake a -> IO a
-runner settings (Fake f) = runReaderT f settings
-
-createItemFake :: IORef (Maybe Item) -> Item -> Fake ()
+createItemFake :: IORef (Maybe Item) -> Item -> Rollbar ()
 createItemFake itemRef (Item itemData) = do
   requestModifier <- getRequestModifier
   liftIO $ writeIORef itemRef $ Just $ Item itemData

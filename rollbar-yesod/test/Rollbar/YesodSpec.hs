@@ -39,7 +39,7 @@ instance Yesod App where
       defaultYesodMiddleware handler
     where
       writeRequest requestRef _ request _ =
-        writeIORef requestRef $ Just request
+        liftIO $ writeIORef requestRef $ Just request
 
 getErrorR :: Handler ()
 getErrorR = error "Boom"
