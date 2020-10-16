@@ -8,7 +8,7 @@ module Rollbar.Yesod
 import qualified Network.Wai as W
 
 import Control.Exception (Exception(..), SomeException)
-import Control.Monad (unless, void)
+import Control.Monad (unless)
 import Rollbar.Client
 import Rollbar.Wai (rollbarOnException)
 import UnliftIO.Exception (catch, throwIO)
@@ -30,8 +30,8 @@ rollbarYesodMiddlewareWith
 rollbarYesodMiddlewareWith f handler = handler `catch` \e -> do
   unless (isHandlerContents e) $ do
     settings <- getSettings
-    request <- waiRequest
-    f settings request e
+    wrequest <- waiRequest
+    f settings wrequest e
 
   throwIO e
 

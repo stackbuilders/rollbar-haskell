@@ -13,7 +13,6 @@ module Rollbar.Client.Settings
   , defaultRequestModifiers
   ) where
 
-import qualified Data.HashMap.Strict as HM
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as T
 

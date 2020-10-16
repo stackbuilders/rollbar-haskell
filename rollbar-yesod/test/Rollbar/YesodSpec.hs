@@ -38,8 +38,8 @@ instance Yesod App where
     rollbarYesodMiddlewareWith (writeRequest requestRef) $
       defaultYesodMiddleware handler
     where
-      writeRequest requestRef _ request _ =
-        liftIO $ writeIORef requestRef $ Just request
+      writeRequest requestRef _ wrequest _ =
+        liftIO $ writeIORef requestRef $ Just wrequest
 
 getErrorR :: Handler ()
 getErrorR = error "Boom"
@@ -56,8 +56,8 @@ spec = withApp $
         statusIs 500
         requestRef <- appRequestRef <$> getTestYesod
         liftIO $ do
-          request <- readIORef requestRef
-          request `shouldSatisfy` isJust
+          wrequest <- readIORef requestRef
+          wrequest `shouldSatisfy` isJust
 
     context "when there is no error" $
       it "does not trigger a call to Rollbar" $ do
@@ -65,8 +65,8 @@ spec = withApp $
         statusIs 200
         requestRef <- appRequestRef <$> getTestYesod
         liftIO $ do
-          request <- readIORef requestRef
-          request `shouldSatisfy` isNothing
+          wrequest <- readIORef requestRef
+          wrequest `shouldSatisfy` isNothing
 
 
 withApp :: SpecWith (TestApp App) -> Spec

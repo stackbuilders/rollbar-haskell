@@ -34,11 +34,11 @@ rollbarOnExceptionWith
   -> Maybe W.Request
   -> SomeException
   -> IO ()
-rollbarOnExceptionWith f settings mreq ex =
+rollbarOnExceptionWith f settings waiRequest ex =
   void $ liftIO $ forkIO $ runRollbar settings $ do
-    idata <- mkData $ PayloadTrace $ Trace [] $ mkException ex
-    mdreq <- mapM mkRequest mreq
-    f $ Item idata { dataRequest = mdreq }
+    item <- mkItem $ PayloadTrace $ Trace [] $ mkException ex
+    request <- mapM mkRequest waiRequest
+    f item { itemRequest = request }
 
 mkRequest :: MonadIO m => W.Request -> m Request
 mkRequest req = liftIO $ do

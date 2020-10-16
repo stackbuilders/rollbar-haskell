@@ -33,7 +33,7 @@ spec =
         response `shouldBe` "Something went wrong"
         return $ T.pack $ show port
 
-      mrequest <-fmap (dataRequest . itemData) <$> readIORef itemRef
+      mrequest <-fmap itemRequest <$> readIORef itemRef
       join mrequest `shouldBe` Just
         ( Request
           { requestUrl = "http://localhost:" <> port <> "/"
@@ -56,7 +56,7 @@ app :: W.Application
 app _ _ = error "Boom"
 
 createItemFake :: IORef (Maybe Item) -> Item -> Rollbar ()
-createItemFake itemRef (Item itemData) = do
+createItemFake itemRef item = do
   requestModifier <- getRequestModifier
-  liftIO $ writeIORef itemRef $ Just $ Item itemData
-    { dataRequest = requestModifier <$> dataRequest itemData }
+  liftIO $ writeIORef itemRef $ Just $
+    item { itemRequest = requestModifier <$> itemRequest item }

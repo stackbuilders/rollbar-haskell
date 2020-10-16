@@ -18,8 +18,6 @@ module Rollbar.Client.Item
   ( -- * Requests
     Item(..)
   , mkItem
-  , Data(..)
-  , mkData
   , Body(..)
   , Payload(..)
   , Trace(..)
@@ -56,13 +54,64 @@ import Rollbar.Client.Settings
 import System.Directory (getCurrentDirectory)
 import System.Info (arch, os)
 
-newtype Item = Item
-  { itemData :: Data
+data Item = Item
+  { itemEnvironment :: Environment
+    -- ^ The name of the environment in which this occurrence was seen. A
+    -- string up to 255 characters. For best results, use "production" or
+    -- "prod" for your production environment.  You don't need to configure
+    -- anything in the Rollbar UI for new environment names; we'll detect them
+    -- automatically.
+  , itemBody :: Body
+    -- ^ The main data being sent. It can either be a message, an exception, or
+    -- a crash report.
+  , itemLevel :: Maybe Level
+    -- ^ The severity level. One of: "critical", "error", "warning", "info",
+    -- "debug" Defaults to "error" for exceptions and "info" for messages.  The
+    -- level of the *first* occurrence of an item is used as the item's level.
+  -- timestamp
+  -- code_version
+  , itemPlatform :: Maybe Text
+    -- ^ The platform on which this occurred. Meaningful platform names:
+    -- "browser", "android", "ios", "flash", "client", "heroku",
+    -- "google-app-engine" If this is a client-side event, be sure to specify
+    -- the platform and use a post_client_item access token.
+  , itemLanguage :: Maybe Text
+    -- ^ The name of the language your code is written in.  This can affect the
+    -- order of the frames in the stack trace. The following languages set the
+    -- most recent call first - 'ruby', 'javascript', 'php', 'java',
+    -- 'objective-c', 'lua' It will also change the way the individual frames
+    -- are displayed, with what is most consistent with users of the language.
+  , itemFramework :: Maybe Text
+    -- ^ The name of the framework your code uses.
+  -- context
+  -- request
+  , itemRequest :: Maybe Request
+    -- ^ Data about the request this event occurred in.
+  -- person
+  , itemServer :: Maybe Server
+    -- ^ Data about the server related to this event.
+  -- client
+  -- custom
+  -- fingerprint
+  -- title
+  -- uuid
+  , itemNotifier :: Notifier
+    -- ^ Describes the library used to send this event.
   } deriving (Eq, Show)
 
 instance ToJSON Item where
   toJSON Item{..} = object
-    [ "data" .= itemData
+    [ "data" .= object
+        [ "environment" .= itemEnvironment
+        , "body" .= itemBody
+        , "level" .= itemLevel
+        , "platform" .= itemPlatform
+        , "language" .= itemLanguage
+        , "framework" .= itemFramework
+        , "request" .= itemRequest
+        , "server" .= itemServer
+        , "notifier" .= itemNotifier
+        ]
     ]
 
 -- | Builds an 'Item' based on a 'Payload'.
@@ -70,92 +119,27 @@ mkItem
   :: (HasSettings m, MonadIO m)
   => Payload
   -> m Item
-mkItem payload = Item <$> mkData payload
-
-data Data = Data
-  { dataEnvironment :: Environment
-    -- ^ The name of the environment in which this occurrence was seen. A
-    -- string up to 255 characters. For best results, use "production" or
-    -- "prod" for your production environment.  You don't need to configure
-    -- anything in the Rollbar UI for new environment names; we'll detect them
-    -- automatically.
-  , dataBody :: Body
-    -- ^ The main data being sent. It can either be a message, an exception, or
-    -- a crash report.
-  , dataLevel :: Maybe Level
-    -- ^ The severity level. One of: "critical", "error", "warning", "info",
-    -- "debug" Defaults to "error" for exceptions and "info" for messages.  The
-    -- level of the *first* occurrence of an item is used as the item's level.
-  -- timestamp
-  -- code_version
-  , dataPlatform :: Maybe Text
-    -- ^ The platform on which this occurred. Meaningful platform names:
-    -- "browser", "android", "ios", "flash", "client", "heroku",
-    -- "google-app-engine" If this is a client-side event, be sure to specify
-    -- the platform and use a post_client_item access token.
-  , dataLanguage :: Maybe Text
-    -- ^ The name of the language your code is written in.  This can affect the
-    -- order of the frames in the stack trace. The following languages set the
-    -- most recent call first - 'ruby', 'javascript', 'php', 'java',
-    -- 'objective-c', 'lua' It will also change the way the individual frames
-    -- are displayed, with what is most consistent with users of the language.
-  , dataFramework :: Maybe Text
-    -- ^ The name of the framework your code uses.
-  -- context
-  -- request
-  , dataRequest :: Maybe Request
-    -- ^ Data about the request this event occurred in.
-  -- person
-  , dataServer :: Maybe Server
-    -- ^ Data about the server related to this event.
-  -- client
-  -- custom
-  -- fingerprint
-  -- title
-  -- uuid
-  , dataNotifier :: Notifier
-    -- ^ Describes the library used to send this event.
-  } deriving (Eq, Show)
-
-instance ToJSON Data where
-  toJSON Data{..} = object
-    [ "environment" .= dataEnvironment
-    , "body" .= dataBody
-    , "level" .= dataLevel
-    , "platform" .= dataPlatform
-    , "language" .= dataLanguage
-    , "framework" .= dataFramework
-    , "request" .= dataRequest
-    , "server" .= dataServer
-    , "notifier" .= dataNotifier
-    ]
-
--- | Builds an 'Data' based on a 'Payload'.
-mkData
-  :: (HasSettings m, MonadIO m)
-  => Payload
-  -> m Data
-mkData payload = do
+mkItem payload = do
   environment <- settingsEnvironment <$> getSettings
   root <- liftIO getCurrentDirectory
-  return Data
-    { dataEnvironment = environment
-    , dataBody = Body
+  return Item
+    { itemEnvironment = environment
+    , itemBody = Body
         { bodyPayload = payload
         }
-    , dataLevel = Just $ mkLevel payload
-    , dataPlatform = Just $ T.pack os
-    , dataLanguage = Just "haskell"
-    , dataFramework = Nothing
-    , dataRequest = Nothing
-    , dataServer = Just Server
+    , itemLevel = Just $ mkLevel payload
+    , itemPlatform = Just $ T.pack os
+    , itemLanguage = Just "haskell"
+    , itemFramework = Nothing
+    , itemRequest = Nothing
+    , itemServer = Just Server
         { serverCpu = Just $ T.pack arch
         , serverHost = Nothing
         , serverRoot = Just $ T.pack root
         , serverBranch = Nothing
         , serverCodeVersion = Nothing
         }
-    , dataNotifier = defaultNotifier
+    , itemNotifier = defaultNotifier
     }
 
 -- | The main data being sent. It can either be a message, an exception, or a
@@ -418,12 +402,12 @@ createItem
   :: (HasSettings m, MonadHttp m)
   => Item
   -> m ItemId
-createItem (Item itemData) = do
+createItem item = do
   requestModifier <- getRequestModifier
   fmap
     (resultResponseResult . responseBody)
     (rollbar POST url (body requestModifier) jsonResponse mempty)
   where
     url = baseUrl /: "item" /: ""
-    body requestModifier = ReqBodyJson $ Item
-      itemData { dataRequest = requestModifier <$> dataRequest itemData }
+    body requestModifier = ReqBodyJson $
+      item { itemRequest = requestModifier <$> itemRequest item }
