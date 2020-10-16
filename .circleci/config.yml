@@ -28,12 +28,30 @@ commands:
       - run: cabal test all
 
   stack_build:
+    parameters:
+      resolver:
+        type: string
+        default: "16"
+
     steps:
       - run: apt update
       - run: apt install -y curl
+      - restore_cache:
+          keys:
+            - stack-<< parameters.resolver >>-{{ checksum "stack-<< parameters.resolver >>.yaml" }}
+            - stack-<< parameters.resolver >>-
       - run: stack update
       - run: stack build --only-dependencies --test
       - run: stack build --test --no-run-tests
+      - save_cache:
+          key:  stack-<< parameters.resolver >>-{{ checksum "stack-<< parameters.resolver >>.yaml" }}
+          paths:
+            - .stack-work
+            - rollbar-cli/.stack-work
+            - rollbar-client/.stack-work
+            - rollbar-wai/.stack-work
+            - rollbar-yesod/.stack-work
+            - ~/.stack
       - run: stack test
 
 jobs:
@@ -70,18 +88,24 @@ jobs:
   stack_16:
     docker:
       - image: fpco/stack-build-small:lts-16.17
+        environment:
+          STACK_YAML: stack-16.yaml
 
     steps:
       - checkout
-      - stack_build
+      - stack_build:
+          resolver: "16"
 
   stack_14:
     docker:
       - image: fpco/stack-build-small:lts-14.27
+        environment:
+          STACK_YAML: stack-14.yaml
 
     steps:
       - checkout
-      - stack_build
+      - stack_build:
+          resolver: "14"
 
 workflows:
   main:
