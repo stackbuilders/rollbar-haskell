@@ -21,10 +21,6 @@ commands:
 
   cabal_build:
     steps:
-      - restore_cache:
-          keys:
-            - stack-<< parameters.ghc >>-{{ checksum "stack-<< parameters.resolver >>.yaml" }}
-            - stack-<< parameters.ghc >>-
       - run: cabal update
       - run: cabal configure --enable-tests -fexample
       - run: cabal build all --only-dependencies
