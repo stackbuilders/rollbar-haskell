@@ -1,7 +1,1 @@
-resolver: lts-16.17
-
-packages:
-  - ./rollbar-cli
-  - ./rollbar-client
-  - ./rollbar-wai
-  - ./rollbar-yesod
+stack-16.yaml
