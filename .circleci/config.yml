@@ -2,7 +2,7 @@
 version: 2.1
 
 commands:
-  setup_haskell:
+  cabal_build:
     parameters:
       cabal:
         type: string
@@ -12,19 +12,27 @@ commands:
 
     steps:
       - run: apt update
-      - run: apt install -y ca-certificates git gnupg zlib1g-dev
+      - run: apt install -y ca-certificates coreutils git gnupg zlib1g-dev
       - run: apt-key adv --keyserver keyserver.ubuntu.com --recv-keys BA3CBA3FFE22B574
       - run: echo 'deb http://downloads.haskell.org/debian buster main' > /etc/apt/sources.list.d/haskell.list
       - run: apt update
       - run: apt install -y cabal-install-<< parameters.cabal >> ghc-<< parameters.ghc >>
       - run: echo 'export PATH=/opt/ghc/bin:$PATH' >> $BASH_ENV
-
-  cabal_build:
-    steps:
+      - run: md5sum */*.cabal > checksum.txt
+      - restore_cache:
+          keys:
+            - cabal-<< parameters.ghc >>-{{ checksum "checksum.txt" }}
+            - cabal-<< parameters.ghc >>-
       - run: cabal update
       - run: cabal configure --enable-tests -fexample
       - run: cabal build all --only-dependencies
       - run: cabal build all
+      - save_cache:
+          key: cabal-<< parameters.ghc >>-{{ checksum "checksum.txt" }}
+          paths:
+            - dist-newstyle
+            - ~/.cabal/packages
+            - ~/.cabal/store
       - run: cabal test all
 
   stack_build:
@@ -58,9 +66,8 @@ jobs:
 
     steps:
       - checkout
-      - setup_haskell:
+      - cabal_build:
           ghc: "8.10.2"
-      - cabal_build
 
   cabal_8_8:
     docker:
@@ -68,9 +75,8 @@ jobs:
 
     steps:
       - checkout
-      - setup_haskell:
+      - cabal_build:
           ghc: "8.8.4"
-      - cabal_build
 
   cabal_8_6:
     docker:
@@ -78,9 +84,8 @@ jobs:
 
     steps:
       - checkout
-      - setup_haskell:
+      - cabal_build:
           ghc: "8.6.5"
-      - cabal_build
 
   stack_16:
     docker:
