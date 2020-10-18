@@ -2,18 +2,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards #-}
 
-{-|
-Module: Rollbar.Client.Item
-Copyright: (c) 2020 Stack Builders Inc.
-License: MIT
-Maintainer: Sebastián Estrella <sestrella@stackbuilders.com>
-
-Most of the documentation in this module comes from Rollbar's official
-documentation.
-
-<https://explorer.docs.rollbar.com/#operation/create-item>
--}
-
 module Rollbar.Client.Item
   ( -- ** Requests
     Item(..)

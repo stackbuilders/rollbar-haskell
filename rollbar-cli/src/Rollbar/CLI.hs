@@ -1,3 +1,9 @@
+{-|
+Module: Rollbar.CLI
+Copyright: (c) 2020 Stack Builders Inc.
+License: MIT
+Maintainer: Sebastián Estrella <sestrella@stackbuilders.com>
+-}
 module Rollbar.CLI
   ( parseCommand
   , runCommand

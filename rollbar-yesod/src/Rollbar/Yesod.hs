@@ -1,5 +1,11 @@
 {-# LANGUAGE FlexibleContexts #-}
 
+{-|
+Module: Rollbar.Yesod
+Copyright: (c) 2020 Stack Builders Inc.
+License: MIT
+Maintainer: Sebastián Estrella <sestrella@stackbuilders.com>
+-}
 module Rollbar.Yesod
   ( rollbarYesodMiddleware
   , rollbarYesodMiddlewareWith
