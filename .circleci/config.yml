@@ -22,8 +22,8 @@ commands:
             - v1-cabal-<< parameters.ghc >>-
       - run: cabal update
       - run: cabal configure --enable-tests -fexample
-      - run: cabal build all --only-dependencies
-      - run: cabal build all
+      - run: cabal build all --jobs=1 --only-dependencies
+      - run: cabal build all --jobs=1
       - save_cache:
           key: v1-cabal-<< parameters.ghc >>-{{ checksum "checksum.txt" }}
           paths:
@@ -47,8 +47,8 @@ commands:
             - v1-stack-<< parameters.resolver >>-{{ checksum "stack-<< parameters.resolver >>.yaml.lock" }}-
             - v1-stack-<< parameters.resolver >>-
       - run: stack update
-      - run: stack build --no-terminal --only-dependencies --test
-      - run: stack build --no-terminal --test --no-run-tests --pedantic
+      - run: stack build --no-terminal --jobs=1 --only-dependencies --test
+      - run: stack build --no-terminal --jobs=1 --test --no-run-tests --pedantic
       - save_cache:
           key: v1-stack-<< parameters.resolver >>-{{ checksum "stack-<< parameters.resolver >>.yaml.lock" }}-{{ checksum "checksum.txt" }}
           paths:

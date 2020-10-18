@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 5a8a4780990f65c561d61f4039d4be0d152d938f25aedd1c9237017947866fdc
+-- hash: b02a5fddb64403b3cf13f84fbb15688c3fdbc9a9fdaebc9838bb002287203cd8
 
 name:           rollbar-yesod
 version:        0.1.0
@@ -70,14 +70,27 @@ executable yesod-example
     buildable: False
   default-language: Haskell2010
 
-test-suite spec
+test-suite hlint
+  type: exitcode-stdio-1.0
+  main-is: Main.hs
+  other-modules:
+      Paths_rollbar_yesod
+  hs-source-dirs:
+      test/hlint
+  ghc-options: -Wall -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      base >=4.12 && <5
+    , hlint
+  default-language: Haskell2010
+
+test-suite hspec
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:
       Rollbar.YesodSpec
       Paths_rollbar_yesod
   hs-source-dirs:
-      test
+      test/hspec
   ghc-options: -Wall -threaded -rtsopts -with-rtsopts=-N
   build-tool-depends:
       hspec-discover:hspec-discover >=2.7 && <3

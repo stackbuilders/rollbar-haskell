@@ -52,7 +52,7 @@ deployCommandParser = subparser $
     ]
 
 runCommand :: Settings -> Command -> IO ()
-runCommand settings cmd = do
+runCommand settings cmd =
   case cmd of
     CommandPing -> do
       pong <- runRollbar settings ping

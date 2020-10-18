@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 050867e06db1f830bef31f1fb008b4c512bd788d74b4822060d0c04b7232e4f6
+-- hash: a8ae951196d5f3e5ab292c0728f7a088cbc465badb782cce28069cf75761e618
 
 name:           rollbar-wai
 version:        0.1.0
@@ -74,14 +74,27 @@ executable wai-example
     buildable: False
   default-language: Haskell2010
 
-test-suite spec
+test-suite hlint
+  type: exitcode-stdio-1.0
+  main-is: Main.hs
+  other-modules:
+      Paths_rollbar_wai
+  hs-source-dirs:
+      test/hlint
+  ghc-options: -Wall -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      base >=4.12 && <5
+    , hlint
+  default-language: Haskell2010
+
+test-suite hspec
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:
       Rollbar.WaiSpec
       Paths_rollbar_wai
   hs-source-dirs:
-      test
+      test/hspec
   ghc-options: -Wall -threaded -rtsopts -with-rtsopts=-N
   build-tool-depends:
       hspec-discover:hspec-discover >=2.7 && <3

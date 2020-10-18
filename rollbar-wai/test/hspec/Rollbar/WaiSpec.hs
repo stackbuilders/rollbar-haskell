@@ -1,4 +1,3 @@
-{-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE OverloadedStrings #-}
 
 module Rollbar.WaiSpec
@@ -11,7 +10,6 @@ import qualified Network.Wai as W
 import qualified Network.Wai.Handler.Warp as W
 
 import Control.Concurrent (threadDelay)
-import Control.Monad (join)
 import Control.Monad.IO.Class
 import Data.Aeson
 import Data.IORef
@@ -40,13 +38,13 @@ spec = before getSettingsAndItemRef $
       it "triggers a call to Rollbar" $
         withApp $ \itemRef warpPort -> do
           let url = http "localhost" /: "error"
-          response <- fmap responseBody $ runReq
+          response <- responseBody <$> runReq
             (defaultHttpConfig { httpConfigCheckResponse = \_ _ _ -> Nothing })
             (req GET url NoReqBody bsResponse $ port warpPort)
           response `shouldBe` "Something went wrong"
           threadDelay 500
           let portAsText = T.pack $ show warpPort
-          join . fmap itemRequest <$> readIORef itemRef `shouldReturn` Just
+          (itemRequest =<<) <$> readIORef itemRef `shouldReturn` Just
             ( Request
                 { requestUrl = "http://localhost:" <> portAsText <> "/error"
                 , requestMethod = "GET"
