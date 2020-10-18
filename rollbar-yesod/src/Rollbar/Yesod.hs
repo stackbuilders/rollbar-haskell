@@ -19,21 +19,21 @@ rollbarYesodMiddleware
   :: (HasSettings m, MonadHandler m, MonadUnliftIO m)
   => m a
   -> m a
-rollbarYesodMiddleware = rollbarYesodMiddlewareWith $ \settings request e ->
-  liftIO $ rollbarOnException settings (Just request) e
+rollbarYesodMiddleware = rollbarYesodMiddlewareWith $ \settings request ex ->
+  liftIO $ rollbarOnException settings (Just request) ex
 
 rollbarYesodMiddlewareWith
   :: (HasSettings m, MonadHandler m, MonadUnliftIO m)
   => (Settings -> W.Request -> SomeException -> m ())
   -> m a
   -> m a
-rollbarYesodMiddlewareWith f handler = handler `catch` \e -> do
-  unless (isHandlerContents e) $ do
+rollbarYesodMiddlewareWith f handler = handler `catch` \ex -> do
+  unless (isHandlerContents ex) $ do
     settings <- getSettings
     wrequest <- waiRequest
-    f settings wrequest e
+    f settings wrequest ex
 
-  throwIO e
+  throwIO ex
 
 isHandlerContents :: SomeException -> Bool
 isHandlerContents = maybe False handlerContents . fromException
