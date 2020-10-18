@@ -1,9 +1,14 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 
 module Rollbar.Client
-  ( module Rollbar.Client.Deploy
+  (
+    -- * Deploy
+    module Rollbar.Client.Deploy
+    -- * Item
   , module Rollbar.Client.Item
+    -- * Ping
   , module Rollbar.Client.Ping
+    -- * Settings
   , module Rollbar.Client.Settings
   , Rollbar(..)
   , withRollbar

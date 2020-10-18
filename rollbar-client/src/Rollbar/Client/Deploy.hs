@@ -3,13 +3,13 @@
 {-# LANGUAGE RecordWildCards #-}
 
 module Rollbar.Client.Deploy
-  ( -- * Requests
+  ( -- ** Requests
     Deploy(..)
   , mkDeploy
   , Status(..)
-    -- * Responses
+    -- ** Responses
   , DeployId(..)
-    -- * Endpoints
+    -- ** Endpoints
   , reportDeploy
   ) where
 
@@ -25,11 +25,18 @@ import System.Environment (lookupEnv)
 
 data Deploy = Deploy
   { deployEnvironment :: Environment
+    -- ^ Environment to which the revision was deployed.
   , deployRevision :: Revision
+    -- ^ Git SHA of revision being deployed.
   , deployRollbarUsername :: Maybe Text
+    -- ^ Rollbar username of person who deployed.
   , deployLocalUsername :: Maybe Text
+    -- ^ Local username of person who deployed. Displayed in web app if no
+    -- 'deployRollbarUsername' was specified.
   , deployComment :: Maybe Text
+    -- ^ Additional text to include with the deploy.
   , deployStatus :: Maybe Status
+    -- ^ Status of the deployment.
   } deriving (Eq, Show)
 
 instance ToJSON Deploy where
@@ -42,6 +49,11 @@ instance ToJSON Deploy where
     , "status" .= deployStatus
     ]
 
+-- | Builds a 'Deploy' based on a 'Revision'.
+--
+-- __Example__
+--
+-- > getRevision >>= mkDeploy
 mkDeploy
   :: (HasSettings m, MonadIO m)
   => Revision
@@ -58,6 +70,7 @@ mkDeploy revision = do
     , deployStatus = Just StatusSucceeded
     }
 
+-- | Status of the deployment.
 data Status
   = StatusStarted
   | StatusSucceeded

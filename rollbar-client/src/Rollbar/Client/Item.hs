@@ -15,7 +15,7 @@ documentation.
 -}
 
 module Rollbar.Client.Item
-  ( -- * Requests
+  ( -- ** Requests
     Item(..)
   , mkItem
   , Body(..)
@@ -33,9 +33,9 @@ module Rollbar.Client.Item
   , Server(..)
   , Notifier(..)
   , defaultNotifier
-    -- * Responses
+    -- ** Responses
   , ItemId(..)
-    -- * Endpoints
+    -- ** Endpoints
   , createItem
   ) where
 

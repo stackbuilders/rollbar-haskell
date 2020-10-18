@@ -24,13 +24,18 @@ import Data.Text (Text)
 import Data.Yaml.Config (loadYamlSettings, requireEnv)
 import System.Process
 
+-- | Typeclass used to pull Rollbar 'Settings' out of a given 'Monad'.
 class HasSettings m where
   getSettings :: m Settings
 
+-- | General settings required to interact with Rollbar API.
 data Settings = Settings
   { settingsToken :: Token
+    -- ^ Rollbar API authentication token.
   , settingsEnvironment :: Environment
+    -- ^ Environment to which the revision was deployed.
   , settingsRevision :: Maybe Revision
+    -- ^ Git SHA of revision being deployed.
   , settingsRequestModifiers :: RequestModifiers
   } deriving (Eq, Show)
 
@@ -51,12 +56,17 @@ newtype Token = Token ByteString
 instance FromJSON Token where
   parseJSON = withText "Token" $ pure . Token . T.encodeUtf8
 
+-- | Environment to which the revision was deployed.
 newtype Environment = Environment Text
   deriving (Eq, FromJSON, Show, ToJSON)
 
+-- | Git SHA of revision being deployed.
 newtype Revision = Revision Text
   deriving (Eq, FromJSON, Show, ToJSON)
 
+-- | Gets the 'Revision' from 'Settings' if the value is present (not Nothing),
+-- otherwise pulls the 'Revision' from @git@ directly running the following
+-- command @git rev-parse HEAD@.
 getRevision
   :: (HasSettings m, MonadIO m)
   => m Revision
@@ -69,11 +79,17 @@ getRevision = do
   where
     mkRevision = Revision . T.stripEnd . T.pack
 
+-- | Represents a list of 'Request' modifiers that are combined by
+-- 'getRequestModifier' into a single function.
 data RequestModifiers = RequestModifiers
   { requestModifiersExcludeHeaders :: Maybe (NonEmpty Text)
+    -- ^ A list of 'Request' header names to be excluded.
   , requestModifiersExcludeParams :: Maybe (NonEmpty Text)
+    -- ^ A list of 'Request' param names to be excluded.
   , requestModifiersIncludeHeaders :: Maybe (NonEmpty Text)
+    -- ^ A list of 'Request' header names to be included.
   , requestModifiersIncludeParams :: Maybe (NonEmpty Text)
+    -- ^ A list of 'Request' params names to be included.
   } deriving (Eq, Show)
 
 instance FromJSON RequestModifiers where

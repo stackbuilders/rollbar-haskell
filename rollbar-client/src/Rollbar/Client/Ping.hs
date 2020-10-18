@@ -1,9 +1,9 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module Rollbar.Client.Ping
-  ( -- * Requests
+  ( -- ** Requests
     Pong(..)
-    -- * Endpoints
+    -- ** Endpoints
   , ping
   ) where
 
