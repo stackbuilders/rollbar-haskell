@@ -19,10 +19,31 @@ API][rollbar-api]. Inspired by
 
 ## Requirements
 
-- Install [stack](https://docs.haskellstack.org/en/stable/README/).
+- Install one of the following tools (or both):
+  - [GHC](https://www.haskell.org/ghc/download.html) and
+    [cabal](https://www.haskell.org/cabal/download.html).
+  - [stack](https://docs.haskellstack.org/en/stable/README/).
 - Setup a Rollbar account, create a project and generate an access token.
 
 ## Getting Started
+
+### Cabal
+
+Compile the projects:
+
+```
+cabal update
+cabal configure --enable-tests
+cabal build all
+```
+
+Run all tests:
+
+```
+env ROLLBAR_TOKEN=<token> cabal test all
+```
+
+### Stack
 
 Compile the projects:
 
