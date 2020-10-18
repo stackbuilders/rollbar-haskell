@@ -4,9 +4,6 @@ version: 2.1
 commands:
   cabal_build:
     parameters:
-      cabal:
-        type: string
-        default: "3.2"
       ghc:
         type: string
 
@@ -16,7 +13,7 @@ commands:
       - run: apt-key adv --keyserver keyserver.ubuntu.com --recv-keys BA3CBA3FFE22B574
       - run: echo 'deb http://downloads.haskell.org/debian buster main' > /etc/apt/sources.list.d/haskell.list
       - run: apt update
-      - run: apt install -y cabal-install-<< parameters.cabal >> ghc-<< parameters.ghc >>
+      - run: apt install -y cabal-install-3.2 ghc-<< parameters.ghc >>
       - run: echo 'export PATH=/opt/ghc/bin:$PATH' >> $BASH_ENV
       - run: md5sum */*.cabal > checksum.txt
       - restore_cache:
