@@ -12,7 +12,7 @@ commands:
 
     steps:
       - run: apt update
-      - run: apt install -y ca-certificates curl git gnupg zlib1g-dev
+      - run: apt install -y ca-certificates git gnupg zlib1g-dev
       - run: apt-key adv --keyserver keyserver.ubuntu.com --recv-keys BA3CBA3FFE22B574
       - run: echo 'deb http://downloads.haskell.org/debian buster main' > /etc/apt/sources.list.d/haskell.list
       - run: apt update
@@ -21,6 +21,10 @@ commands:
 
   cabal_build:
     steps:
+      - restore_cache:
+          keys:
+            - stack-<< parameters.ghc >>-{{ checksum "stack-<< parameters.resolver >>.yaml" }}
+            - stack-<< parameters.ghc >>-
       - run: cabal update
       - run: cabal configure --enable-tests -fexample
       - run: cabal build all --only-dependencies
@@ -31,18 +35,15 @@ commands:
     parameters:
       resolver:
         type: string
-        default: "16"
 
     steps:
-      - run: apt update
-      - run: apt install -y curl
       - restore_cache:
           keys:
             - stack-<< parameters.resolver >>-{{ checksum "stack-<< parameters.resolver >>.yaml" }}
             - stack-<< parameters.resolver >>-
       - run: stack update
       - run: stack build --only-dependencies --test
-      - run: stack build --test --no-run-tests
+      - run: stack build --test --no-run-tests --pedantic
       - save_cache:
           key:  stack-<< parameters.resolver >>-{{ checksum "stack-<< parameters.resolver >>.yaml" }}
           paths:
