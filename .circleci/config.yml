@@ -15,17 +15,17 @@ commands:
       - run: apt update
       - run: apt install -y cabal-install-3.2 ghc-<< parameters.ghc >>
       - run: echo 'export PATH=/opt/ghc/bin:$PATH' >> $BASH_ENV
-      - run: md5sum */*.cabal > checksum.txt
+      - run: sha256sum */*.cabal > checksum.txt
       - restore_cache:
           keys:
-            - cabal-<< parameters.ghc >>-{{ checksum "checksum.txt" }}
-            - cabal-<< parameters.ghc >>-
+            - v1-cabal-<< parameters.ghc >>-{{ checksum "checksum.txt" }}
+            - v1-cabal-<< parameters.ghc >>-
       - run: cabal update
       - run: cabal configure --enable-tests -fexample
       - run: cabal build all --only-dependencies
       - run: cabal build all
       - save_cache:
-          key: cabal-<< parameters.ghc >>-{{ checksum "checksum.txt" }}
+          key: v1-cabal-<< parameters.ghc >>-{{ checksum "checksum.txt" }}
           paths:
             - dist-newstyle
             - ~/.cabal/packages
@@ -38,15 +38,19 @@ commands:
         type: string
 
     steps:
+      - run: apt update
+      - run: apt install -y coreutils
+      - run: sha256sum */package.yaml > checksum.txt
       - restore_cache:
           keys:
-            - stack-<< parameters.resolver >>-{{ checksum "stack-<< parameters.resolver >>.yaml" }}
-            - stack-<< parameters.resolver >>-
+            - v1-stack-<< parameters.resolver >>-{{ checksum "stack-<< parameters.resolver >>.yaml.lock" }}-{{ checksum "checksum.txt" }}
+            - v1-stack-<< parameters.resolver >>-{{ checksum "stack-<< parameters.resolver >>.yaml.lock" }}-
+            - v1-stack-<< parameters.resolver >>-
       - run: stack update
-      - run: stack build --only-dependencies --test
-      - run: stack build --test --no-run-tests --pedantic
+      - run: stack build --no-terminal --only-dependencies --test
+      - run: stack build --no-terminal --test --no-run-tests --pedantic
       - save_cache:
-          key:  stack-<< parameters.resolver >>-{{ checksum "stack-<< parameters.resolver >>.yaml" }}
+          key: v1-stack-<< parameters.resolver >>-{{ checksum "stack-<< parameters.resolver >>.yaml.lock" }}-{{ checksum "checksum.txt" }}
           paths:
             - .stack-work
             - rollbar-cli/.stack-work
@@ -54,7 +58,7 @@ commands:
             - rollbar-wai/.stack-work
             - rollbar-yesod/.stack-work
             - ~/.stack
-      - run: stack test
+      - run: stack test --no-terminal
 
 jobs:
   cabal_8_10:
