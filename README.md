@@ -19,7 +19,7 @@ API][rollbar-api]. Inspired by
 
 ## Requirements
 
-- Install one of the following tools (or both):
+- Install one of the following set of tools (or all of them):
   - [GHC](https://www.haskell.org/ghc/download.html) and
     [cabal](https://www.haskell.org/cabal/download.html).
   - [stack](https://docs.haskellstack.org/en/stable/README/).
