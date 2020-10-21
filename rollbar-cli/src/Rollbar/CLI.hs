@@ -4,7 +4,9 @@
 -- License: MIT
 -- Maintainer: Sebastián Estrella <sestrella@stackbuilders.com>
 module Rollbar.CLI
-  ( parseCommand
+  ( Command(..)
+  , DeployCommand(..)
+  , parseCommand
   , runCommand
   ) where
 
@@ -13,12 +15,21 @@ import Rollbar.Client
 
 data Command
   = CommandPing
+    -- ^ Pings Rollbar API server.
+    --
+    -- @since 0.1.0
   | CommandDeploy DeployCommand
+    -- ^ Tracks a deploy in Rollbar.
+    --
+    -- @since 0.1.0
   deriving (Eq, Show)
 
 data DeployCommand = DeployCommandReport
   deriving (Eq, Show)
 
+-- | Parses a 'Command'.
+--
+-- @since 0.1.0
 parseCommand :: IO Command
 parseCommand = execParser commandParserInfo
 
@@ -47,7 +58,7 @@ deployCommandParser :: Parser DeployCommand
 deployCommandParser = subparser $
   command "report" $ info (pure DeployCommandReport) $ mconcat
     [ fullDesc
-    , progDesc "Report a deploy"
+    , progDesc "Tracks a deploy in Rollbar"
     ]
 
 runCommand :: Settings -> Command -> IO ()
