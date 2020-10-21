@@ -1,16 +1,10 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 
-{-|
-Module: Rollbar.Client
-Copyright: (c) 2020 Stack Builders Inc.
-License: MIT
-Maintainer: Sebastián Estrella <sestrella@stackbuilders.com>
-
-Most of the documentation in this module comes from Rollbar's official
-documentation.
-
-<https://explorer.docs.rollbar.com/>
--}
+-- |
+-- Module: Rollbar.Client
+-- Copyright: (c) 2020 Stack Builders Inc.
+-- License: MIT
+-- Maintainer: Sebastián Estrella <sestrella@stackbuilders.com>
 module Rollbar.Client
   (
     -- * Deploy

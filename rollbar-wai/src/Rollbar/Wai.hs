@@ -1,11 +1,10 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-{-|
-Module: Rollbar.Wai
-Copyright: (c) 2020 Stack Builders Inc.
-License: MIT
-Maintainer: Sebastián Estrella <sestrella@stackbuilders.com>
--}
+-- |
+-- Module: Rollbar.Wai
+-- Copyright: (c) 2020 Stack Builders Inc.
+-- License: MIT
+-- Maintainer: Sebastián Estrella <sestrella@stackbuilders.com>
 module Rollbar.Wai
   ( rollbarOnException
   , rollbarOnExceptionWith

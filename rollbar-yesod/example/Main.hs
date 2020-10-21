@@ -28,7 +28,7 @@ instance Yesod App where
   yesodMiddleware = rollbarYesodMiddleware . defaultYesodMiddleware
 
 getRootR :: Handler ()
-getRootR = error "Boom"
+getRootR = error "yesod"
 
 main :: IO ()
 main = do
