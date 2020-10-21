@@ -24,14 +24,19 @@ description: |
 ghc-options:
   - -Wall
 
+dependencies:
+  - base >= 4.12 && < 5
+
 flags:
   example:
     description: Build the example
     manual: false
     default: false
 
-dependencies:
-  - base >= 4.12 && < 5
+_exe-ghc-options: &exe-ghc-options
+  - -threaded
+  - -rtsopts
+  - -with-rtsopts=-N
 
 library:
   source-dirs: src
@@ -46,10 +51,7 @@ executables:
   yesod-example:
     source-dirs: example
     main: Main.hs
-    ghc-options:
-      - -threaded
-      - -rtsopts
-      - -with-rtsopts=-N
+    ghc-options: *exe-ghc-options
     dependencies:
       - rollbar-client
       - rollbar-yesod
@@ -66,10 +68,7 @@ tests:
   spec:
     main: Spec.hs
     source-dirs: test
-    ghc-options:
-      - -threaded
-      - -rtsopts
-      - -with-rtsopts=-N
+    ghc-options: *exe-ghc-options
     dependencies:
       - hspec
       - rollbar-client
