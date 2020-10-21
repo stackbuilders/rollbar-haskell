@@ -40,6 +40,7 @@ commands:
     steps:
       - run: apt update
       - run: apt install -y coreutils
+      - run: stack upgrade --binary-version 2.5.1
       - run: sha256sum */package.yaml > checksum.txt
       - restore_cache:
           keys:
