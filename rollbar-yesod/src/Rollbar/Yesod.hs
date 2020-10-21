@@ -32,6 +32,8 @@ import Yesod.Core.Types (HandlerContents)
 --
 -- > instance Yesod App where
 -- >   yesodMiddleware = rollbarYesodMiddleware . defaultYesodMiddleware
+--
+-- @since 0.1.0
 rollbarYesodMiddleware
   :: (HasSettings m, MonadHandler m, MonadUnliftIO m)
   => m a
@@ -41,6 +43,8 @@ rollbarYesodMiddleware = rollbarYesodMiddlewareWith $ \settings request ex ->
 
 -- | Similar to 'rollbarYesodMiddleware', but it allows customize the function
 -- used to send the 'SomeException' captured from a handler to Rollbar.
+--
+-- @since 0.1.0
 rollbarYesodMiddlewareWith
   :: (HasSettings m, MonadHandler m, MonadUnliftIO m)
   => (Settings -> W.Request -> SomeException -> m ())
