@@ -40,7 +40,7 @@ rollbarYesodMiddleware = rollbarYesodMiddlewareWith $ \settings request ex ->
   liftIO $ rollbarOnException settings (Just request) ex
 
 -- | Similar to 'rollbarYesodMiddleware', but it allows customize the function
--- used to send the 'SomeException' capture from a handler to Rollbar.
+-- used to send the 'SomeException' captured from a handler to Rollbar.
 rollbarYesodMiddlewareWith
   :: (HasSettings m, MonadHandler m, MonadUnliftIO m)
   => (Settings -> W.Request -> SomeException -> m ())

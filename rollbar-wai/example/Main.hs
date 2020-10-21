@@ -10,8 +10,9 @@ import Rollbar.Wai
 main :: IO ()
 main = do
   settings <- readSettings "rollbar.yaml"
-  let warpSettings = setOnException (rollbarOnException settings) defaultSettings
-  runSettings warpSettings app
+  runSettings
+    (setOnException (rollbarOnException settings) defaultSettings)
+    app
 
 app :: Application
 app _ _ = error "Boom"
