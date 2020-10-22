@@ -39,14 +39,14 @@ library:
   source-dirs: src
   dependencies:
     - aeson >= 1.4 && < 2
-    - bytestring
-    - directory
+    - bytestring >= 0.10 && < 1
+    - directory >= 1.3 && < 2
     - exceptions >= 0.10 && < 1
     - mtl >= 2.2 && < 3
-    - process
+    - process >= 1.6 && < 2
     - req >= 2.1 && < 4
-    - text
-    - unordered-containers
+    - text >= 1.2 && < 2
+    - unordered-containers >= 0.2 && < 1
     - yaml >= 0.11 && < 1
   exposed-modules:
     - Rollbar.Client

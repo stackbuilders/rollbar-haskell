@@ -41,11 +41,11 @@ _exe-ghc-options: &exe-ghc-options
 library:
   source-dirs: src
   dependencies:
-    - rollbar-client
-    - rollbar-wai
-    - unliftio
-    - wai
-    - yesod-core
+    - rollbar-client >= 0.1 && < 1
+    - rollbar-wai >= 0.1 && < 1
+    - unliftio >= 0.2 && < 1
+    - wai >= 3.2 && < 4
+    - yesod-core >= 1.6 && < 2
 
 executables:
   yesod-example:
@@ -55,7 +55,7 @@ executables:
     dependencies:
       - rollbar-client
       - rollbar-yesod
-      - warp
+      - warp >= 3.3 && < 4
       - yesod-core
     when:
       - condition: flag(example)
@@ -70,11 +70,11 @@ tests:
     source-dirs: test
     ghc-options: *exe-ghc-options
     dependencies:
-      - hspec
+      - hspec >= 2.7 && < 3
       - rollbar-client
       - rollbar-yesod
       - yesod-core
-      - yesod-test
+      - yesod-test >= 1.6 && < 2
       - wai
     build-tools:
       - hspec-discover:hspec-discover >= 2.7 && < 3

@@ -1,10 +1,10 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.33.0.
+-- This file has been generated from package.yaml by hpack version 0.34.2.
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 5a8a4780990f65c561d61f4039d4be0d152d938f25aedd1c9237017947866fdc
+-- hash: d007a8f11fac3e9745d78838751cf81ae9ce6f553d2a8e7f8aad77b97ad6d903
 
 name:           rollbar-yesod
 version:        0.1.0
@@ -44,11 +44,11 @@ library
   ghc-options: -Wall
   build-depends:
       base >=4.12 && <5
-    , rollbar-client
-    , rollbar-wai
-    , unliftio
-    , wai
-    , yesod-core
+    , rollbar-client >=0.1 && <1
+    , rollbar-wai >=0.1 && <1
+    , unliftio >=0.2 && <1
+    , wai >=3.2 && <4
+    , yesod-core >=1.6 && <2
   default-language: Haskell2010
 
 executable yesod-example
@@ -62,7 +62,7 @@ executable yesod-example
       base >=4.12 && <5
     , rollbar-client
     , rollbar-yesod
-    , warp
+    , warp >=3.3 && <4
     , yesod-core
   if flag(example)
     buildable: True
@@ -83,10 +83,10 @@ test-suite spec
       hspec-discover:hspec-discover >=2.7 && <3
   build-depends:
       base >=4.12 && <5
-    , hspec
+    , hspec >=2.7 && <3
     , rollbar-client
     , rollbar-yesod
     , wai
     , yesod-core
-    , yesod-test
+    , yesod-test >=1.6 && <2
   default-language: Haskell2010
