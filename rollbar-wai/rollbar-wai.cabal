@@ -1,10 +1,10 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.34.2.
+-- This file has been generated from package.yaml by hpack version 0.33.0.
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 3756852216d09ae0aa2d74a8a4e3b5969cc00b5d0f271ed50e4e2f9c337d121a
+-- hash: 36882de3e15bbc25fa5b54c1ee7d9dbe96436e87f4502b002a3a388508677741
 
 name:           rollbar-wai
 version:        0.1.0
@@ -90,13 +90,13 @@ test-suite spec
     , base >=4.12 && <5
     , hspec >=2.7 && <3
     , http-types
-    , mtl
+    , mtl >=2.2 && <3
     , process >=1.6 && <2
-    , req >=2.1 && <3
+    , req >=2.1 && <4
     , rollbar-client
     , rollbar-wai
     , text
     , unordered-containers
-    , wai >=3.2 && <4
+    , wai
     , warp >=3.3 && <4
   default-language: Haskell2010
