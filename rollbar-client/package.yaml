@@ -58,6 +58,7 @@ executables:
     ghc-options: *exe-ghc-options
     dependencies:
       - rollbar-client
+      - text
     when:
       - condition: flag(example)
         then:
