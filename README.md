@@ -1,6 +1,6 @@
 # Rollbar Haskell
 
-[![CircleCI](https://circleci.com/gh/stackbuilders/rollbar-haskell.svg?style=shield&circle-token=8006d81b2704e6649dddd32146493054b3033bc2)](https://app.circleci.com/pipelines/github/stackbuilders/rollbar-haskell)
+![CI](https://github.com/stackbuilders/rollbar-haskell/workflows/CI/badge.svg?branch=master)
 
 A group of libraries written in Haskell to communicate with [Rollbar
 API][rollbar-api]. Inspired by
