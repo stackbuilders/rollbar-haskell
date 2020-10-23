@@ -23,7 +23,13 @@ API][rollbar-api]. Inspired by
   - [GHC](https://www.haskell.org/ghc/download.html) and
     [cabal](https://www.haskell.org/cabal/download.html).
   - [stack](https://docs.haskellstack.org/en/stable/README/).
-- Setup a Rollbar account, create a project and generate an access token.
+- Set up a [Rollbar][rollbar] account, create a project, and generate an access
+  token.
+  - To get an access token, go to your project's Settings and then to Project
+    Access Tokens, where you can copy or create an access token with scope
+    `post_server_item`.
+
+[rollbar]: https://rollbar.com/
 
 ## Getting Started
 
