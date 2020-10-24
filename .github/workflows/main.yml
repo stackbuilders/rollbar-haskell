@@ -70,6 +70,6 @@ jobs:
       - run: stack update
       - run: stack build --only-dependencies --test
       - run: stack build --test --no-run-tests --pedantic
-      - run: stack test
+      - run: stack test -j1
         env:
           ROLLBAR_TOKEN: ${{ secrets.ROLLBAR_TOKEN }}
