@@ -63,7 +63,10 @@ rollbarOnExceptionWith f settings waiRequest ex =
   void $ liftIO $ forkIO $ runRollbar settings $ do
     item <- mkItem $ PayloadTrace $ Trace [] $ mkException ex
     request <- mapM mkRequest waiRequest
-    f item { itemRequest = request }
+    f item
+      { itemFramework = Just "wai"
+      , itemRequest = request
+      }
 
 -- | Transforms a Wai 'W.Request' into a Rollbar 'Request'.
 --

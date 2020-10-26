@@ -1,4 +1,5 @@
 {-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE OverloadedStrings #-}
 
 -- |
 -- Module: Rollbar.Yesod
@@ -17,9 +18,9 @@ module Rollbar.Yesod
 import qualified Network.Wai as W
 
 import Control.Exception (Exception(..), SomeException)
-import Control.Monad (unless)
+import Control.Monad (unless, void)
 import Rollbar.Client
-import Rollbar.Wai (rollbarOnException)
+import Rollbar.Wai (rollbarOnExceptionWith)
 import UnliftIO.Exception (catch, throwIO)
 import Yesod.Core
 import Yesod.Core.Types (HandlerContents)
@@ -39,7 +40,9 @@ rollbarYesodMiddleware
   => m a
   -> m a
 rollbarYesodMiddleware = rollbarYesodMiddlewareWith $ \settings request ex ->
-  liftIO $ rollbarOnException settings (Just request) ex
+  liftIO $ rollbarOnExceptionWith handler settings (Just request) ex
+  where
+    handler item = void $ createItem item { itemFramework = Just "yesod" }
 
 -- | Similar to 'rollbarYesodMiddleware', but it allows customize the function
 -- used to send the 'SomeException' captured from a handler to Rollbar.
