@@ -394,7 +394,7 @@ createItem item = do
   requestModifier <- getRequestModifier
   fmap
     (resultResponseResult . responseBody)
-    (rollbar POST url (body requestModifier) jsonResponse mempty)
+    (rollbar POST url (body requestModifier) jsonResponse)
   where
     url = baseUrl /: "item" /: ""
     body requestModifier = ReqBodyJson $

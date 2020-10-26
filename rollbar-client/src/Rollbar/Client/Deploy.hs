@@ -110,6 +110,6 @@ reportDeploy
 reportDeploy deploy =
   fmap
     (unDataResponse . responseBody)
-    (rollbar POST url (ReqBodyJson deploy) jsonResponse mempty)
+    (rollbar POST url (ReqBodyJson deploy) jsonResponse)
   where
     url = baseUrl /: "deploy"
