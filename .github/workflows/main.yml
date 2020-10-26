@@ -51,8 +51,9 @@ jobs:
       - uses: actions/setup-haskell@v1
         with:
           enable-stack: true
-          stack-version: 'latest'
+          stack-no-global: false
           stack-setup-ghc: true
+          stack-version: 'latest'
       - uses: actions/cache@v2
         with:
           path: |
