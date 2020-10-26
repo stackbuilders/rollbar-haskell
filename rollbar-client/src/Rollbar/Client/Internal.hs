@@ -42,11 +42,10 @@ rollbar
   -> Url 'Https
   -> body
   -> Proxy response
-  -> Option 'Https
   -> m response
-rollbar method url body response options = do
+rollbar method url body response = do
   Token token <- settingsToken <$> getSettings
-  req method url body response $ options <> header "X-Rollbar-Access-Token" token
+  req method url body response $ header "X-Rollbar-Access-Token" token
 
 baseUrl :: Url 'Https
 baseUrl = https "api.rollbar.com" /: "api" /: "1"
