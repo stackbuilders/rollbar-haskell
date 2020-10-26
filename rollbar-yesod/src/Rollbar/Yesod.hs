@@ -40,7 +40,7 @@ rollbarYesodMiddleware
   => m a
   -> m a
 rollbarYesodMiddleware = rollbarYesodMiddlewareWith $ \settings request ex ->
-  liftIO $ rollbarOnExceptionWith handler settings (Just request) ex
+  rollbarOnExceptionWith handler settings (Just request) ex
   where
     handler item = void $ createItem item { itemFramework = Just "yesod" }
 

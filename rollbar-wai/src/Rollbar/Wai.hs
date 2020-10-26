@@ -43,10 +43,11 @@ import Rollbar.Client
 --
 -- @since 0.1.0
 rollbarOnException
-  :: Settings
+  :: MonadIO m
+  => Settings
   -> Maybe W.Request
   -> SomeException
-  -> IO ()
+  -> m ()
 rollbarOnException = rollbarOnExceptionWith (void . createItem)
 
 -- | Similar to 'rollbarOnExceptionWith', but it allows customize the function
@@ -54,11 +55,12 @@ rollbarOnException = rollbarOnExceptionWith (void . createItem)
 --
 -- @since 0.1.0
 rollbarOnExceptionWith
-  :: (Item -> Rollbar ())
+  :: MonadIO m
+  => (Item -> Rollbar ())
   -> Settings
   -> Maybe W.Request
   -> SomeException
-  -> IO ()
+  -> m ()
 rollbarOnExceptionWith f settings waiRequest ex =
   void $ liftIO $ forkIO $ runRollbar settings $ do
     item <- mkItem $ PayloadTrace $ Trace [] $ mkException ex
