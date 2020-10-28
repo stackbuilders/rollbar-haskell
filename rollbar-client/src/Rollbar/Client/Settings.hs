@@ -1,3 +1,5 @@
+{-# LANGUAGE DeriveAnyClass #-}
+{-# LANGUAGE DerivingStrategies #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE OverloadedStrings #-}
 
@@ -9,6 +11,7 @@ module Rollbar.Client.Settings
   , Environment(..)
   , Revision(..)
   , getRevision
+  , getRevisionMaybe
   , RequestModifiers(..)
   , defaultRequestModifiers
   ) where
@@ -16,12 +19,15 @@ module Rollbar.Client.Settings
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as T
 
+import Control.Exception (Exception, throwIO)
+import Control.Monad (forM)
 import Control.Monad.IO.Class (MonadIO(..))
 import Data.Aeson
 import Data.ByteString (ByteString)
 import Data.List.NonEmpty
 import Data.Text (Text)
 import Data.Yaml.Config (loadYamlSettings, requireEnv)
+import System.Directory (findExecutable)
 import System.Process
 
 -- | Typeclass used to pull Rollbar 'Settings' out of a given 'Monad'.
@@ -58,24 +64,40 @@ instance FromJSON Token where
 
 -- | Environment to which the revision was deployed.
 newtype Environment = Environment Text
-  deriving (Eq, FromJSON, Show, ToJSON)
+  deriving (Eq, Show)
+  deriving newtype (FromJSON, ToJSON)
 
 -- | Git SHA of revision being deployed.
 newtype Revision = Revision Text
-  deriving (Eq, FromJSON, Show, ToJSON)
+  deriving (Eq, Show)
+  deriving newtype (FromJSON, ToJSON)
 
--- | Gets the 'Revision' from 'Settings' if the value is present (not Nothing),
--- otherwise pulls the 'Revision' from @git@ directly running the following
--- command @git rev-parse HEAD@.
+-- | Similar to 'getRevisionMaybe', but it throws a 'RevisionNotFound' if the
+-- 'Revision' is not found.
 getRevision
   :: (HasSettings m, MonadIO m)
   => m Revision
 getRevision = do
+  mrevision <- getRevisionMaybe
+  case mrevision of
+    Nothing -> liftIO $ throwIO RevisionNotFound
+    Just revision -> return revision
+
+-- | Gets the 'Revision' from 'Settings' (if the value is present), otherwise
+-- gets the 'Revision' from @git@ (if the executable is present) directly
+-- by running the following command @git rev-parse HEAD@, if none of them are
+-- present (neither the value nor the executable) returns 'Nothing'.
+getRevisionMaybe
+  :: (HasSettings m, MonadIO m)
+  => m (Maybe Revision)
+getRevisionMaybe = do
   mrevision <- settingsRevision <$> getSettings
   case mrevision of
-    Nothing ->
-      mkRevision <$> liftIO (readProcess "git" ["rev-parse", "HEAD"] "")
-    Just revision -> return revision
+    Nothing -> do
+      mgitPath <- liftIO $ findExecutable "git"
+      forM mgitPath $ \gitPath ->
+        mkRevision <$> liftIO (readProcess gitPath ["rev-parse", "HEAD"] "")
+    Just revision -> return $ Just revision
   where
     mkRevision = Revision . T.stripEnd . T.pack
 
@@ -108,3 +130,7 @@ defaultRequestModifiers = RequestModifiers
   , requestModifiersIncludeHeaders = Nothing
   , requestModifiersIncludeParams = Nothing
   }
+
+data RollbarError = RevisionNotFound
+  deriving (Eq, Show)
+  deriving anyclass Exception

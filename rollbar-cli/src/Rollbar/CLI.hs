@@ -24,7 +24,7 @@ data Command
     -- @since 0.1.0
   deriving (Eq, Show)
 
-data DeployCommand = DeployCommandReport
+data DeployCommand = DeployCommandReport (Maybe Revision)
   deriving (Eq, Show)
 
 -- | Parses a 'Command'.
@@ -56,10 +56,24 @@ commandParser = subparser $ mconcat
 
 deployCommandParser :: Parser DeployCommand
 deployCommandParser = subparser $
-  command "report" $ info (pure DeployCommandReport) $ mconcat
+  command "report" $ info (deployCommandReportParser <**> helper) $ mconcat
     [ fullDesc
     , progDesc "Tracks a deploy in Rollbar"
     ]
+
+deployCommandReportParser :: Parser DeployCommand
+deployCommandReportParser =
+  DeployCommandReport <$> optional (Revision <$> strOption revisionOptions)
+  where
+    revisionOptions = mconcat
+      [ short 'r'
+      , long "revision"
+      , help $ mconcat
+        [ "Git SHA of revision being deployed, if this argument is not present"
+        , " it would try to get the value from the configuration file first"
+        , " before calling git."
+        ]
+      ]
 
 runCommand :: Settings -> Command -> IO ()
 runCommand settings cmd = do
@@ -67,9 +81,12 @@ runCommand settings cmd = do
     CommandPing -> do
       pong <- runRollbar settings ping
       print pong
-    CommandDeploy DeployCommandReport -> do
+    CommandDeploy (DeployCommandReport mrevision) -> do
       deployId <- runRollbar settings $ do
-        deploy <- getRevision >>= mkDeploy
+        revision <- case mrevision of
+          Nothing -> getRevision
+          Just revision -> return revision
+        deploy <- mkDeploy revision
         reportDeploy deploy
 
       print deployId
