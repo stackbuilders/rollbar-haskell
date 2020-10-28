@@ -1,5 +1,3 @@
-{-# LANGUAGE DeriveAnyClass #-}
-{-# LANGUAGE DerivingStrategies #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE OverloadedStrings #-}
 
@@ -64,13 +62,11 @@ instance FromJSON Token where
 
 -- | Environment to which the revision was deployed.
 newtype Environment = Environment Text
-  deriving (Eq, Show)
-  deriving newtype (FromJSON, ToJSON)
+  deriving (Eq, FromJSON, Show, ToJSON)
 
 -- | Git SHA of revision being deployed.
 newtype Revision = Revision Text
-  deriving (Eq, Show)
-  deriving newtype (FromJSON, ToJSON)
+  deriving (Eq, FromJSON, Show, ToJSON)
 
 -- | Similar to 'getRevisionMaybe', but it throws a 'RevisionNotFound' if the
 -- 'Revision' is not found.
@@ -133,4 +129,5 @@ defaultRequestModifiers = RequestModifiers
 
 data RollbarError = RevisionNotFound
   deriving (Eq, Show)
-  deriving anyclass Exception
+
+instance Exception RollbarError
