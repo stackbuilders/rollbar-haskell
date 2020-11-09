@@ -1,6 +1,6 @@
 # Rollbar Haskell
 
-![CI](https://github.com/stackbuilders/rollbar-haskell/workflows/CI/badge.svg?branch=master)
+![CI](https://github.com/stackbuilders/rollbar-haskell/workflows/CI/badge.svg)
 
 A group of libraries written in Haskell to communicate with [Rollbar
 API][rollbar-api]. Inspired by
