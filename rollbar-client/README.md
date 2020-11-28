@@ -1,5 +1,8 @@
 # Rollbar Client
 
+![CI](https://github.com/stackbuilders/rollbar-haskell/workflows/CI/badge.svg)
+![Hackage](https://img.shields.io/hackage/v/rollbar-client)
+
 Core library to communicate with [Rollbar
 API](https://explorer.docs.rollbar.com/).
 
