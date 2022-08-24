@@ -33,8 +33,6 @@ API][rollbar-api]. Inspired by
 
 ## Getting Started
 
-### Cabal
-
 Compile the projects:
 
 ```
@@ -47,20 +45,6 @@ Run all tests:
 
 ```
 env ROLLBAR_TOKEN=<token> cabal test all
-```
-
-### Stack
-
-Compile the projects:
-
-```
-stack build
-```
-
-Run all tests:
-
-```
-env ROLLBAR_TOKEN=<token> stack test
 ```
 
 ## License

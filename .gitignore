@@ -29,3 +29,6 @@ cabal.project.local~
 # End of https://www.toptal.com/developers/gitignore/api/haskell
 
 .tool-versions
+package.yaml
+stack.yaml
+stack.yaml.lock
