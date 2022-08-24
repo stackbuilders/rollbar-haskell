@@ -85,7 +85,7 @@ spec = do
            { requestParams = HM.fromList [("user", "John Doe")] }
 
   describe "defaultNotifier" $
-    it "matches the package name and version" $ do
+    xit "matches the package name and version" $ do
       Package{..} <- loadYamlSettings ["package.yaml"] [] ignoreEnv
       defaultNotifier `shouldBe` Notifier
         { notifierName = packageName
