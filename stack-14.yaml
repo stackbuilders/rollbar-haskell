@@ -1,7 +1,0 @@
-resolver: lts-14.27
-
-packages:
-  - ./rollbar-cli
-  - ./rollbar-client
-  - ./rollbar-wai
-  - ./rollbar-yesod

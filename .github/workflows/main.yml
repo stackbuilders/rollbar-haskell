@@ -1,18 +1,13 @@
 name: CI
 
-on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
+on: push
 
 jobs:
-  cabal_build:
+  build:
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         ghc: ['8.6', '8.8', '8.10']
-
-    runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v2
@@ -33,43 +28,5 @@ jobs:
       - run: cabal build all --only-dependencies
       - run: cabal build all
       - run: cabal test all
-        env:
-          ROLLBAR_TOKEN: ${{ secrets.ROLLBAR_TOKEN }}
-
-  stack_build:
-    strategy:
-      matrix:
-        resolver: ['14', '16']
-
-    runs-on: ubuntu-latest
-
-    env:
-      STACK_YAML: stack-${{ matrix.resolver }}.yaml
-
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-haskell@v1
-        with:
-          enable-stack: true
-          stack-version: 'latest'
-          stack-setup-ghc: true
-      - uses: actions/cache@v2.1.4
-        with:
-          path: |
-            .stack-work
-            rollbar-cli/.stack-work
-            rollbar-client/.stack-work
-            rollbar-wai/.stack-work
-            rollbar-yesod/.stack-work
-            ~/.stack
-          key: stack-${{ matrix.resolver }}-${{ hashFiles('*/package.yaml') }}
-          restore-keys: |
-            stack-${{ matrix.resolver }}-${{ hashFiles('*/package.yaml') }}
-            stack-${{ matrix.resolver }}-
-            stack-
-      - run: stack update
-      - run: stack build --only-dependencies --test
-      - run: stack build --test --no-run-tests --pedantic
-      - run: stack test -j1
         env:
           ROLLBAR_TOKEN: ${{ secrets.ROLLBAR_TOKEN }}
