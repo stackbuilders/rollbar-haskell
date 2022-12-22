@@ -28,7 +28,8 @@ module Rollbar.Client.Item
   ) where
 
 import qualified Control.Exception as E
-import qualified Data.HashMap.Strict as HM
+import qualified Data.Aeson.KeyMap as KM
+import qualified Data.Aeson.Key as K
 import qualified Data.Text as T
 
 import Control.Monad.IO.Class (MonadIO(..))
@@ -239,7 +240,7 @@ data Message = Message
 
 instance ToJSON Message where
   toJSON Message{..} = Object $
-    HM.insert "body" (toJSON messageBody) messageMetadata
+    KM.insert "body" (toJSON messageBody) messageMetadata
 
 -- | The severity level. One of: "critical", "error", "warning", "info",
 -- "debug" Defaults to "error" for exceptions and "info" for messages. The
@@ -308,18 +309,18 @@ getRequestModifier :: (HasSettings m, Monad m) => m (Request -> Request)
 getRequestModifier = do
   RequestModifiers{..} <- settingsRequestModifiers <$> getSettings
   return $ appEndo $ mconcat $ catMaybes
-    [ withHeaders . excludeNames <$> requestModifiersExcludeHeaders
-    , withParams . excludeNames <$> requestModifiersExcludeParams
-    , withHeaders . includeNames <$> requestModifiersIncludeHeaders
-    , withParams . includeNames <$> requestModifiersIncludeParams
+    [ withHeaders . excludeNames . fmap K.fromText <$> requestModifiersExcludeHeaders
+    , withParams . excludeNames . fmap K.fromText <$> requestModifiersExcludeParams
+    , withHeaders . includeNames . fmap K.fromText <$> requestModifiersIncludeHeaders
+    , withParams . includeNames . fmap K.fromText <$> requestModifiersIncludeParams
     ]
   where
     withHeaders f = Endo $ \request -> request
       { requestHeaders = f $ requestHeaders request }
     withParams f = Endo $ \request -> request
       { requestParams = f $ requestParams request }
-    excludeNames names = HM.filterWithKey $ \name _ -> name `notElem` names
-    includeNames names = HM.filterWithKey $ \name _ -> name `elem` names
+    excludeNames names = KM.filterWithKey $ \name _ -> name `notElem` names
+    includeNames names = KM.filterWithKey $ \name _ -> name `elem` names
 
 -- | Data about the server related to this event.
 data Server = Server

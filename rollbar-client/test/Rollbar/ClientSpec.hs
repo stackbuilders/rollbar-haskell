@@ -7,7 +7,7 @@ module Rollbar.ClientSpec
   ( spec
   ) where
 
-import qualified Data.HashMap.Strict as HM
+import qualified Data.Aeson.KeyMap as KM
 
 import Control.Monad.Reader
 import Data.Aeson
@@ -41,11 +41,11 @@ spec = do
         request = Request
           { requestUrl = "http://example.com"
           , requestMethod = "GET"
-          , requestHeaders = HM.fromList
+          , requestHeaders = KM.fromList
               [ ("Host", "example.com")
               , ("Secret", "p4ssw0rd")
               ]
-          , requestParams = HM.fromList
+          , requestParams = KM.fromList
               [ ("user", "John Doe")
               , ("password", "p4ssw0rd")
               ]
@@ -61,28 +61,28 @@ spec = do
             defaultRequestModifiers
               { requestModifiersExcludeHeaders = Just $ pure "Secret" }
       in requestModifier request `shouldBe` request
-           { requestHeaders = HM.fromList [("Host", "example.com")] }
+           { requestHeaders = KM.fromList [("Host", "example.com")] }
 
     it "excludes the params not matching the given names" $
       let requestModifier = runReader getRequestModifier $ mkSettings $
             defaultRequestModifiers
               { requestModifiersExcludeParams = Just $ pure "password" }
       in requestModifier request `shouldBe` request
-           { requestParams = HM.fromList [("user", "John Doe")] }
+           { requestParams = KM.fromList [("user", "John Doe")] }
 
     it "includes only the headers matching the given names" $
       let requestModifier = runReader getRequestModifier $ mkSettings $
             defaultRequestModifiers
               { requestModifiersIncludeHeaders = Just $ pure "Host" }
       in requestModifier request `shouldBe` request
-           { requestHeaders = HM.fromList [("Host", "example.com")] }
+           { requestHeaders = KM.fromList [("Host", "example.com")] }
 
     it "includes only the params matching the given names" $
       let requestModifier = runReader getRequestModifier $ mkSettings $
             defaultRequestModifiers
               { requestModifiersIncludeParams = Just $ pure "user" }
       in requestModifier request `shouldBe` request
-           { requestParams = HM.fromList [("user", "John Doe")] }
+           { requestParams = KM.fromList [("user", "John Doe")] }
 
   describe "defaultNotifier" $
     it "matches the package name and version" $ do
@@ -127,7 +127,7 @@ spec = do
           itemId <- runRollbar settings $ do
             item <- mkItem $ PayloadMessage $ Message
               { messageBody = "Request over threshold of 10 seconds"
-              , messageMetadata = HM.fromList
+              , messageMetadata = KM.fromList
                   [ ("route", "home#index")
                   , ("time_elapsed", Number 15.23)
                   ]
