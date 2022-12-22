@@ -16,7 +16,8 @@ module Rollbar.Wai
   ) where
 
 import qualified Data.CaseInsensitive as CI
-import qualified Data.HashMap.Strict as HM
+import qualified Data.Aeson.KeyMap as KM
+import qualified Data.Aeson.Key as K
 import qualified Data.Text.Encoding as T
 import qualified Network.Wai as W
 import qualified Network.Wai.Parse as W
@@ -27,6 +28,7 @@ import Control.Exception
 import Control.Monad (void)
 import Control.Monad.IO.Class (MonadIO(..))
 import Data.Aeson
+import Data.Bifunctor (first)
 import Network.HTTP.Types (renderQuery)
 import Rollbar.Client
 
@@ -83,11 +85,11 @@ mkRequest req = liftIO $ do
         , W.rawQueryString req
         ]
     , requestMethod = T.decodeUtf8 $ W.requestMethod req
-    , requestHeaders = HM.fromList $ toHeader <$> W.requestHeaders req
+    , requestHeaders = KM.fromList $ map (first K.fromText) $ toHeader <$> W.requestHeaders req
     , requestParams = mempty
-    , requestGet = HM.fromList $ toQuery <$> W.queryString req
+    , requestGet = KM.fromList $ map (first K.fromText) $ toQuery <$> W.queryString req
     , requestQueryStrings = T.decodeUtf8 $ renderQuery False $ W.queryString req
-    , requestPost = HM.fromList $ fmap toParam params
+    , requestPost = KM.fromList $ map (first K.fromText) $ fmap toParam params
     , requestBody = ""
     , requestUserIp = ""
     }

@@ -5,7 +5,7 @@ module Rollbar.WaiSpec
   ( spec
   ) where
 
-import qualified Data.HashMap.Strict as HM
+import qualified Data.Aeson.KeyMap as KM
 import qualified Data.Text as T
 import qualified Network.Wai as W
 import qualified Network.Wai.Handler.Warp as W
@@ -50,7 +50,7 @@ spec = before getSettingsAndItemRef $
             ( Request
                 { requestUrl = "http://localhost:" <> portAsText <> "/error"
                 , requestMethod = "GET"
-                , requestHeaders = HM.fromList
+                , requestHeaders = KM.fromList
                     [ ("Accept-Encoding", "gzip")
                     , ("Host", String $ "localhost:" <> portAsText)
                     ]
