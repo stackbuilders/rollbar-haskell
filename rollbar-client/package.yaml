@@ -38,7 +38,7 @@ _exe-ghc-options: &exe-ghc-options
 library:
   source-dirs: src
   dependencies:
-    - aeson >= 2.0 && <= 2.2
+    - aeson >= 2.0 && <3
     - bytestring >= 0.10 && < 1
     - directory >= 1.3 && < 2
     - exceptions >= 0.10 && < 1

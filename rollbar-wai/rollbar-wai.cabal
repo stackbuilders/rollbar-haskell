@@ -43,7 +43,7 @@ library
       src
   ghc-options: -Wall
   build-depends:
-      aeson >=2.0 && <=2.2
+      aeson >=2.0 && <3
     , base >=4.12 && <5
     , bytestring >=0.10 && <1
     , case-insensitive >=1.2 && <2

@@ -40,7 +40,7 @@ _exe-ghc-options: &exe-ghc-options
 library:
   source-dirs: src
   dependencies:
-    - aeson >= 2.0 && <= 2.2
+    - aeson >= 2.0 && <3
     - bytestring >= 0.10 && < 1
     - case-insensitive >= 1.2 && < 2
     - http-types >= 0.12 && < 1
