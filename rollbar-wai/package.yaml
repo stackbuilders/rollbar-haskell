@@ -24,7 +24,7 @@ ghc-options:
   - -Wall
 
 dependencies:
-  - base >= 4.12 && < 5
+  - base >= 4.13 && < 5
 
 flags:
   example:

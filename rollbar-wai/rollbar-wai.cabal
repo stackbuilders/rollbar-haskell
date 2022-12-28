@@ -44,7 +44,7 @@ library
   ghc-options: -Wall
   build-depends:
       aeson >=2.0 && <3
-    , base >=4.12 && <5
+    , base >=4.13 && <5
     , bytestring >=0.10 && <1
     , case-insensitive >=1.2 && <2
     , http-types >=0.12 && <1
@@ -63,7 +63,7 @@ executable wai-example
       example
   ghc-options: -Wall -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-      base >=4.12 && <5
+      base >=4.13 && <5
     , rollbar-client
     , rollbar-wai
     , wai
@@ -87,7 +87,7 @@ test-suite spec
       hspec-discover:hspec-discover >=2.7 && <3
   build-depends:
       aeson
-    , base >=4.12 && <5
+    , base >=4.13 && <5
     , hspec >=2.7 && <3
     , http-types
     , mtl >=2.2 && <3
