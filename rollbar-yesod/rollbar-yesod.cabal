@@ -7,7 +7,7 @@ cabal-version: 1.12
 -- hash: d007a8f11fac3e9745d78838751cf81ae9ce6f553d2a8e7f8aad77b97ad6d903
 
 name:           rollbar-yesod
-version:        0.1.0
+version:        0.2.0
 synopsis:       Provides error reporting capabilities to Yesod applications through Rollbar API.
 
 description:    Please see the README on GitHub at
