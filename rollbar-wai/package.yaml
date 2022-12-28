@@ -44,7 +44,7 @@ library:
     - bytestring >= 0.10 && < 1
     - case-insensitive >= 1.2 && < 2
     - http-types >= 0.12 && < 1
-    - rollbar-client >= 0.1 && < 1
+    - rollbar-client >= 1.0 && < 2
     - text >= 1.2 && < 2
     - unordered-containers >= 0.2 && < 1
     - wai >= 3.2 && < 4
