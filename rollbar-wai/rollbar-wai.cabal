@@ -7,7 +7,7 @@ cabal-version: 1.12
 -- hash: 36882de3e15bbc25fa5b54c1ee7d9dbe96436e87f4502b002a3a388508677741
 
 name:           rollbar-wai
-version:        0.2.0
+version:        1.0.0
 synopsis:       Provides error reporting capabilities to WAI based applications through Rollbar API.
 
 description:    Please see the README on GitHub at
