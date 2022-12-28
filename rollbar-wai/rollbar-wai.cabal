@@ -19,7 +19,7 @@ maintainer:     Sebastián Estrella <sestrella@stackbuilders.com>
 copyright:      2020 Stack Builders Inc.
 license:        MIT
 license-file:   LICENSE
-tested-with:    GHC ==8.6.5, GHC ==8.8.4, GHC ==8.10.2
+tested-with:    GHC ==8.8.4, GHC ==8.10.2
 build-type:     Simple
 extra-source-files:
     README.md
