@@ -361,7 +361,7 @@ instance ToJSON Notifier where
 defaultNotifier :: Notifier
 defaultNotifier = Notifier
   { notifierName = "rollbar-client"
-  , notifierVersion = "0.1.0"
+  , notifierVersion = "0.2.0"
   }
 
 newtype ItemId = ItemId Text
