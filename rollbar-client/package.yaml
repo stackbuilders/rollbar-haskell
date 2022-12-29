@@ -1,11 +1,11 @@
 name: rollbar-client
-version: 0.1.0
+version: 1.0.0
 github: "stackbuilders/rollbar-haskell"
 license: MIT
 author: "Stack Builders Inc."
 maintainer: "Sebastián Estrella <sestrella@stackbuilders.com>"
 copyright: "2020 Stack Builders Inc."
-tested-with: GHC ==8.6.5, GHC ==8.8.4, GHC ==8.10.2
+tested-with: GHC ==8.8.4, GHC ==8.10.2
 
 extra-source-files:
   - README.md
@@ -22,7 +22,7 @@ ghc-options:
   - -Wall
 
 dependencies:
-  - base >= 4.12 && < 5
+  - base >= 4.13 && < 5
 
 flags:
   example:
@@ -38,7 +38,7 @@ _exe-ghc-options: &exe-ghc-options
 library:
   source-dirs: src
   dependencies:
-    - aeson >= 1.4 && < 2
+    - aeson >= 2.0 && <3
     - bytestring >= 0.10 && < 1
     - directory >= 1.3 && < 2
     - exceptions >= 0.10 && < 1

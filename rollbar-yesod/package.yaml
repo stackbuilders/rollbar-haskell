@@ -1,11 +1,11 @@
 name: rollbar-yesod
-version: 0.1.0
+version: 1.0.0
 github: "stackbuilders/rollbar-haskell"
 license: MIT
 author: "Stack Builders Inc."
 maintainer: "Sebastián Estrella <sestrella@stackbuilders.com>"
 copyright: "2020 Stack Builders Inc."
-tested-with: GHC ==8.6.5, GHC ==8.8.4, GHC ==8.10.2
+tested-with: GHC ==8.8.4, GHC ==8.10.2
 
 extra-source-files:
   - README.md
@@ -25,7 +25,7 @@ ghc-options:
   - -Wall
 
 dependencies:
-  - base >= 4.12 && < 5
+  - base >= 4.13 && < 5
 
 flags:
   example:
@@ -41,8 +41,8 @@ _exe-ghc-options: &exe-ghc-options
 library:
   source-dirs: src
   dependencies:
-    - rollbar-client >= 0.1 && < 1
-    - rollbar-wai >= 0.1 && < 1
+    - rollbar-client >= 1.0 && < 2
+    - rollbar-wai >= 1.0 && < 2
     - unliftio >= 0.2 && < 1
     - wai >= 3.2 && < 4
     - yesod-core >= 1.6 && < 2
