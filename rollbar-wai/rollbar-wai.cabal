@@ -1,10 +1,10 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.33.0.
+-- This file has been generated from package.yaml by hpack version 0.34.7.
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 36882de3e15bbc25fa5b54c1ee7d9dbe96436e87f4502b002a3a388508677741
+-- hash: ac188cecfff7139de33d798a8f28d9b0f071045ece47e95a25890f89a77b00c4
 
 name:           rollbar-wai
 version:        1.0.0
@@ -12,6 +12,7 @@ synopsis:       Provides error reporting capabilities to WAI based applications 
 
 description:    Please see the README on GitHub at
                 <https://github.com/stackbuilders/rollbar-haskell/tree/master/rollbar-wai>
+category:       Network
 homepage:       https://github.com/stackbuilders/rollbar-haskell#readme
 bug-reports:    https://github.com/stackbuilders/rollbar-haskell/issues
 author:         Stack Builders Inc.
@@ -19,7 +20,8 @@ maintainer:     Sebastián Estrella <sestrella@stackbuilders.com>
 copyright:      2020 Stack Builders Inc.
 license:        MIT
 license-file:   LICENSE
-tested-with:    GHC ==8.8.4, GHC ==8.10.2
+tested-with:
+    GHC ==8.8.4, GHC ==8.10.2
 build-type:     Simple
 extra-source-files:
     README.md

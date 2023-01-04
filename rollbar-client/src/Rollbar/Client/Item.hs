@@ -36,7 +36,7 @@ import Control.Monad.IO.Class (MonadIO(..))
 import Data.Aeson
 import Data.Maybe (catMaybes)
 import Data.Monoid (Endo(..))
-import Data.Text
+import Data.Text (Text)
 import Network.HTTP.Req
 import Rollbar.Client.Internal
 import Rollbar.Client.Settings

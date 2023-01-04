@@ -12,7 +12,7 @@ extra-source-files:
   - ChangeLog.md
 
 synopsis: Core library to communicate with Rollbar API.
-# category:            Web
+category: Network
 
 description: |
   Please see the README on GitHub at

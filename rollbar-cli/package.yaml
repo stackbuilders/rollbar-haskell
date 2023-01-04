@@ -12,7 +12,7 @@ extra-source-files:
   - ChangeLog.md
 
 synopsis: Simple CLI tool to perform commons tasks such as tracking deploys.
-# category:            Web
+category: Network
 
 description: |
   Please see the README on GitHub at

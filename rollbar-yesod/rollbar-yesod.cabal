@@ -1,10 +1,10 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.34.2.
+-- This file has been generated from package.yaml by hpack version 0.34.7.
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: d007a8f11fac3e9745d78838751cf81ae9ce6f553d2a8e7f8aad77b97ad6d903
+-- hash: 2e5d6eb77f4bc9ff223f3a16bc8b92ced7f6ab18eedf7405d9978b8520be8de7
 
 name:           rollbar-yesod
 version:        1.0.0
@@ -12,6 +12,7 @@ synopsis:       Provides error reporting capabilities to Yesod applications thro
 
 description:    Please see the README on GitHub at
                 <https://github.com/stackbuilders/rollbar-haskell/tree/master/rollbar-yesod>
+category:       Network
 homepage:       https://github.com/stackbuilders/rollbar-haskell#readme
 bug-reports:    https://github.com/stackbuilders/rollbar-haskell/issues
 author:         Stack Builders Inc.
@@ -19,7 +20,8 @@ maintainer:     Sebastián Estrella <sestrella@stackbuilders.com>
 copyright:      2020 Stack Builders Inc.
 license:        MIT
 license-file:   LICENSE
-tested-with:    GHC ==8.8.4, GHC ==8.10.2
+tested-with:
+    GHC ==8.8.4, GHC ==8.10.2
 build-type:     Simple
 extra-source-files:
     README.md
