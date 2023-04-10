@@ -67,4 +67,4 @@ env ROLLBAR_TOKEN=<token> stack test
 
 [MIT](LICENSE)
 
-[rollbar-api]: https://explorer.docs.rollbar.com/
+[rollbar-api]: https://docs.rollbar.com/
