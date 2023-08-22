@@ -25,7 +25,7 @@ jobs:
             cabal--${{ matrix.ghc }}-
             cabal-
       - run: cabal update
-      - run: cabal configure --enable-tests -fexample
+      - run: cabal configure --enable-tests
       - run: cabal build all --only-dependencies
       - run: cabal build all
       - run: cabal test all
