@@ -80,10 +80,14 @@ data Item = Item
   , itemServer :: Maybe Server
     -- ^ Data about the server related to this event.
   -- client
-  -- custom
-  -- fingerprint
-  -- title
-  -- uuid
+  , custom :: Maybe Object
+    -- ^ Any arbitrary metadata you want to send.
+  , title :: Maybe Text
+    -- ^ A string that will be used as the title of the Item occurrences will be grouped into.
+  , uuid :: Maybe Text
+    -- ^ Identifies this occurrence.
+  , fingerprint :: Maybe Text
+    -- ^ Controlls how this occurrence should be grouped.
   , itemNotifier :: Notifier
     -- ^ Describes the library used to send this event.
   } deriving (Eq, Show)
@@ -100,6 +104,10 @@ instance ToJSON Item where
         , "request" .= itemRequest
         , "server" .= itemServer
         , "notifier" .= itemNotifier
+        , "fingerprint" .= fingerprint
+        , "title" .= title
+        , "uuid" .= uuid
+        , "custom" .= custom
         ]
     ]
 
