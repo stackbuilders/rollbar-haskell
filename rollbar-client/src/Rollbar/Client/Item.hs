@@ -93,23 +93,25 @@ data Item = Item
   } deriving (Eq, Show)
 
 instance ToJSON Item where
-  toJSON Item{..} = object
-    [ "data" .= object
-        [ "environment" .= itemEnvironment
-        , "body" .= itemBody
-        , "level" .= itemLevel
-        , "platform" .= itemPlatform
-        , "language" .= itemLanguage
-        , "framework" .= itemFramework
-        , "request" .= itemRequest
-        , "server" .= itemServer
-        , "notifier" .= itemNotifier
-        , "fingerprint" .= fingerprint
-        , "title" .= title
-        , "uuid" .= uuid
-        , "custom" .= custom
-        ]
-    ]
+  toJSON Item{..} =
+    let dataFields =
+          [ "environment" .= itemEnvironment
+          , "body" .= itemBody
+          , "level" .= itemLevel
+          , "platform" .= itemPlatform
+          , "language" .= itemLanguage
+          , "framework" .= itemFramework
+          , "request" .= itemRequest
+          , "server" .= itemServer
+          , "notifier" .= itemNotifier
+          ] ++ catMaybes
+          [ ("custom" .=) <$> custom
+           , ("fingerprint" .=) <$> fingerprint
+           , ("title" .=) <$> title
+           , ("uuid" .=) <$> uuid
+          ]
+    in
+    object [ "data" .= object dataFields ]
 
 -- | Builds an 'Item' based on a 'Payload'.
 mkItem
@@ -137,6 +139,10 @@ mkItem payload = do
         , serverCodeVersion = Nothing
         }
     , itemNotifier = defaultNotifier
+    , custom = Nothing
+    , title = Nothing
+    , uuid = Nothing
+    , fingerprint = Nothing
     }
 
 -- | The main data being sent. It can either be a message, an exception, or a
