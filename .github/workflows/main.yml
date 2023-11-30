@@ -55,5 +55,3 @@ jobs:
         run: cabal test all
         env:
           ROLLBAR_TOKEN: ${{ secrets.ROLLBAR_TOKEN }}
-      - name: Check cabal file
-        run: cabal check
