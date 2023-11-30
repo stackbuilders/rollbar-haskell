@@ -31,7 +31,7 @@ jobs:
           cabal-update: true
       - name: Configure the build
         run: |
-          cabal configure --enable-tests --enable-benchmarks --disable-documentation
+          cabal configure --enable-tests --disable-documentation
           cabal build --dry-run
       - name: Restore cached dependencies
         uses: actions/cache/restore@v3
