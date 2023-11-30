@@ -1,40 +1,61 @@
-name: CI
+# The following workflow is based on the example provided by
+# haskell-actions/setup:
+#
+# https://github.com/haskell-actions/setup#model-cabal-workflow-with-caching
 
-on: push
+name: build
+
+on:
+  pull_request:
+  push:
+
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        ghc: ['8.8', '8.10']
+        ghc-version: ['8.10', '8.8']
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      - name: Setup Haskell
-        uses: haskell/actions/setup@v2
+      - name: Setup Haskell tools
+        uses: haskell-actions/setup@v2
+        id: setup
         with:
-          ghc-version: ${{ matrix.ghc }}
+          ghc-version: ${{ matrix.ghc-version }}
           cabal-version: 'latest'
-      - name: Setup cache
-        # https://github.com/actions/cache/blob/main/examples.md#haskell---cabal
-        uses: actions/cache@v3
+          cabal-update: true
+      - name: Configure the build
+        run: |
+          cabal configure --enable-tests --enable-benchmarks --disable-documentation
+          cabal build --dry-run
+      - name: Restore cached dependencies
+        uses: actions/cache/restore@v3
+        id: cache
+        env:
+          key: ${{ runner.os }}-ghc-${{ steps.setup.outputs.ghc-version }}-cabal-${{ steps.setup.outputs.cabal-version }}
         with:
-          path: |
-            ~/.cabal/packages
-            ~/.cabal/store
-            dist-newstyle
-          key: ${{ runner.os }}-${{ matrix.ghc }}-${{ hashFiles('**/*.cabal', '**/cabal.project', '**/cabal.project.freeze') }}
-          restore-keys: ${{ runner.os }}-${{ matrix.ghc }}-
-      - name: Update packages list
-        run: cabal update
-      - name: Configure project
-        run: cabal configure --enable-tests
+          path: ${{ steps.setup.outputs.cabal-store }}
+          key: ${{ env.key }}-plan-${{ hashFiles('**/plan.json') }}
+          restore-keys: ${{ env.key }}-
       - name: Install dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
         run: cabal build all --only-dependencies
-      - name: Compile project
+      - name: Save cached dependencies
+        uses: actions/cache/save@v3
+        if: steps.cache.outputs.cache-hit != 'true'
+        with:
+          path: ${{ steps.setup.outputs.cabal-store }}
+          key: ${{ steps.cache.outputs.cache-primary-key }}
+      - name: Build
         run: cabal build all
       - name: Run tests
         run: cabal test all
         env:
           ROLLBAR_TOKEN: ${{ secrets.ROLLBAR_TOKEN }}
+      - name: Check cabal file
+        run: cabal check
