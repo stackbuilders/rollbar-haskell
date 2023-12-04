@@ -2,7 +2,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 -- |
--- Module: Rollbar.Yesod
+-- Module: Rollbar.Yesod test
 -- Copyright: (c) 2020 Stack Builders Inc.
 -- License: MIT
 -- Maintainer: Sebastián Estrella <sestrella@stackbuilders.com>
