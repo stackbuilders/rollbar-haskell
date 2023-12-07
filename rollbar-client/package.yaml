@@ -4,7 +4,7 @@ github: "stackbuilders/rollbar-haskell"
 license: MIT
 author: "Stack Builders Inc."
 maintainer: "Sebastián Estrella <sestrella@stackbuilders.com>"
-copyright: "2020 Stack Builders Inc."
+copyright: "2020-present Stack Builders Inc."
 tested-with: GHC ==8.8.4, GHC ==8.10.2
 
 extra-source-files:
