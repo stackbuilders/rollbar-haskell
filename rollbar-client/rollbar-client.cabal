@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 125ccbaa8f8a1b3dab026c05c979880711d5f61ef9cf7323bfe23bda09bb3743
+-- hash: cdeac0442cf18d1227f6b97f4a74e6dc1f3ab22f9d7455ad2d0055550c69a00b
 
 name:           rollbar-client
 version:        1.0.0
@@ -16,7 +16,7 @@ homepage:       https://github.com/stackbuilders/rollbar-haskell#readme
 bug-reports:    https://github.com/stackbuilders/rollbar-haskell/issues
 author:         Stack Builders Inc.
 maintainer:     Sebastián Estrella <sestrella@stackbuilders.com>
-copyright:      2020 Stack Builders Inc.
+copyright:      2020-present Stack Builders Inc.
 license:        MIT
 license-file:   LICENSE
 tested-with:
