@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 09f6d783a4dd50c3c20f6baae154ce4682ffcce48aeb584f0ad6585b28ddd84b
+-- hash: 22fc7c0ac87561c87ece5a7fc5e7488798240e33a8e5f664ddb1359452f6e042
 
 name:           rollbar-wai
 version:        1.0.0
@@ -16,7 +16,7 @@ category:       Network
 homepage:       https://github.com/stackbuilders/rollbar-haskell#readme
 bug-reports:    https://github.com/stackbuilders/rollbar-haskell/issues
 author:         Stack Builders Inc.
-maintainer:     Sebastián Estrella <sestrella@stackbuilders.com>
+maintainer:     David Mazarro <dmunuera@stackbuilders.com>
 copyright:      2020-present Stack Builders Inc.
 license:        MIT
 license-file:   LICENSE
