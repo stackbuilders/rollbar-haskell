@@ -34,7 +34,7 @@ instance HasSettings Handler where
   getSettings = getsYesod appRollbarSettings
 
 instance Yesod App where
-  yesodMiddleware handler = do
+  yesodMiddleware handler = do 
     requestRef <- getsYesod appRequestRef
     rollbarYesodMiddlewareWith (writeRequest requestRef) $
       defaultYesodMiddleware handler
