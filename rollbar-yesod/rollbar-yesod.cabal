@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 2e5d6eb77f4bc9ff223f3a16bc8b92ced7f6ab18eedf7405d9978b8520be8de7
+-- hash: 07ec6f4e4497c06c6b37555f1514fdd3b8751a689ac2dc6e254a71a79879a00e
 
 name:           rollbar-yesod
 version:        1.0.0
@@ -16,8 +16,8 @@ category:       Network
 homepage:       https://github.com/stackbuilders/rollbar-haskell#readme
 bug-reports:    https://github.com/stackbuilders/rollbar-haskell/issues
 author:         Stack Builders Inc.
-maintainer:     Sebastián Estrella <sestrella@stackbuilders.com>
-copyright:      2020 Stack Builders Inc.
+maintainer:     David Mazarro <dmunuera@stackbuilders.com>
+copyright:      2020-present Stack Builders Inc.
 license:        MIT
 license-file:   LICENSE
 tested-with:

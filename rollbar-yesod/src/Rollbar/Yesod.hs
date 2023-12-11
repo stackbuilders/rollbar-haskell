@@ -3,7 +3,7 @@
 
 -- |
 -- Module: Rollbar.Yesod
--- Copyright: (c) 2020 Stack Builders Inc.
+-- Copyright: (c) 2020-present Stack Builders Inc.
 -- License: MIT
 -- Maintainer: Sebastián Estrella <sestrella@stackbuilders.com>
 --
