@@ -23,6 +23,7 @@ jobs:
     strategy:
       matrix:
         ghc-version: 
+          - '8.8'
           - '8.10' 
           - '9.4'
     steps:
