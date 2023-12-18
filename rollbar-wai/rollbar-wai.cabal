@@ -51,7 +51,7 @@ library
     , case-insensitive >=1.2 && <2
     , http-types >=0.12 && <1
     , rollbar-client >=1.0 && <2
-    , text >=1.2 && <2
+    , text >=1.2 && <2.1
     , unordered-containers >=0.2 && <1
     , wai >=3.2 && <4
     , wai-extra >=3.0 && <4

@@ -80,28 +80,38 @@ data Item = Item
   , itemServer :: Maybe Server
     -- ^ Data about the server related to this event.
   -- client
-  -- custom
-  -- fingerprint
-  -- title
-  -- uuid
+  , custom :: Maybe Object
+    -- ^ Any arbitrary metadata you want to send.
+  , title :: Maybe Text
+    -- ^ A string that will be used as the title of the Item occurrences will be grouped into.
+  , uuid :: Maybe Text
+    -- ^ Identifies this occurrence.
+  , fingerprint :: Maybe Text
+    -- ^ Controlls how this occurrence should be grouped.
   , itemNotifier :: Notifier
     -- ^ Describes the library used to send this event.
   } deriving (Eq, Show)
 
 instance ToJSON Item where
-  toJSON Item{..} = object
-    [ "data" .= object
-        [ "environment" .= itemEnvironment
-        , "body" .= itemBody
-        , "level" .= itemLevel
-        , "platform" .= itemPlatform
-        , "language" .= itemLanguage
-        , "framework" .= itemFramework
-        , "request" .= itemRequest
-        , "server" .= itemServer
-        , "notifier" .= itemNotifier
-        ]
-    ]
+  toJSON Item{..} =
+    let dataFields =
+          [ "environment" .= itemEnvironment
+          , "body" .= itemBody
+          , "level" .= itemLevel
+          , "platform" .= itemPlatform
+          , "language" .= itemLanguage
+          , "framework" .= itemFramework
+          , "request" .= itemRequest
+          , "server" .= itemServer
+          , "notifier" .= itemNotifier
+          ] ++ catMaybes
+          [ ("custom" .=) <$> custom
+           , ("fingerprint" .=) <$> fingerprint
+           , ("title" .=) <$> title
+           , ("uuid" .=) <$> uuid
+          ]
+    in
+    object [ "data" .= object dataFields ]
 
 -- | Builds an 'Item' based on a 'Payload'.
 mkItem
@@ -129,6 +139,10 @@ mkItem payload = do
         , serverCodeVersion = Nothing
         }
     , itemNotifier = defaultNotifier
+    , custom = Nothing
+    , title = Nothing
+    , uuid = Nothing
+    , fingerprint = Nothing
     }
 
 -- | The main data being sent. It can either be a message, an exception, or a
