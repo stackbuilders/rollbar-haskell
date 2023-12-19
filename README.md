@@ -1,6 +1,10 @@
 # Rollbar Haskell
 
 ![CI](https://github.com/stackbuilders/rollbar-haskell/workflows/CI/badge.svg)
+[![Hackage Version](https://img.shields.io/hackage/v/rollbar-cli?label=rollbar-cli)](http://hackage.haskell.org/package/rollbar-cli)
+[![Hackage Version](https://img.shields.io/hackage/v/rollbar-client?label=rollbar-cli)](http://hackage.haskell.org/package/rollbar-client)
+[![Hackage Version](https://img.shields.io/hackage/v/rollbar-wai?label=rollbar-cli)](http://hackage.haskell.org/package/rollbar-wai)
+[![Hackage Version](https://img.shields.io/hackage/v/rollbar-yesod?label=rollbar-cli)](http://hackage.haskell.org/package/rollbar-yesod)
 
 A group of libraries written in Haskell to communicate with [Rollbar
 API][rollbar-api]. Inspired by
