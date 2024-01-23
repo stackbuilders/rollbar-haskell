@@ -1,10 +1,10 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.34.7.
+-- This file has been generated from package.yaml by hpack version 0.36.0.
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 07ec6f4e4497c06c6b37555f1514fdd3b8751a689ac2dc6e254a71a79879a00e
+-- hash: 928697afe6fc01901eb1e55e4cf239102c43949165f2e912442b44fc521a3dfb
 
 name:           rollbar-yesod
 version:        1.0.0
@@ -21,7 +21,7 @@ copyright:      2020-present Stack Builders Inc.
 license:        MIT
 license-file:   LICENSE
 tested-with:
-    GHC ==8.8.4, GHC ==8.10.2
+    GHC ==8.8.4, GHC ==8.10.7, GHC ==9.4.7
 build-type:     Simple
 extra-source-files:
     README.md
@@ -66,11 +66,11 @@ executable yesod-example
     , rollbar-yesod
     , warp >=3.3 && <4
     , yesod-core
+  default-language: Haskell2010
   if flag(example)
     buildable: True
   else
     buildable: False
-  default-language: Haskell2010
 
 test-suite spec
   type: exitcode-stdio-1.0

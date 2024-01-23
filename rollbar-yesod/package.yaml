@@ -5,7 +5,7 @@ license: MIT
 author: "Stack Builders Inc."
 maintainer: "David Mazarro <dmunuera@stackbuilders.com>"
 copyright: "2020-present Stack Builders Inc."
-tested-with: GHC ==8.8.4, GHC ==8.10.2
+tested-with: GHC ==8.8.4, GHC ==8.10.7, GHC ==9.4.7
 
 extra-source-files:
   - README.md
