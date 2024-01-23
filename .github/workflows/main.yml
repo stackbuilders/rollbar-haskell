@@ -18,14 +18,25 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build:
+  generate-matrix:
+    name: "Generate matrix from cabal"
+    outputs: 
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
     runs-on: ubuntu-latest
+    steps:
+      - name: Extract the tested GHC versions
+        id: set-matrix
+        uses: kleidukos/get-tested@v0.1.6.0
+        with:
+          cabal-file: rollbar-client/rollbar-client.cabal
+          ubuntu: true
+          version: 0.1.6.0
+  build:
+    name: GHC ${{ matrix.ghc }} on ${{ matrix.os }}
+    needs: generate-matrix
+    runs-on: ${{ matrix.os }}
     strategy:
-      matrix:
-        ghc-version: 
-          - '8.8'
-          - '8.10' 
-          - '9.4'
+      matrix: ${{ fromJSON(needs.generate-matrix.outputs.matrix) }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
