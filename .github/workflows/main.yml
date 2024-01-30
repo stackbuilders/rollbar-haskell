@@ -44,7 +44,7 @@ jobs:
         uses: haskell-actions/setup@v2
         id: setup
         with:
-          ghc-version: ${{ matrix.ghc-version }}
+          ghc-version: ${{ matrix.ghc }}
           cabal-version: 'latest'
           cabal-update: true
       - name: Configure the build
