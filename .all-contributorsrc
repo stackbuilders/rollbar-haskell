@@ -16,6 +16,21 @@
         "code",
         "example"
       ]
+    },
+    {
+      "login": "cptrodolfox",
+      "name": "William R. Arellano",
+      "avatar_url": "https://avatars.githubusercontent.com/u/20303685?v=4",
+      "profile": "https://github.com/cptrodolfox",
+    },
+    {
+      "login": "sestrella",
+      "name": "Sebastián Estrella",
+      "avatar_url": "https://avatars.githubusercontent.com/u/2049686?v=4",
+      "profile": "https://github.com/sestrella",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
