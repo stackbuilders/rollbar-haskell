@@ -8,12 +8,13 @@
   "commitConvention": "angular",
   "contributors": [
     {
-      "login": "sestrella",
-      "name": "Sebastián Estrella",
-      "avatar_url": "https://avatars.githubusercontent.com/u/2049686?v=4",
-      "profile": "https://github.com/sestrella",
+      "login": "jpvillaisaza",
+      "name": "Juan Pedro Villa Isaza",
+      "avatar_url": "https://avatars.githubusercontent.com/u/584947?v=4",
+      "profile": "http://www.jpvillaisaza.com",
       "contributions": [
-        "code"
+        "code",
+        "example"
       ]
     },
     {
@@ -21,6 +22,15 @@
       "name": "William R. Arellano",
       "avatar_url": "https://avatars.githubusercontent.com/u/20303685?v=4",
       "profile": "https://github.com/cptrodolfox",
+    },
+    {
+      "login": "sestrella",
+      "name": "Sebastián Estrella",
+      "avatar_url": "https://avatars.githubusercontent.com/u/2049686?v=4",
+      "profile": "https://github.com/sestrella",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
