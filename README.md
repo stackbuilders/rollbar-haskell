@@ -1,4 +1,7 @@
 # Rollbar Haskell
+<!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
+[![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors-)
+<!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 ![CI](https://github.com/stackbuilders/rollbar-haskell/workflows/CI/badge.svg)
 [![Hackage Version](https://img.shields.io/hackage/v/rollbar-cli?label=rollbar-cli)](http://hackage.haskell.org/package/rollbar-cli)
@@ -67,8 +70,44 @@ Run all tests:
 env ROLLBAR_TOKEN=<token> stack test
 ```
 
+## Contributors
+
+Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
+
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+<table>
+  <tbody>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/sestrella"><img src="https://avatars.githubusercontent.com/u/2049686?v=4?s=100" width="100px;" alt="Sebastián Estrella"/><br /><sub><b>Sebastián Estrella</b></sub></a><br /><a href="https://github.com/stackbuilders/rollbar-haskell/commits?author=sestrella" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/cptrodolfox"><img src="https://avatars.githubusercontent.com/u/20303685?v=4?s=100" width="100px;" alt="William R. Arellano"/><br /><sub><b>William R. Arellano</b></sub></a><br /><a href="https://github.com/stackbuilders/rollbar-haskell/commits?author=cptrodolfox" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/jpvillaisaza"><img src="https://avatars.githubusercontent.com/u/584947?v=4?s=100" width="100px;" alt="Juan Pedro Villa Isaza"/><br /><sub><b>Juan Pedro Villa Isaza</b></sub></a><br /><a href="https://github.com/stackbuilders/rollbar-haskell/commits?author=jpvillaisaza" title="Code">💻</a> <a href="#example-jpvillaisaza" title="Examples">💡</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/davidmazarro"><img src="https://avatars.githubusercontent.com/u/22799724?v=4?s=100" width="100px;" alt="David Mazarro"/><br /><sub><b>David Mazarro</b></sub></a><br /><a href="https://github.com/stackbuilders/rollbar-haskell/commits?author=DavidMazarro" title="Code">💻</a> <a href="#maintenance-DavidMazarro" title="Maintenance">🚧</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/sebas1208"><img src="https://avatars.githubusercontent.com/u/5571870?v=4?s=100" width="100px;" alt="Sebastian Avalos"/><br /><sub><b>Sebastian Avalos</b></sub></a><br /><a href="https://github.com/stackbuilders/rollbar-haskell/commits?author=sebas1208" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/psilospore"><img src="https://avatars.githubusercontent.com/u/5355976?v=4?s=100" width="100px;" alt="psilospore"/><br /><sub><b>psilospore</b></sub></a><br /><a href="https://github.com/stackbuilders/rollbar-haskell/commits?author=psilospore" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/ijsnow"><img src="https://avatars.githubusercontent.com/u/11557758?v=4?s=100" width="100px;" alt="Isaac Snow"/><br /><sub><b>Isaac Snow</b></sub></a><br /><a href="https://github.com/stackbuilders/rollbar-haskell/commits?author=ijsnow" title="Documentation">📖</a></td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- markdownlint-restore -->
+<!-- prettier-ignore-end -->
+
+<!-- ALL-CONTRIBUTORS-LIST:END -->
+
+This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
+
 ## License
 
-[MIT](LICENSE)
+MIT, see [the LICENSE file](LICENSE).
+
+## Contributing
+
+Do you want to contribute to this project? Please take a look at our [contributing guideline](/docs/CONTRIBUTING.md) to know how you can help us build it.
+
+---
+<img src="https://cdn.stackbuilders.com/media/images/Sb-supports.original.png" alt="Stack Builders" width="50%"></img>
+[Check out our libraries](https://github.com/stackbuilders/) | [Join our team](https://www.stackbuilders.com/join-us/)
 
 [rollbar-api]: https://docs.rollbar.com/
