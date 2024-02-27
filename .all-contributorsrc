@@ -1,0 +1,27 @@
+{
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": false,
+  "commitType": "docs",
+  "commitConvention": "angular",
+  "contributors": [
+    {
+      "login": "jpvillaisaza",
+      "name": "Juan Pedro Villa Isaza",
+      "avatar_url": "https://avatars.githubusercontent.com/u/584947?v=4",
+      "profile": "http://www.jpvillaisaza.com",
+      "contributions": [
+        "code",
+        "example"
+      ]
+    }
+  ],
+  "contributorsPerLine": 7,
+  "skipCi": true,
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "projectName": "rollbar-haskell",
+  "projectOwner": "stackbuilders"
+}
