@@ -1,0 +1,26 @@
+{
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": false,
+  "commitType": "docs",
+  "commitConvention": "angular",
+  "contributors": [
+    {
+      "login": "sebas1208",
+      "name": "Sebastian Avalos",
+      "avatar_url": "https://avatars.githubusercontent.com/u/5571870?v=4",
+      "profile": "https://github.com/sebas1208",
+      "contributions": [
+        "code"
+      ]
+    }
+  ],
+  "contributorsPerLine": 7,
+  "skipCi": true,
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "projectName": "rollbar-haskell",
+  "projectOwner": "stackbuilders"
+}
