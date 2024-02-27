@@ -1,0 +1,26 @@
+{
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": false,
+  "commitType": "docs",
+  "commitConvention": "angular",
+  "contributors": [
+    {
+      "login": "ijsnow",
+      "name": "Isaac Snow",
+      "avatar_url": "https://avatars.githubusercontent.com/u/11557758?v=4",
+      "profile": "https://github.com/ijsnow",
+      "contributions": [
+        "doc"
+      ]
+    }
+  ],
+  "contributorsPerLine": 7,
+  "skipCi": true,
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "projectName": "rollbar-haskell",
+  "projectOwner": "stackbuilders"
+}
