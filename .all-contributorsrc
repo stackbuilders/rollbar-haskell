@@ -61,6 +61,14 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "ijsnow",
+      "name": "Isaac Snow",
+      "avatar_url": "https://avatars.githubusercontent.com/u/11557758?v=4",
+      "profile": "https://github.com/ijsnow",
+      "contributions": [
+        "doc"
     }
   ],
   "contributorsPerLine": 7,
