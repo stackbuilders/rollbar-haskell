@@ -1,6 +1,6 @@
 # Rollbar Haskell
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-7-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 ![CI](https://github.com/stackbuilders/rollbar-haskell/workflows/CI/badge.svg)
@@ -70,7 +70,7 @@ Run all tests:
 env ROLLBAR_TOKEN=<token> stack test
 ```
 
-## Contributors
+## Contributors ✨
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
 
