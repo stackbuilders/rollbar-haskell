@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 2ba224bc6db40a624010bece934990a32caa6f2f52115acb984f1c95461db94d
+-- hash: ec084557ab6ac4fa78cda03d7566582d95296b617cdf5f55ec5d6a8ab9bad8c8
 
 name:           rollbar-wai
 version:        1.1.0
@@ -25,7 +25,7 @@ tested-with:
 build-type:     Simple
 extra-source-files:
     README.md
-    CHANGELOG.md
+    ChangeLog.md
 
 source-repository head
   type: git

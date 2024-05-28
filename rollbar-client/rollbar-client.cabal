@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 81d6afa5ec6b2f06fd39127d2ad1f8ad60dc296787ba7008b4850224495641fe
+-- hash: 372dae78f9159532940f589cb4a58365621fc289aae679dfac95e4b6ba477ed7
 
 name:           rollbar-client
 version:        1.1.0
@@ -24,7 +24,7 @@ tested-with:
 build-type:     Simple
 extra-source-files:
     README.md
-    CHANGELOG.md
+    ChangeLog.md
 
 source-repository head
   type: git
