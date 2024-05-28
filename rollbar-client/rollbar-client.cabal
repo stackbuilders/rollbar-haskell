@@ -4,10 +4,10 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 1931cea8ad6754d11a0a9999cf3bd306f24d3b9b492d2bd442edbd99b1f1a78d
+-- hash: 81d6afa5ec6b2f06fd39127d2ad1f8ad60dc296787ba7008b4850224495641fe
 
 name:           rollbar-client
-version:        1.0.0
+version:        1.1.0
 synopsis:       Core library to communicate with Rollbar API.
 description:    Please see the README on GitHub at
                 <https://github.com/stackbuilders/rollbar-haskell/tree/master/rollbar-client>
