@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 928697afe6fc01901eb1e55e4cf239102c43949165f2e912442b44fc521a3dfb
+-- hash: 5125e85e486dd50a57b0879cae6ecfc7c5a756c587f33eef2d2c5d38a915969f
 
 name:           rollbar-yesod
 version:        1.0.0
@@ -25,7 +25,7 @@ tested-with:
 build-type:     Simple
 extra-source-files:
     README.md
-    ChangeLog.md
+    CHANGELOG.md
 
 source-repository head
   type: git
