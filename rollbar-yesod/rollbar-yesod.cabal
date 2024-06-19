@@ -4,10 +4,10 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 928697afe6fc01901eb1e55e4cf239102c43949165f2e912442b44fc521a3dfb
+-- hash: 73910af7b84cf6d3325d9af612c5d29651317e6e29596c3660c64a32be67da87
 
 name:           rollbar-yesod
-version:        1.0.0
+version:        1.1.0
 synopsis:       Provides error reporting capabilities to Yesod applications through Rollbar API.
 
 description:    Please see the README on GitHub at

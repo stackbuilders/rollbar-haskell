@@ -30,7 +30,7 @@ jobs:
         with:
           cabal-file: rollbar-client/rollbar-client.cabal
           ubuntu-version: latest
-          macos-version: latest
+          macos-version: 12
           version: 0.1.7.0
   build:
     name: GHC ${{ matrix.ghc }} on ${{ matrix.os }}

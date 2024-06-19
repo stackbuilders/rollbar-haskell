@@ -4,10 +4,10 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 7c6698b375ec164c76d2431962f34299163ec2755d348dc931999d649f19669e
+-- hash: 99c3aa74e5ef6c059b7ebeb837bca8f09c047df2a00b6856c99a919e4ad041ed
 
 name:           rollbar-cli
-version:        1.0.0
+version:        1.1.0
 synopsis:       Simple CLI tool to perform commons tasks such as tracking deploys.
 description:    Please see the README on GitHub at
                 <https://github.com/stackbuilders/rollbar-haskell/tree/master/rollbar-cli>
