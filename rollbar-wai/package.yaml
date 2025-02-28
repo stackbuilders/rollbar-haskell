@@ -48,7 +48,7 @@ library:
     - text >= 1.2 && < 2.1
     - unordered-containers >= 0.2 && < 1
     - wai >= 3.2 && < 4
-    - wai-extra >= 3.0 && < 4
+    - "wai-extra < 3.1.17"         # TODO: update breaks yesod-core, see https://github.com/yesodweb/yesod/issues/1854
 
 executables:
   wai-example:
