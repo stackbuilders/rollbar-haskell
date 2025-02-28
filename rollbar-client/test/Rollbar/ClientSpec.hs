@@ -11,10 +11,12 @@ import qualified Data.Aeson.KeyMap as KM
 
 import Control.Monad.Reader
 import Data.Aeson
-import Data.Text
+import Data.Text as T
 import Data.Yaml.Config
 import Rollbar.Client
 import Test.Hspec
+import Data.Text.Encoding
+import Data.ByteString as DB
 
 data Package = Package
   { packageName :: Text
@@ -143,3 +145,28 @@ spec = do
           reportDeploy deploy
 
         deployId `shouldSatisfy` (> 0)
+
+  describe "ToJSON Item" $ do
+    context "when serializing to JSON" $ do
+      let item = Item
+            { itemEnvironment = Environment "test"
+            , itemBody = Body { bodyPayload = PayloadMessage (Message "Test" mempty) }
+            , itemLevel = Just LevelInfo
+            , itemPlatform = Just "haskell"
+            , itemLanguage = Just "Haskell"
+            , itemFramework = Just "GHC"
+            , itemRequest = Nothing
+            , itemServer = Nothing
+            , custom = Just mempty
+            , title = Nothing
+            , uuid = Just "12345"
+            , fingerprint = Nothing
+            , itemNotifier = Notifier "rollbar-client" "1.1.0"
+            }
+          jsonItem = decodeUtf8 $ toStrict $ encode item
+
+      it "omits fields if they are Nothing values" $
+        T.unpack jsonItem `shouldNotContain` "\"server\""
+
+      it "includes fields if they are Just values" $ 
+        T.unpack jsonItem `shouldContain` "\"platform\":\"haskell\""
