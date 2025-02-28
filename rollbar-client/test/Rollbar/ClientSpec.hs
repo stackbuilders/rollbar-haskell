@@ -16,7 +16,7 @@ import Data.Yaml.Config
 import Rollbar.Client
 import Test.Hspec
 import Data.Text.Encoding
-import Data.ByteString as DB
+import qualified Data.ByteString.Lazy as DBL
 
 data Package = Package
   { packageName :: Text
@@ -163,7 +163,7 @@ spec = do
             , fingerprint = Nothing
             , itemNotifier = Notifier "rollbar-client" "1.1.0"
             }
-          jsonItem = decodeUtf8 $ toStrict $ encode item
+          jsonItem = decodeUtf8 $ DBL.toStrict $ encode item
 
       it "omits fields if they are Nothing values" $
         T.unpack jsonItem `shouldNotContain` "\"server\""
