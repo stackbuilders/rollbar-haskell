@@ -11,12 +11,12 @@ import qualified Data.Aeson.KeyMap as KM
 
 import Control.Monad.Reader
 import Data.Aeson
+import qualified Data.ByteString.Lazy as DBL
+import Data.Text.Encoding
 import Data.Text as T
 import Data.Yaml.Config
 import Rollbar.Client
 import Test.Hspec
-import Data.Text.Encoding
-import qualified Data.ByteString.Lazy as DBL
 
 data Package = Package
   { packageName :: Text
