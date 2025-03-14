@@ -54,7 +54,7 @@ library
     , text >=1.2 && <2.1
     , unordered-containers >=0.2 && <1
     , wai >=3.2 && <4
-    , wai-extra >=3.0 && <4
+    , wai-extra >=3.0 && < 3.1.17 -- TODO: update breaks yesod-core, see https://github.com/yesodweb/yesod/issues/1854
   default-language: Haskell2010
 
 executable wai-example
@@ -101,4 +101,5 @@ test-suite spec
     , unordered-containers
     , wai
     , warp >=3.3 && <4
+    , bytestring >=0.10 && <1
   default-language: Haskell2010

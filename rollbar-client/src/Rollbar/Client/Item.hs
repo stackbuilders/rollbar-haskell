@@ -97,15 +97,15 @@ instance ToJSON Item where
     let dataFields =
           [ "environment" .= itemEnvironment
           , "body" .= itemBody
-          , "level" .= itemLevel
-          , "platform" .= itemPlatform
-          , "language" .= itemLanguage
-          , "framework" .= itemFramework
-          , "request" .= itemRequest
-          , "server" .= itemServer
           , "notifier" .= itemNotifier
           ] ++ catMaybes
-          [ ("custom" .=) <$> custom
+          [  ("level" .=) <$> itemLevel
+           , ("platform" .=) <$> itemPlatform
+           , ("language" .=) <$> itemLanguage
+           , ("framework" .=) <$> itemFramework
+           , ("request" .=) <$> itemRequest
+           , ("server" .=) <$> itemServer
+           , ("custom" .=) <$> custom
            , ("fingerprint" .=) <$> fingerprint
            , ("title" .=) <$> title
            , ("uuid" .=) <$> uuid
