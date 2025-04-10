@@ -5,8 +5,8 @@
 
 name: CI
 
-on: 
-  pull_request: 
+on:
+  pull_request:
     branches:
       - main
   push:
@@ -20,7 +20,7 @@ concurrency:
 jobs:
   generate-matrix:
     name: "Generate matrix from cabal"
-    outputs: 
+    outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     runs-on: ubuntu-latest
     steps:
@@ -46,12 +46,33 @@ jobs:
         id: setup
         with:
           ghc-version: ${{ matrix.ghc }}
-          cabal-version: 'latest'
+          cabal-version: "latest"
           cabal-update: true
-      - name: Configure the build
+
+      # TODO: Delete these outputs after testing
+      - name: Debug Setup Outputs
         run: |
-          cabal configure --enable-tests --disable-documentation
-          cabal build all --dry-run
+          echo "GHC Version: ${{ steps.setup.outputs.ghc-version }}"
+          echo "Cabal Version: ${{ steps.setup.outputs.cabal-version }}"
+          echo "Cabal Store: ${{ steps.setup.outputs.cabal-store }}"
+          echo "Runner OS: ${{ runner.os }}"
+
+      # TODO: Refine this plan.json configuration
+      - name: Generate plan.json
+        run: |
+          cabal update
+          cabal build --dry-run --enable-benchmarks --enable-tests all > /dev/null
+          mkdir -p ${{ github.workspace }}/cache-info
+          cp dist-newstyle/cache/plan.json ${{ github.workspace }}/cache-info/
+          echo "Plan JSON Hash: $(sha256sum ${{ github.workspace }}/cache-info/plan.json | cut -d ' ' -f 1)"
+
+      # TODO: Configure options is needed???
+      #- name: Configure the build
+      #  run: |
+      #  cabal configure --enable-tests --disable-documentation
+      #  cabal build all --dry-run
+
+      # TODO: delete /cache-info/ path
       - name: Restore cached dependencies
         uses: actions/cache/restore@v4
         id: cache
@@ -59,8 +80,16 @@ jobs:
           key: ${{ runner.os }}-ghc-${{ steps.setup.outputs.ghc-version }}-cabal-${{ steps.setup.outputs.cabal-version }}
         with:
           path: ${{ steps.setup.outputs.cabal-store }}
-          key: ${{ env.key }}-plan-${{ hashFiles('**/plan.json') }}
+          key: ${{ env.key }}-plan-${{ hashFiles('**/cache-info/plan.json') }}
           restore-keys: ${{ env.key }}-
+
+      # Debug the cache hit/miss
+      - name: Debug Cache Results
+        run: |
+          echo "Cache Hit: ${{ steps.cache.outputs.cache-hit }}"
+          echo "Cache Primary Key: ${{ steps.cache.outputs.cache-primary-key }}"
+          echo "Cache Matched Key: ${{ steps.cache.outputs.cache-matched-key }}"
+
       - name: Install dependencies
         if: steps.cache.outputs.cache-hit != 'true'
         run: cabal build all --only-dependencies
