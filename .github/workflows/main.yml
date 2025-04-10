@@ -50,12 +50,12 @@ jobs:
           cabal-update: true
 
       # TODO: Delete these outputs after testing
-      - name: Debug Setup Outputs
-        run: |
-          echo "GHC Version: ${{ steps.setup.outputs.ghc-version }}"
-          echo "Cabal Version: ${{ steps.setup.outputs.cabal-version }}"
-          echo "Cabal Store: ${{ steps.setup.outputs.cabal-store }}"
-          echo "Runner OS: ${{ runner.os }}"
+      #- name: Debug Setup Outputs
+      #  run: |
+      #    echo "GHC Version: ${{ steps.setup.outputs.ghc-version }}"
+      #    echo "Cabal Version: ${{ steps.setup.outputs.cabal-version }}"
+      #    echo "Cabal Store: ${{ steps.setup.outputs.cabal-store }}"
+      #    echo "Runner OS: ${{ runner.os }}"
 
       # TODO: Refine this plan.json configuration
       - name: Generate plan.json
