@@ -50,12 +50,8 @@ jobs:
           cabal-update: true
       - name: Configure the build
         run: |
-          cabal configure --enable-tests --disable-documentation
+          cabal configure --enable-tests --enable-benchmarks --disable-documentation
           cabal build all --dry-run
-          pwd
-          echo ${{ github.workspace }}
-          find . -type f -name "*plan.json"
-          cat dist-newstyle/cache/plan.json
 
       - name: Restore cached dependencies
         uses: actions/cache/restore@v4
@@ -64,7 +60,7 @@ jobs:
           key: ${{ runner.os }}-ghc-${{ steps.setup.outputs.ghc-version }}-cabal-${{ steps.setup.outputs.cabal-version }}
         with:
           path: ${{ steps.setup.outputs.cabal-store }}
-          key: ${{ env.key }}-plan-${{ hashFiles('**/plan.json') }}
+          key: ${{ env.key }}-plan-${{ hashFiles('${{ github.workspace }}/dist-newstyle/cache/plan.json') }}
           restore-keys: ${{ env.key }}-
 
       - name: Install dependencies
