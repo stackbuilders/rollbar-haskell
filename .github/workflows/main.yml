@@ -60,7 +60,7 @@ jobs:
           key: ${{ runner.os }}-ghc-${{ steps.setup.outputs.ghc-version }}-cabal-${{ steps.setup.outputs.cabal-version }}
         with:
           path: ${{ steps.setup.outputs.cabal-store }}
-          key: v1-ghc-deps-${{ env.key }}-plan-${{ hashFiles('${{ github.workspace }}/dist-newstyle/cache/plan.json') }}
+          key: v1-ghc-deps-${{ env.key }}-plan-${{ hashFiles('**/dist-newstyle/cache/plan.json') }}
           restore-keys: v1-ghc-deps-${{ env.key }}-
 
       - name: Install dependencies
