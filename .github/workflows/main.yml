@@ -48,17 +48,15 @@ jobs:
           ghc-version: ${{ matrix.ghc }}
           cabal-version: "latest"
           cabal-update: true
-
-      # TODO: Refine this plan.json configuration
-      - name: Generate plan.json
+      - name: Configure the build
         run: |
-          cabal update
-          cabal build --dry-run --enable-benchmarks --enable-tests all > /dev/null
-          mkdir -p ${{ github.workspace }}/cache-info
-          cp dist-newstyle/cache/plan.json ${{ github.workspace }}/cache-info/
-          echo "Plan JSON Hash: $(sha256sum ${{ github.workspace }}/cache-info/plan.json | cut -d ' ' -f 1)"
+          cabal configure --enable-tests --disable-documentation
+          cabal build all --dry-run
+          pwd
+          echo ${{ github.workspace }}
+          find . -type f -name "*plan.json"
+          cat dist-newstyle/cache/plan.json
 
-      # TODO: delete /cache-info/ path ?
       - name: Restore cached dependencies
         uses: actions/cache/restore@v4
         id: cache
@@ -66,15 +64,8 @@ jobs:
           key: ${{ runner.os }}-ghc-${{ steps.setup.outputs.ghc-version }}-cabal-${{ steps.setup.outputs.cabal-version }}
         with:
           path: ${{ steps.setup.outputs.cabal-store }}
-          key: ${{ env.key }}-plan-${{ hashFiles('**/cache-info/plan.json') }}
+          key: ${{ env.key }}-plan-${{ hashFiles('**/plan.json') }}
           restore-keys: ${{ env.key }}-
-
-      # Debug the cache hit/miss
-      - name: Debug Cache Results
-        run: |
-          echo "Cache Hit: ${{ steps.cache.outputs.cache-hit }}"
-          echo "Cache Primary Key: ${{ steps.cache.outputs.cache-primary-key }}"
-          echo "Cache Matched Key: ${{ steps.cache.outputs.cache-matched-key }}"
 
       - name: Install dependencies
         if: steps.cache.outputs.cache-hit != 'true'
@@ -91,4 +82,3 @@ jobs:
         run: cabal test all
         env:
           ROLLBAR_TOKEN: ${{ secrets.ROLLBAR_TOKEN }}
-
