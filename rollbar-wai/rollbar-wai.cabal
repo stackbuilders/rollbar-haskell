@@ -1,10 +1,10 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.36.0.
+-- This file has been generated from package.yaml by hpack version 0.38.1.
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: ec084557ab6ac4fa78cda03d7566582d95296b617cdf5f55ec5d6a8ab9bad8c8
+-- hash: b86fed99ff701f3fcad9f738afc390815821aa0fb67532db9332583377e86282
 
 name:           rollbar-wai
 version:        1.1.0
@@ -21,7 +21,7 @@ copyright:      2020-present Stack Builders Inc.
 license:        MIT
 license-file:   LICENSE
 tested-with:
-    GHC ==8.8.4, GHC ==8.10.7, GHC ==9.4.7
+    GHC ==9.4.7, GHC ==9.6.7, GHC ==9.8.4, GHC ==9.10.1, GHC ==9.12.2
 build-type:     Simple
 extra-source-files:
     README.md
@@ -54,8 +54,7 @@ library
     , text >=1.2 && <2.1
     , unordered-containers >=0.2 && <1
     , wai >=3.2 && <4
-    , wai-extra >=3.0 && < 3.1.17
-    -- TODO: update breaks yesod-core, see https://github.com/yesodweb/yesod/issues/1854
+    , wai-extra <3.1.17
   default-language: Haskell2010
 
 executable wai-example
@@ -102,5 +101,4 @@ test-suite spec
     , unordered-containers
     , wai
     , warp >=3.3 && <4
-    , bytestring >=0.10 && <1
   default-language: Haskell2010

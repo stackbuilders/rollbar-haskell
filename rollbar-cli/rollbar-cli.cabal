@@ -1,10 +1,10 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.36.0.
+-- This file has been generated from package.yaml by hpack version 0.38.1.
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 99c3aa74e5ef6c059b7ebeb837bca8f09c047df2a00b6856c99a919e4ad041ed
+-- hash: a83fc1986401d60e95b403c89a44ae9b8e952aa3427da2ef9c890fc974903626
 
 name:           rollbar-cli
 version:        1.1.0
@@ -20,7 +20,7 @@ copyright:      2020-present Stack Builders Inc.
 license:        MIT
 license-file:   LICENSE
 tested-with:
-    GHC ==8.8.4, GHC ==8.10.7, GHC ==9.4.7
+    GHC ==9.4.7, GHC ==9.6.7, GHC ==9.8.4, GHC ==9.10.1, GHC ==9.12.2
 build-type:     Simple
 extra-source-files:
     README.md
@@ -68,5 +68,4 @@ test-suite spec
   build-depends:
       base >=4.13 && <5
     , rollbar-cli
-    , bytestring >=0.10 && <1
   default-language: Haskell2010

@@ -5,7 +5,7 @@ license: MIT
 author: "Stack Builders Inc."
 maintainer: "David Mazarro <dmunuera@stackbuilders.com>"
 copyright: "2020-present Stack Builders Inc."
-tested-with: GHC ==8.8.4, GHC ==8.10.7, GHC ==9.4.7
+tested-with: GHC ==9.4.7, GHC ==9.6.7, GHC ==9.8.4, GHC ==9.10.1, GHC ==9.12.2
 
 extra-source-files:
   - README.md
@@ -15,7 +15,6 @@ synopsis: >
   Provides error reporting capabilities to WAI based applications through
   Rollbar API.
 category: Network
-
 description: |
   Please see the README on GitHub at
   <https://github.com/stackbuilders/rollbar-haskell/tree/master/rollbar-wai>
@@ -48,7 +47,7 @@ library:
     - text >= 1.2 && < 2.1
     - unordered-containers >= 0.2 && < 1
     - wai >= 3.2 && < 4
-    - wai-extra < 3.1.17         # TODO: update breaks yesod-core, see https://github.com/yesodweb/yesod/issues/1854
+    - wai-extra < 3.1.17 # TODO: update breaks yesod-core, see https://github.com/yesodweb/yesod/issues/1854
 
 executables:
   wai-example:
