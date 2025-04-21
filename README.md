@@ -3,7 +3,7 @@
 [![All Contributors](https://img.shields.io/badge/all_contributors-7-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
-![CI](https://github.com/stackbuilders/rollbar-haskell/workflows/CI/badge.svg)
+![CI](https://github.com/stackbuilders/rollbar-haskell/actions/workflows/main.yml/badge.svg)
 [![Hackage Version](https://img.shields.io/hackage/v/rollbar-cli?label=rollbar-cli)](http://hackage.haskell.org/package/rollbar-cli)
 [![Hackage Version](https://img.shields.io/hackage/v/rollbar-client?label=rollbar-cli)](http://hackage.haskell.org/package/rollbar-client)
 [![Hackage Version](https://img.shields.io/hackage/v/rollbar-wai?label=rollbar-cli)](http://hackage.haskell.org/package/rollbar-wai)
