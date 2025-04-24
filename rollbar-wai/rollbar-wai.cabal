@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: b86fed99ff701f3fcad9f738afc390815821aa0fb67532db9332583377e86282
+-- hash: 4419308d935ac2c2c904f04bc2c6e6d009dada286117ef9bb4cc4305f6aea11f
 
 name:           rollbar-wai
 version:        1.1.0
@@ -21,7 +21,7 @@ copyright:      2020-present Stack Builders Inc.
 license:        MIT
 license-file:   LICENSE
 tested-with:
-    GHC ==9.4.7, GHC ==9.6.7, GHC ==9.8.4, GHC ==9.10.1, GHC ==9.12.2
+    GHC ==9.6.7, GHC ==9.8.4, GHC ==9.10.1
 build-type:     Simple
 extra-source-files:
     README.md
@@ -51,7 +51,7 @@ library
     , case-insensitive >=1.2 && <2
     , http-types >=0.12 && <1
     , rollbar-client >=1.0 && <2
-    , text >=1.2 && <2.1
+    , text >=1.2 && <2.2
     , unordered-containers >=0.2 && <1
     , wai >=3.2 && <4
     , wai-extra <3.1.17

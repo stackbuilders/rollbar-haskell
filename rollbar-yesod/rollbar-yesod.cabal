@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: c61923a1f84423ec023148f3e9d0bc0c60770d5c5328de3a12ee3864b1b00f3a
+-- hash: 2b59759f80250c1aa7d3765ef87fdd788e005eae91db24bd89f4c820ed3988c2
 
 name:           rollbar-yesod
 version:        1.1.0
@@ -21,7 +21,7 @@ copyright:      2020-present Stack Builders Inc.
 license:        MIT
 license-file:   LICENSE
 tested-with:
-    GHC ==9.4.7, GHC ==9.6.7, GHC ==9.8.4, GHC ==9.10.1, GHC ==9.12.2
+    GHC ==9.6.7, GHC ==9.8.4, GHC ==9.10.1
 build-type:     Simple
 extra-source-files:
     README.md
