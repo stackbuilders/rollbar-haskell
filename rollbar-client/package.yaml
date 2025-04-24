@@ -73,6 +73,7 @@ tests:
     ghc-options: *exe-ghc-options
     dependencies:
       - aeson
+      - bytestring >= 0.10 && < 1
       - hspec >= 2.7 && < 3
       - mtl
       - rollbar-client
