@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 2b59759f80250c1aa7d3765ef87fdd788e005eae91db24bd89f4c820ed3988c2
+-- hash: 4db0e774c58481a01ca154a66062cb3ac4dd8ba09bb9e11f54dfcdf039fc001e
 
 name:           rollbar-yesod
 version:        1.1.0
@@ -45,7 +45,7 @@ library
       src
   ghc-options: -Wall
   build-depends:
-      base >=4.13 && <5
+      base >=4.18 && <5
     , rollbar-client >=1.0 && <2
     , rollbar-wai >=1.0 && <2
     , unliftio >=0.2 && <1
@@ -61,7 +61,7 @@ executable yesod-example
       example
   ghc-options: -Wall -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-      base >=4.13 && <5
+      base >=4.18 && <5
     , rollbar-client
     , rollbar-yesod
     , warp >=3.3 && <4
@@ -84,7 +84,7 @@ test-suite spec
   build-tool-depends:
       hspec-discover:hspec-discover >=2.7 && <3
   build-depends:
-      base >=4.13 && <5
+      base >=4.18 && <5
     , hspec >=2.7 && <3
     , rollbar-client
     , rollbar-yesod

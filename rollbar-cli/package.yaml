@@ -22,7 +22,7 @@ ghc-options:
   - -Wall
 
 dependencies:
-  - base >= 4.13 && < 5
+  - base >= 4.18 && < 5
 
 _exe-ghc-options: &exe-ghc-options
   - -threaded

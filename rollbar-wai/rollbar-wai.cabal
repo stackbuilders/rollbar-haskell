@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: cf2227064192dc4c6cb8aa19776ed2e3112241ef9c24c3ede8f990bea30bbc7d
+-- hash: c2711649ac4ce6d4ff340d52040ad26c62dda61d3bc0fe63400c1114a333336c
 
 name:           rollbar-wai
 version:        1.1.0
@@ -46,7 +46,7 @@ library
   ghc-options: -Wall
   build-depends:
       aeson >=2.0 && <3
-    , base >=4.13 && <5
+    , base >=4.18 && <5
     , bytestring >=0.10 && <1
     , case-insensitive >=1.2 && <2
     , http-types >=0.12 && <1
@@ -54,7 +54,7 @@ library
     , text >=1.2 && <2.2
     , unordered-containers >=0.2 && <1
     , wai >=3.2 && <4
-    , wai-extra >=3.0
+    , wai-extra >=3.0 && <4
   default-language: Haskell2010
 
 executable wai-example
@@ -65,7 +65,7 @@ executable wai-example
       example
   ghc-options: -Wall -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-      base >=4.13 && <5
+      base >=4.18 && <5
     , rollbar-client
     , rollbar-wai
     , wai
@@ -89,7 +89,7 @@ test-suite spec
       hspec-discover:hspec-discover >=2.7 && <3
   build-depends:
       aeson
-    , base >=4.13 && <5
+    , base >=4.18 && <5
     , hspec >=2.7 && <3
     , http-types
     , mtl >=2.2 && <3
