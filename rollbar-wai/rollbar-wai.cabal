@@ -4,10 +4,10 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: c2711649ac4ce6d4ff340d52040ad26c62dda61d3bc0fe63400c1114a333336c
+-- hash: 9c8edccb3292a596219436cab59ec7dc0b0ed6ca8932667de57a87824d4311a8
 
 name:           rollbar-wai
-version:        1.1.0
+version:        1.2.0
 synopsis:       Provides error reporting capabilities to WAI based applications through Rollbar API.
 
 description:    Please see the README on GitHub at
