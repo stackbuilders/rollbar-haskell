@@ -1,13 +1,11 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.38.1.
+-- This file has been generated from package.yaml by hpack version 0.36.1.
 --
 -- see: https://github.com/sol/hpack
---
--- hash: 51800f31b3c17842ec1abffab29c5966901d356f4a6be199e4851bb70d632431
 
 name:           rollbar-client
-version:        1.2.0
+version:        1.1.1
 synopsis:       Core library to communicate with Rollbar API.
 description:    Please see the README on GitHub at
                 <https://github.com/stackbuilders/rollbar-haskell/tree/master/rollbar-client>
@@ -19,9 +17,9 @@ maintainer:     David Mazarro <dmunuera@stackbuilders.com>
 copyright:      2020-present Stack Builders Inc.
 license:        MIT
 license-file:   LICENSE
-tested-with:
-    GHC ==9.6.7, GHC ==9.8.4, GHC ==9.10.1
 build-type:     Simple
+tested-with:
+    GHC ==9.6.7, GHC ==9.8.4, GHC ==9.10.2, GHC ==9.12.2
 extra-source-files:
     README.md
     ChangeLog.md
