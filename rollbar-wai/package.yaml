@@ -1,11 +1,11 @@
 name: rollbar-wai
-version: 1.2.0
+version: 1.1.1
 github: "stackbuilders/rollbar-haskell"
 license: MIT
 author: "Stack Builders Inc."
 maintainer: "David Mazarro <dmunuera@stackbuilders.com>"
 copyright: "2020-present Stack Builders Inc."
-tested-with: GHC ==9.6.7, GHC ==9.8.4, GHC ==9.10.1
+tested-with: GHC ==9.6.7, GHC ==9.8.4, GHC ==9.10.2, GHC ==9.12.2
 
 extra-source-files:
   - README.md
