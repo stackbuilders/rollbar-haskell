@@ -31,12 +31,14 @@ import qualified Control.Exception as E
 import qualified Data.Aeson.KeyMap as KM
 import qualified Data.Aeson.Key as K
 import qualified Data.Text as T
+import qualified Paths_rollbar_client as Paths
 
 import Control.Monad.IO.Class (MonadIO(..))
 import Data.Aeson
 import Data.Maybe (catMaybes)
 import Data.Monoid (Endo(..))
 import Data.Text (Text)
+import Data.Version (showVersion)
 import Network.HTTP.Req
 import Rollbar.Client.Internal
 import Rollbar.Client.Settings
@@ -375,7 +377,7 @@ instance ToJSON Notifier where
 defaultNotifier :: Notifier
 defaultNotifier = Notifier
   { notifierName = "rollbar-client"
-  , notifierVersion = "1.1.0"
+  , notifierVersion = showVersion Paths.version
   }
 
 newtype ItemId = ItemId Text
