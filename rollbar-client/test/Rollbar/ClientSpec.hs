@@ -161,12 +161,12 @@ spec = do
             , title = Nothing
             , uuid = Just "12345"
             , fingerprint = Nothing
-            , itemNotifier = Notifier "rollbar-client" "1.1.0"
+            , itemNotifier = Notifier "rollbar-client" "1.2.0"
             }
           jsonItem = decodeUtf8 $ DBL.toStrict $ encode item
 
       it "omits fields if they are Nothing values" $
         T.unpack jsonItem `shouldNotContain` "\"server\""
 
-      it "includes fields if they are Just values" $ 
+      it "includes fields if they are Just values" $
         T.unpack jsonItem `shouldContain` "\"platform\":\"haskell\""
