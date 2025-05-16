@@ -17,6 +17,7 @@ module Rollbar.Yesod
 
 import qualified Network.Wai as W
 
+import Control.Concurrent (forkIO)
 import Control.Exception (Exception(..), SomeException)
 import Control.Monad (unless, void)
 import Rollbar.Client
@@ -40,7 +41,7 @@ rollbarYesodMiddleware
   => m a
   -> m a
 rollbarYesodMiddleware = rollbarYesodMiddlewareWith $ \settings request ex ->
-  rollbarOnExceptionWith handler settings (Just request) ex
+  rollbarOnExceptionWith (void . forkIO) handler settings (Just request) ex
   where
     handler item = void $ createItem item { itemFramework = Just "yesod" }
 
