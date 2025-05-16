@@ -1,5 +1,5 @@
 name: rollbar-yesod
-version: 1.1.1
+version: 1.1.2
 github: "stackbuilders/rollbar-haskell"
 license: MIT
 author: "Stack Builders Inc."
