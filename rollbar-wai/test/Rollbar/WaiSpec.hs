@@ -10,7 +10,6 @@ import qualified Data.Text as T
 import qualified Network.Wai as W
 import qualified Network.Wai.Handler.Warp as W
 
-import Control.Concurrent (threadDelay)
 import Control.Monad (join)
 import Control.Monad.IO.Class
 import Data.Aeson
@@ -33,7 +32,6 @@ spec = before getSettingsAndItemRef $
             (req GET url NoReqBody bsResponse $ port warpPort)
           responseStatusCode response `shouldBe` 200
           responseBody response `shouldBe` "OK"
-          threadDelay 500
           readIORef itemRef `shouldReturn` Nothing
 
     context "when the response status code is not 200" $
@@ -44,7 +42,6 @@ spec = before getSettingsAndItemRef $
             (defaultHttpConfig { httpConfigCheckResponse = \_ _ _ -> Nothing })
             (req GET url NoReqBody bsResponse $ port warpPort)
           response `shouldBe` "Something went wrong"
-          threadDelay 500
           let portAsText = T.pack $ show warpPort
           join . fmap itemRequest <$> readIORef itemRef `shouldReturn` Just
             ( Request
@@ -75,7 +72,7 @@ withApp
   -> IO a
 withApp f (settings, itemRef) = do
   let waiSettings = W.setOnException
-        (rollbarOnExceptionWith (createItemFake itemRef) settings)
+        (rollbarOnExceptionWith id (createItemFake itemRef) settings)
         W.defaultSettings
   W.withApplicationSettings waiSettings (return app) $ f itemRef
 

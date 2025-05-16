@@ -50,7 +50,7 @@ rollbarOnException
   -> Maybe W.Request
   -> SomeException
   -> m ()
-rollbarOnException = rollbarOnExceptionWith (void . createItem)
+rollbarOnException = rollbarOnExceptionWith (void . forkIO) (void . createItem)
 
 -- | Similar to 'rollbarOnExceptionWith', but it allows customize the function
 -- used to send the 'Item' to Rollbar.
@@ -58,13 +58,14 @@ rollbarOnException = rollbarOnExceptionWith (void . createItem)
 -- @since 0.1.0
 rollbarOnExceptionWith
   :: MonadIO m
-  => (Item -> Rollbar ())
+  => (IO () -> IO ()) -- ^ fork function (returns unit)
+  -> (Item -> Rollbar ())
   -> Settings
   -> Maybe W.Request
   -> SomeException
   -> m ()
-rollbarOnExceptionWith f settings waiRequest ex =
-  void $ liftIO $ forkIO $ runRollbar settings $ do
+rollbarOnExceptionWith fork f settings waiRequest ex =
+  void $ liftIO $ fork $ runRollbar settings $ do
     item <- mkItem $ PayloadTrace $ Trace [] $ mkException ex
     request <- mapM mkRequest waiRequest
     f item
