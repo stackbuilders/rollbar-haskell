@@ -50,7 +50,7 @@ rollbarOnException
   -> Maybe W.Request
   -> SomeException
   -> m ()
-rollbarOnException settings = rollbarOnExceptionWith (void . forkIO) (void . createItem) settings
+rollbarOnException = rollbarOnExceptionWith (void . forkIO) (void . createItem)
 
 -- | Similar to 'rollbarOnExceptionWith', but it allows customize the function
 -- used to send the 'Item' to Rollbar.
