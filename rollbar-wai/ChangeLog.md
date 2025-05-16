@@ -8,7 +8,7 @@ All notable changes to this project will be documented in this file.
 - Added support for GHC 9.4
 - Changed `text` dependency upper bound: we now support `text-2.0.X.X`.
 
-## [1.2.0] - 2025-05-16
+## Unreleased changes
 
 ### Changed
 - `rollbarOnExceptionWith` now takes a fork function of type `IO () -> IO ()`.
