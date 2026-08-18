@@ -198,7 +198,7 @@ spec = do
             , title = Nothing
             , uuid = Just "12345"
             , fingerprint = Nothing
-            , itemNotifier = Notifier "rollbar-client" "1.1.1"
+            , itemNotifier = Notifier "rollbar-client" "1.2.0"
             }
           jsonItem = decodeUtf8 $ DBL.toStrict $ encode item
 
