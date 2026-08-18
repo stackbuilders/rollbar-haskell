@@ -19,6 +19,15 @@ All notable changes to this project will be documented in this file.
   upgrade carry new class values, so Rollbar files them as new items rather than
   adding to the ones already open.
 
+  Known limitation: this library does not populate stack frames yet, so
+  Rollbar's default fingerprint (frame filenames and methods plus the exception
+  class) reduces to the class alone and all occurrences of one exception type
+  are grouped into a single item. Applications that need finer-grained grouping
+  can set the `fingerprint` field on the `Item` before sending it, for example
+  through `rollbarOnExceptionWith`. The exception message is not part of
+  Rollbar's default fingerprint, but projects that enabled Rollbar's "include
+  message in fingerprint" setting will see items split per distinct message.
+
 ## [1.1.0] - 2024-05-28
 
 ### Changed

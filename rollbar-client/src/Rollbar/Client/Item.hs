@@ -250,6 +250,11 @@ instance ToJSON Exception where
 -- per-occurrence data such as urls, ids and call stacks, which would mint a
 -- new item on every occurrence. The rendered text is kept in full as the
 -- description, and its first line as the message, unless that line is blank.
+--
+-- Since the traces built by this library carry no stack frames yet, Rollbar's
+-- default fingerprint reduces to the class alone, grouping all occurrences of
+-- one exception type into a single item. Set 'fingerprint' on the 'Item' to
+-- control grouping at a finer grain.
 mkException :: E.Exception e => e -> Exception
 mkException e = Exception
   { exceptionClass = T.pack $ exceptionTypeName $ E.toException e
