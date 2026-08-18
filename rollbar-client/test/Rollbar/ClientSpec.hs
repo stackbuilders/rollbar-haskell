@@ -7,6 +7,7 @@ module Rollbar.ClientSpec
   ( spec
   ) where
 
+import qualified Control.Exception as E
 import qualified Data.Aeson.KeyMap as KM
 
 import Control.Monad.Reader
@@ -30,6 +31,17 @@ instance FromJSON Package where
 
 instance HasSettings (Reader Settings) where
   getSettings = ask
+
+-- | An exception whose rendered form spans several lines and carries
+-- per-occurrence data, the way real exceptions usually do.
+newtype TestException = TestException String
+  deriving (Eq, Show)
+
+instance E.Exception TestException where
+  displayException (TestException detail) =
+    "Something went wrong: " <> detail <> "\n" <>
+    "CallStack (from HasCallStack):\n" <>
+    "  error, called at src/Main.hs:42:9 in main:Main"
 
 spec :: Spec
 spec = do
@@ -93,6 +105,31 @@ spec = do
         { notifierName = packageName
         , notifierVersion = packageVersion
         }
+
+  describe "mkException" $ do
+    let rendered =
+          "Something went wrong: 42\n\
+          \CallStack (from HasCallStack):\n\
+          \  error, called at src/Main.hs:42:9 in main:Main"
+
+    it "uses the exception type name as the class" $
+      exceptionClass (mkException $ TestException "42") `shouldBe` "TestException"
+
+    it "unwraps SomeException to reach the concrete exception type" $
+      exceptionClass (mkException $ E.toException $ TestException "42")
+        `shouldBe` "TestException"
+
+    it "gives occurrences of the same type the same class" $
+      exceptionClass (mkException $ TestException "42")
+        `shouldBe` exceptionClass (mkException $ TestException "1337")
+
+    it "puts the first line of the rendered exception in the message" $
+      exceptionMessage (mkException $ TestException "42")
+        `shouldBe` Just "Something went wrong: 42"
+
+    it "keeps the whole rendered exception in the description" $
+      exceptionDescription (mkException $ TestException "42")
+        `shouldBe` Just rendered
 
   before (readSettings "rollbar.yaml") $ do
     describe "ping" $

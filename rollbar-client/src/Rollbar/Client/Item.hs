@@ -38,6 +38,7 @@ import Data.Aeson
 import Data.Maybe (catMaybes)
 import Data.Monoid (Endo(..))
 import Data.Text (Text)
+import Data.Typeable (typeOf)
 import Data.Version (showVersion)
 import Network.HTTP.Req
 import Rollbar.Client.Internal
@@ -242,12 +243,22 @@ instance ToJSON Exception where
     ]
 
 -- | Builds a 'Exception' based on 'E.SomeException'.
+--
+-- The class is the name of the concrete exception type, unwrapping
+-- 'E.SomeException' first, since Rollbar groups trace payloads by class and
+-- rendered exceptions usually embed per-occurrence data such as urls, ids and
+-- call stacks, which would mint a new item on every occurrence. The rendered
+-- text is kept in full as the description, and its first line as the message.
 mkException :: E.Exception e => e -> Exception
-mkException e = Exception
-  { exceptionClass = T.pack $ E.displayException e
-  , exceptionMessage = Nothing
-  , exceptionDescription = Nothing
-  }
+mkException e =
+  case E.toException e of
+    E.SomeException inner -> Exception
+      { exceptionClass = T.pack $ show $ typeOf inner
+      , exceptionMessage = Just $ T.takeWhile (/= '\n') rendered
+      , exceptionDescription = Just rendered
+      }
+  where
+    rendered = T.pack $ E.displayException e
 
 data Message = Message
   { messageBody :: Text

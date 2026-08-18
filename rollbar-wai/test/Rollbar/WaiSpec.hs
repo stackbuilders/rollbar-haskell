@@ -11,7 +11,7 @@ import qualified Network.Wai as W
 import qualified Network.Wai.Handler.Warp as W
 
 import Control.Concurrent (threadDelay)
-import Control.Monad (join)
+import Control.Monad (join, void)
 import Control.Monad.IO.Class
 import Data.Aeson
 import Data.IORef
@@ -63,6 +63,18 @@ spec = before getSettingsAndItemRef $
                 }
             )
 
+    context "when the request handler throws" $
+      it "reports the exception type as the class" $
+        withApp $ \itemRef warpPort -> do
+          let url = http "localhost" /: "error"
+          void $ runReq
+            (defaultHttpConfig { httpConfigCheckResponse = \_ _ _ -> Nothing })
+            (req GET url NoReqBody bsResponse $ port warpPort)
+          threadDelay 500
+          exception <- fmap (>>= itemException) $ readIORef itemRef
+          fmap exceptionClass exception `shouldBe` Just "ErrorCall"
+          fmap exceptionMessage exception `shouldBe` Just (Just "Boom")
+
 
 getSettingsAndItemRef :: IO (Settings, IORef (Maybe Item))
 getSettingsAndItemRef =
@@ -91,3 +103,9 @@ createItemFake itemRef item = do
   requestModifier <- getRequestModifier
   liftIO $ writeIORef itemRef $ Just $
     item { itemRequest = requestModifier <$> itemRequest item }
+
+itemException :: Item -> Maybe Exception
+itemException item =
+  case bodyPayload $ itemBody item of
+    PayloadTrace trace -> Just $ traceException trace
+    _ -> Nothing
