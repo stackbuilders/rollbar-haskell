@@ -244,17 +244,13 @@ instance ToJSON Exception where
 
 -- | Builds a 'Exception' based on 'E.SomeException'.
 --
--- The class is the name of the concrete exception type, unwrapping the
--- 'E.SomeException' and 'E.SomeAsyncException' wrappers first, since Rollbar
--- groups trace payloads by class and rendered exceptions usually embed
--- per-occurrence data such as urls, ids and call stacks, which would mint a
--- new item on every occurrence. The rendered text is kept in full as the
--- description, and its first line as the message, unless that line is blank.
+-- The class is the concrete exception type name, unwrapping 'E.SomeException'
+-- and 'E.SomeAsyncException' first, since Rollbar groups trace payloads by
+-- class. The rendered text is kept as the description in full and as the
+-- message up to its first newline, when non-blank.
 --
--- Since the traces built by this library carry no stack frames yet, Rollbar's
--- default fingerprint reduces to the class alone, grouping all occurrences of
--- one exception type into a single item. Set 'fingerprint' on the 'Item' to
--- control grouping at a finer grain.
+-- Traces carry no stack frames yet, so all occurrences of one exception type
+-- group into a single item; set 'fingerprint' on the 'Item' to refine that.
 mkException :: E.Exception e => e -> Exception
 mkException e = Exception
   { exceptionClass = T.pack $ exceptionTypeName $ E.toException e
@@ -265,8 +261,7 @@ mkException e = Exception
     rendered = T.pack $ E.displayException e
     firstLine = T.dropWhileEnd (== '\r') $ T.takeWhile (/= '\n') rendered
 
--- | Returns the name of the innermost exception type, peeling off the
--- 'E.SomeAsyncException' wrapper used by async exception hierarchies.
+-- | Name of the innermost exception type, unwrapping 'E.SomeAsyncException'.
 exceptionTypeName :: E.SomeException -> String
 exceptionTypeName se =
   case E.fromException se of

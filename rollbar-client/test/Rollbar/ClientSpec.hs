@@ -32,8 +32,7 @@ instance FromJSON Package where
 instance HasSettings (Reader Settings) where
   getSettings = ask
 
--- | An exception whose rendered form spans several lines and carries
--- per-occurrence data, the way real exceptions usually do.
+-- | An exception rendered across several lines, the way real ones are.
 newtype TestException = TestException String
   deriving (Eq, Show)
 
@@ -43,8 +42,7 @@ instance E.Exception TestException where
     "CallStack (from HasCallStack):\n" <>
     "  error, called at src/Main.hs:42:9 in main:Main"
 
--- | An exception thrown through the async exception hierarchy, the way
--- timeouts and thread kills are.
+-- | An exception reported through the async exception hierarchy.
 data AsyncTestException = AsyncTestException
   deriving Show
 

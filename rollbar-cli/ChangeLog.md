@@ -6,9 +6,8 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
-- Version bump only, to stay in step with the other rollbar packages. The CLI
-  does not report exceptions, so it is unaffected by the `mkException` change in
-  rollbar-client 1.2.0.
+- Version bump only, keeping in step with the other rollbar packages; the CLI
+  does not report exceptions.
 
 ## [1.1.0] - 2024-05-28
 

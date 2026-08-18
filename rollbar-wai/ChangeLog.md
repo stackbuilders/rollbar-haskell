@@ -6,11 +6,10 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
-- **Breaking:** exceptions captured by `rollbarOnException` and
-  `rollbarOnExceptionWith` are now reported with the exception type name as the
-  Rollbar class, and the rendered exception text as the message and description.
-  Upgrading re-groups existing items once; see the rollbar-client 1.2.0 entry
-  for the details. This requires rollbar-client >= 1.2.
+- **Breaking:** captured exceptions are now reported with the exception type
+  name as the Rollbar class and the rendered text as message and description.
+  Upgrading re-groups existing items once; see the rollbar-client 1.2.0 entry.
+  Requires rollbar-client >= 1.2.
 
 ## [1.1.0] - 2024-05-28
 
