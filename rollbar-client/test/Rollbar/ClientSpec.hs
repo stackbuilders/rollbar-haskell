@@ -43,6 +43,22 @@ instance E.Exception TestException where
     "CallStack (from HasCallStack):\n" <>
     "  error, called at src/Main.hs:42:9 in main:Main"
 
+-- | An exception thrown through the async exception hierarchy, the way
+-- timeouts and thread kills are.
+data AsyncTestException = AsyncTestException
+  deriving Show
+
+instance E.Exception AsyncTestException where
+  toException = E.asyncExceptionToException
+  fromException = E.asyncExceptionFromException
+
+-- | An exception rendered verbatim, to exercise first-line edge cases.
+newtype RawException = RawException String
+  deriving Show
+
+instance E.Exception RawException where
+  displayException (RawException s) = s
+
 spec :: Spec
 spec = do
   describe "getRequestModifier" $ do
@@ -107,10 +123,7 @@ spec = do
         }
 
   describe "mkException" $ do
-    let rendered =
-          "Something went wrong: 42\n\
-          \CallStack (from HasCallStack):\n\
-          \  error, called at src/Main.hs:42:9 in main:Main"
+    let rendered = T.pack $ E.displayException $ TestException "42"
 
     it "uses the exception type name as the class" $
       exceptionClass (mkException $ TestException "42") `shouldBe` "TestException"
@@ -118,6 +131,10 @@ spec = do
     it "unwraps SomeException to reach the concrete exception type" $
       exceptionClass (mkException $ E.toException $ TestException "42")
         `shouldBe` "TestException"
+
+    it "unwraps SomeAsyncException to reach the concrete exception type" $
+      exceptionClass (mkException AsyncTestException)
+        `shouldBe` "AsyncTestException"
 
     it "gives occurrences of the same type the same class" $
       exceptionClass (mkException $ TestException "42")
@@ -130,6 +147,14 @@ spec = do
     it "keeps the whole rendered exception in the description" $
       exceptionDescription (mkException $ TestException "42")
         `shouldBe` Just rendered
+
+    it "drops a trailing carriage return from the message" $
+      exceptionMessage (mkException $ RawException "Boom\r\nDetails")
+        `shouldBe` Just "Boom"
+
+    it "omits the message when the first rendered line is blank" $
+      exceptionMessage (mkException $ RawException "\nDetails")
+        `shouldBe` Nothing
 
   before (readSettings "rollbar.yaml") $ do
     describe "ping" $

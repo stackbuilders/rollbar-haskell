@@ -244,21 +244,32 @@ instance ToJSON Exception where
 
 -- | Builds a 'Exception' based on 'E.SomeException'.
 --
--- The class is the name of the concrete exception type, unwrapping
--- 'E.SomeException' first, since Rollbar groups trace payloads by class and
--- rendered exceptions usually embed per-occurrence data such as urls, ids and
--- call stacks, which would mint a new item on every occurrence. The rendered
--- text is kept in full as the description, and its first line as the message.
+-- The class is the name of the concrete exception type, unwrapping the
+-- 'E.SomeException' and 'E.SomeAsyncException' wrappers first, since Rollbar
+-- groups trace payloads by class and rendered exceptions usually embed
+-- per-occurrence data such as urls, ids and call stacks, which would mint a
+-- new item on every occurrence. The rendered text is kept in full as the
+-- description, and its first line as the message, unless that line is blank.
 mkException :: E.Exception e => e -> Exception
-mkException e =
-  case E.toException e of
-    E.SomeException inner -> Exception
-      { exceptionClass = T.pack $ show $ typeOf inner
-      , exceptionMessage = Just $ T.takeWhile (/= '\n') rendered
-      , exceptionDescription = Just rendered
-      }
+mkException e = Exception
+  { exceptionClass = T.pack $ exceptionTypeName $ E.toException e
+  , exceptionMessage = if T.null firstLine then Nothing else Just firstLine
+  , exceptionDescription = Just rendered
+  }
   where
     rendered = T.pack $ E.displayException e
+    firstLine = T.dropWhileEnd (== '\r') $ T.takeWhile (/= '\n') rendered
+
+-- | Returns the name of the innermost exception type, peeling off the
+-- 'E.SomeAsyncException' wrapper used by async exception hierarchies.
+exceptionTypeName :: E.SomeException -> String
+exceptionTypeName se =
+  case E.fromException se of
+    Just (E.SomeAsyncException inner) ->
+      exceptionTypeName $ E.SomeException inner
+    Nothing ->
+      case se of
+        E.SomeException inner -> show $ typeOf inner
 
 data Message = Message
   { messageBody :: Text
