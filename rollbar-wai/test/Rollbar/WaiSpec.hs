@@ -66,8 +66,17 @@ spec = before getSettingsAndItemRef $
 
 getSettingsAndItemRef :: IO (Settings, IORef (Maybe Item))
 getSettingsAndItemRef =
-  (,) <$> readSettings "rollbar.yaml"
+  (,) <$> pure testSettings
       <*> newIORef Nothing
+
+-- | These specs never call the Rollbar API, so any token works.
+testSettings :: Settings
+testSettings = Settings
+  { settingsToken = Token "invalid-token"
+  , settingsEnvironment = Environment "test"
+  , settingsRevision = Nothing
+  , settingsRequestModifiers = defaultRequestModifiers
+  }
 
 withApp
   :: (IORef (Maybe Item) -> W.Port -> IO a)
