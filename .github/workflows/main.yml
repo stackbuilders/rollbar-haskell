@@ -75,10 +75,9 @@ jobs:
       - name: Build
         run: cabal build all
       - name: Run tests
-        # The specs that talk to the real Rollbar API run only when
-        # ROLLBAR_TOKEN is set. Restore the env below once there is an
-        # active Rollbar account behind the secret:
-        #
-        #   env:
-        #     ROLLBAR_TOKEN: ${{ secrets.ROLLBAR_TOKEN }}
         run: cabal test all
+        env:
+          # When this secret is missing or empty, the specs that talk to the
+          # real Rollbar API are skipped; setting a valid token re-enables
+          # them without any workflow changes.
+          ROLLBAR_TOKEN: ${{ secrets.ROLLBAR_TOKEN }}
