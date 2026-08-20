@@ -1,4 +1,5 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE NumericUnderscores #-}
 {-# LANGUAGE OverloadedStrings #-}
 
 module Rollbar.WaiSpec
@@ -34,7 +35,7 @@ spec = before getSettingsAndItemVar $
             (req GET url NoReqBody bsResponse $ port warpPort)
           responseStatusCode response `shouldBe` 200
           responseBody response `shouldBe` "OK"
-          threadDelay 100000
+          threadDelay 100_000
           tryReadMVar itemVar `shouldReturn` Nothing
 
     context "when the response status code is not 200" $
@@ -45,7 +46,7 @@ spec = before getSettingsAndItemVar $
             (defaultHttpConfig { httpConfigCheckResponse = \_ _ _ -> Nothing })
             (req GET url NoReqBody bsResponse $ port warpPort)
           response `shouldBe` "Something went wrong"
-          item <- timeout 5000000 $ readMVar itemVar
+          item <- timeout 5_000_000 $ readMVar itemVar
           let portAsText = T.pack $ show warpPort
           (item >>= itemRequest) `shouldBe` Just
             ( Request
