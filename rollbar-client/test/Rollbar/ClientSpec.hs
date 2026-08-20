@@ -96,7 +96,7 @@ spec = do
         }
 
   mtoken <- runIO $ lookupEnv "ROLLBAR_TOKEN"
-  if maybe True (== "") mtoken
+  if mtoken == Nothing || mtoken == Just ""
     then describe "live API specs" $
       it "run only when ROLLBAR_TOKEN is set" $
         pendingWith "ROLLBAR_TOKEN is not set"
