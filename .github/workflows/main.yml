@@ -30,7 +30,7 @@ jobs:
         with:
           cabal-file: rollbar-client/rollbar-client.cabal
           ubuntu-version: latest
-          macos-version: 13
+          macos-version: latest
           version: 0.1.7.0
   build:
     name: GHC ${{ matrix.ghc }} on ${{ matrix.os }}
@@ -77,4 +77,7 @@ jobs:
       - name: Run tests
         run: cabal test all
         env:
+          # When this secret is missing or empty, the specs that talk to the
+          # real Rollbar API are skipped; setting a valid token re-enables
+          # them without any workflow changes.
           ROLLBAR_TOKEN: ${{ secrets.ROLLBAR_TOKEN }}

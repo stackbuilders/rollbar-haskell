@@ -76,5 +76,13 @@ withApp = before $ do
   return (app, id)
   where
     getApp =
-      App <$> readSettings "rollbar.yaml"
-          <*> newIORef Nothing
+      App testSettings <$> newIORef Nothing
+
+-- | These specs never call the Rollbar API, so any token works.
+testSettings :: Settings
+testSettings = Settings
+  { settingsToken = Token "invalid-token"
+  , settingsEnvironment = Environment "test"
+  , settingsRevision = Nothing
+  , settingsRequestModifiers = defaultRequestModifiers
+  }
