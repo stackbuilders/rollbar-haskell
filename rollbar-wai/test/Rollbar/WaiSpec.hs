@@ -64,6 +64,9 @@ spec = before getSettingsAndItemVar $
                 , requestUserIp = ""
                 }
             )
+          let exception = item >>= itemException
+          fmap exceptionClass exception `shouldBe` Just "ErrorCall"
+          fmap exceptionMessage exception `shouldBe` Just (Just "Boom")
 
 
 getSettingsAndItemVar :: IO (Settings, MVar Item)
@@ -105,3 +108,9 @@ createItemFake itemVar item = do
   requestModifier <- getRequestModifier
   void $ liftIO $ tryPutMVar itemVar $
     item { itemRequest = requestModifier <$> itemRequest item }
+
+itemException :: Item -> Maybe Exception
+itemException item =
+  case bodyPayload $ itemBody item of
+    PayloadTrace trace -> Just $ traceException trace
+    _ -> Nothing

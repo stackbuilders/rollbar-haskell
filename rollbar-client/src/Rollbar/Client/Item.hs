@@ -38,6 +38,7 @@ import Data.Aeson
 import Data.Maybe (catMaybes)
 import Data.Monoid (Endo(..))
 import Data.Text (Text)
+import Data.Typeable (typeOf)
 import Data.Version (showVersion)
 import Network.HTTP.Req
 import Rollbar.Client.Internal
@@ -242,12 +243,36 @@ instance ToJSON Exception where
     ]
 
 -- | Builds a 'Exception' based on 'E.SomeException'.
+--
+-- The class is the concrete exception type name, unwrapping 'E.SomeException'
+-- and 'E.SomeAsyncException' first, since Rollbar groups trace payloads by
+-- class. The rendered text is kept as the description in full and as the
+-- message up to its first newline, when non-blank.
+--
+-- Traces carry no stack frames yet, so all occurrences of one exception type
+-- group into a single item. The type name is also unqualified, so two
+-- exception types sharing a name (say, req's and http-client's
+-- @HttpException@) share a class. Set 'fingerprint' on the 'Item' to refine
+-- the grouping in either case.
 mkException :: E.Exception e => e -> Exception
 mkException e = Exception
-  { exceptionClass = T.pack $ E.displayException e
-  , exceptionMessage = Nothing
-  , exceptionDescription = Nothing
+  { exceptionClass = T.pack $ exceptionTypeName $ E.toException e
+  , exceptionMessage = if T.null firstLine then Nothing else Just firstLine
+  , exceptionDescription = Just rendered
   }
+  where
+    rendered = T.pack $ E.displayException e
+    firstLine = T.dropWhileEnd (== '\r') $ T.takeWhile (/= '\n') rendered
+
+-- | Name of the innermost exception type, unwrapping 'E.SomeAsyncException'.
+exceptionTypeName :: E.SomeException -> String
+exceptionTypeName se =
+  case E.fromException se of
+    Just (E.SomeAsyncException inner) ->
+      exceptionTypeName $ E.SomeException inner
+    Nothing ->
+      case se of
+        E.SomeException inner -> show $ typeOf inner
 
 data Message = Message
   { messageBody :: Text
