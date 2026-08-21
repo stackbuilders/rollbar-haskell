@@ -250,7 +250,10 @@ instance ToJSON Exception where
 -- message up to its first newline, when non-blank.
 --
 -- Traces carry no stack frames yet, so all occurrences of one exception type
--- group into a single item; set 'fingerprint' on the 'Item' to refine that.
+-- group into a single item. The type name is also unqualified, so two
+-- exception types sharing a name (say, req's and http-client's
+-- @HttpException@) share a class. Set 'fingerprint' on the 'Item' to refine
+-- the grouping in either case.
 mkException :: E.Exception e => e -> Exception
 mkException e = Exception
   { exceptionClass = T.pack $ exceptionTypeName $ E.toException e
