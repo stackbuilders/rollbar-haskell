@@ -16,6 +16,7 @@ import Data.Text.Encoding
 import Data.Text as T
 import Data.Yaml.Config
 import Rollbar.Client
+import System.Environment (lookupEnv)
 import Test.Hspec
 
 data Package = Package
@@ -94,57 +95,12 @@ spec = do
         , notifierVersion = packageVersion
         }
 
-  before (readSettings "rollbar.yaml") $ do
-    describe "ping" $
-      it "returns Pong" $ \settings ->
-        runRollbar settings ping `shouldReturn` Pong
-
-    describe "createItem" $ do
-      context "PayloadTrace" $
-        it "returns ItemId" $ \settings -> do
-          itemId <- runRollbar settings $ do
-            item <- mkItem $ PayloadTrace $ Trace [] $ Exception
-              { exceptionClass = "NameError"
-              , exceptionMessage = Just "global name 'foo' is not defined"
-              , exceptionDescription = Just "Something went wrong while trying to save the user object"
-              }
-            createItem item
-
-          itemId `shouldSatisfy` const True
-
-      context "PayloadTraceChain" $
-        it "returns ItemId" $ \settings -> do
-          itemId <- runRollbar settings $ do
-            item <- mkItem $ PayloadTraceChain $ pure $ Trace [] $ Exception
-              { exceptionClass = "NameError"
-              , exceptionMessage = Just "global name 'foo' is not defined"
-              , exceptionDescription = Just "Something went wrong while trying to save the user object"
-              }
-            createItem item
-
-          itemId `shouldSatisfy` const True
-
-      context "PayloadMessage" $
-        it "returns ItemId" $ \settings -> do
-          itemId <- runRollbar settings $ do
-            item <- mkItem $ PayloadMessage $ Message
-              { messageBody = "Request over threshold of 10 seconds"
-              , messageMetadata = KM.fromList
-                  [ ("route", "home#index")
-                  , ("time_elapsed", Number 15.23)
-                  ]
-              }
-            createItem item
-
-          itemId `shouldSatisfy` const True
-
-    describe "reportDeploy" $
-      it "returns DeployId" $ \settings -> do
-        deployId <- runRollbar settings $ do
-          deploy <- getRevision >>= mkDeploy
-          reportDeploy deploy
-
-        deployId `shouldSatisfy` (> 0)
+  mtoken <- runIO $ lookupEnv "ROLLBAR_TOKEN"
+  if mtoken == Nothing || mtoken == Just ""
+    then describe "live API specs" $
+      it "run only when ROLLBAR_TOKEN is set" $
+        pendingWith "ROLLBAR_TOKEN is not set"
+    else liveApiSpecs
 
   describe "ToJSON Item" $ do
     context "when serializing to JSON" $ do
@@ -170,3 +126,58 @@ spec = do
 
       it "includes fields if they are Just values" $
         T.unpack jsonItem `shouldContain` "\"platform\":\"haskell\""
+
+-- | Specs that talk to the real Rollbar API; they run only when
+-- ROLLBAR_TOKEN is set.
+liveApiSpecs :: Spec
+liveApiSpecs = before (readSettings "rollbar.yaml") $ do
+  describe "ping" $
+    it "returns Pong" $ \settings ->
+      runRollbar settings ping `shouldReturn` Pong
+
+  describe "createItem" $ do
+    context "PayloadTrace" $
+      it "returns ItemId" $ \settings -> do
+        itemId <- runRollbar settings $ do
+          item <- mkItem $ PayloadTrace $ Trace [] $ Exception
+            { exceptionClass = "NameError"
+            , exceptionMessage = Just "global name 'foo' is not defined"
+            , exceptionDescription = Just "Something went wrong while trying to save the user object"
+            }
+          createItem item
+
+        itemId `shouldSatisfy` const True
+
+    context "PayloadTraceChain" $
+      it "returns ItemId" $ \settings -> do
+        itemId <- runRollbar settings $ do
+          item <- mkItem $ PayloadTraceChain $ pure $ Trace [] $ Exception
+            { exceptionClass = "NameError"
+            , exceptionMessage = Just "global name 'foo' is not defined"
+            , exceptionDescription = Just "Something went wrong while trying to save the user object"
+            }
+          createItem item
+
+        itemId `shouldSatisfy` const True
+
+    context "PayloadMessage" $
+      it "returns ItemId" $ \settings -> do
+        itemId <- runRollbar settings $ do
+          item <- mkItem $ PayloadMessage $ Message
+            { messageBody = "Request over threshold of 10 seconds"
+            , messageMetadata = KM.fromList
+                [ ("route", "home#index")
+                , ("time_elapsed", Number 15.23)
+                ]
+            }
+          createItem item
+
+        itemId `shouldSatisfy` const True
+
+  describe "reportDeploy" $
+    it "returns DeployId" $ \settings -> do
+      deployId <- runRollbar settings $ do
+        deploy <- getRevision >>= mkDeploy
+        reportDeploy deploy
+
+      deployId `shouldSatisfy` (> 0)
